@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منصة زوجني - تكفل بالزواج</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Console Error Display -->
+    <div class="console-error" id="consoleError"></div>
+    
+    <!-- Notification Floating Card -->
+    <div class="notification-card" id="notificationCard">
+        <div class="notification-header">
+            <h3>الإشعارات</h3>
+            <span class="notification-close" id="notificationClose">&times;</span>
+        </div>
+        <div class="notification-body" id="notificationBody"></div>
+    </div>
+    
+    <!-- Toast Notifications -->
+    <div class="notification-toast" id="notificationToast">
+        <i class="fas fa-bell"></i>
+        <div class="toast-content">
+            <div class="toast-title" id="toastTitle">عنوان الإشعار</div>
+            <div class="toast-message" id="toastMessage">رسالة الإشعار</div>
+        </div>
+    </div>
+    
+    <!-- Deposit Success Modal -->
+    <div class="deposit-success-modal" id="depositSuccessModal">
+        <div class="deposit-success-content">
+            <div class="deposit-success-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h2 class="deposit-success-title">تم الإيداع بنجاح!</h2>
+            <p class="deposit-success-message">سيتم مراجعة إيداعك من قبل الإدارة وتفعيله في أقرب وقت ممكن.</p>
+            
+            <div class="deposit-currency-image" id="depositCurrencyImage"></div>
+            <div class="deposit-currency-name" id="depositCurrencyName"></div>
+            <div class="deposit-currency-address" id="depositCurrencyAddress"></div>
+            
+            <button class="btn" onclick="appManager.donationManager.closeDepositSuccessModal()">تم</button>
+        </div>
+    </div>
+    
+    <!-- Wheel Result Modal -->
+    <div class="deposit-success-modal" id="wheelResultModal">
+        <div class="deposit-success-content">
+            <div class="deposit-success-icon" id="wheelResultIcon">
+                <i class="fas fa-gift"></i>
+            </div>
+            <h2 class="deposit-success-title" id="wheelResultTitle">مبروك!</h2>
+            <p class="deposit-success-message" id="wheelResultMessage">لقد ربحت جائزة من عجلة الحظ!</p>
+            <div class="wheel-prize-amount" id="wheelPrizeAmount"></div>
+            <button class="btn" onclick="appManager.wheelManager.closeWheelResultModal()">تم</button>
+        </div>
+    </div>
+    
+    <!-- Main Container -->
+    <div class="container" id="mainContainer">
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="logo">
+                <img src="https://placehold.co/100x100/8B5CF6/ffffff?text=LOGO" alt="لوجو منصة زوجني" class="logo-image">
+                <h1>منصة زوجني</h1>
+            </div>
+            
+            <ul class="nav-links">
+                <li><a href="#" class="active" data-section="dashboard"><i class="fas fa-home"></i> <span>لوحة التحكم</span></a></li>
+                <li><a href="#" data-section="donation"><i class="fas fa-hand-holding-usd"></i> <span>التبرع</span></a></li>
+                <li><a href="#" data-section="exchange"><i class="fas fa-exchange-alt"></i> <span>تبادل النقاط</span></a></li>
+                <li><a href="#" data-section="luck-wheel"><i class="fas fa-gift"></i> <span>عجلة الحظ</span></a></li>
+                <li><a href="#" data-section="posts"><i class="fas fa-newspaper"></i> <span>المنشورات</span></a></li>
+                <li><a href="#" data-section="transfer"><i class="fas fa-exchange-alt"></i> <span>تحويل النقاط</span></a></li>
+                <li><a href="#" data-section="withdrawal"><i class="fas fa-wallet"></i> <span>السحب</span></a></li>
+                <li><a href="#" data-section="invite"><i class="fas fa-user-friends"></i> <span>دعوة الأصدقاء</span></a></li>
+                <li><a href="#" data-section="profile"><i class="fas fa-user"></i> <span>ملفي</span></a></li>
+                <li><a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> <span>تسجيل الخروج</span></a></li>
+            </ul>
+            
+            <div class="user-sidebar" id="userSidebar">
+                <div class="user-sidebar-info">
+                    <div class="user-sidebar-avatar" id="sidebarUserAvatar">U</div>
+                    <div>
+                        <div id="sidebarUserName">مستخدم</div>
+                        <div id="sidebarUserId">ID: 000000</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content" id="mainContent">
+            <!-- Homepage -->
+            <div id="homepage" class="hero-section">
+                <h2>مرحباً بك في منصة زوجني</h2>
+                <p>منصة احترافية لمساعدة الشباب على الزواج عبر جمع التبرعات وتقديم الدعم المالي. نساعدك في بناء أسرة سعيدة!</p>
+                <div class="hero-buttons">
+                    <button class="btn" id="registerBtnHomepage">إنشاء حساب</button>
+                    <button class="btn btn-success" id="loginBtnHomepage">تسجيل الدخول</button>
+                </div>
+            </div>
+            
+            <!-- Auth Container -->
+            <div class="card" id="authContainer" style="display: none;">
+                <div class="card-header">
+                    <h2 class="card-title">مرحباً بك في منصة زوجني</h2>
+                </div>
+                
+                <div class="auth-tabs">
+                    <button class="tab-btn active" data-tab="login">تسجيل الدخول</button>
+                    <button class="tab-btn" data-tab="register">إنشاء حساب</button>
+                </div>
+                
+                <!-- Login Form -->
+                <form id="loginForm" class="auth-form">
+                    <div class="form-group">
+                        <label for="loginEmail">البريد الإلكتروني</label>
+                        <input type="email" id="loginEmail" name="email" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="loginPassword">كلمة المرور</label>
+                        <input type="password" id="loginPassword" name="password" required>
+                    </div>
+                    
+                    <button type="submit" class="btn" id="loginSubmitBtn">تسجيل الدخول</button>
+                    <div id="loginMessage" class="message"></div>
+                </form>
+                
+                <!-- Registration Form -->
+                <form id="registerForm" class="auth-form" style="display: none;">
+                    <div class="form-group">
+                        <label for="regUsername">اسم المستخدم</label>
+                        <input type="text" id="regUsername" name="username" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="regEmail">البريد الإلكتروني</label>
+                        <input type="email" id="regEmail" name="email" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="regPassword">كلمة المرور</label>
+                        <input type="password" id="regPassword" name="password" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="regConfirmPassword">تأكيد كلمة المرور</label>
+                        <input type="password" id="regConfirmPassword" name="confirmPassword" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="regInvitationCode">كود الدعوة (اختياري)</label>
+                        <input type="text" id="regInvitationCode" name="invitationCode" placeholder="إذا كان لديك كود دعوة">
+                    </div>
+                    
+                    <button type="submit" class="btn" id="registerSubmitBtn">إنشاء الحساب</button>
+                    <div id="registerMessage" class="message"></div>
+                </form>
+            </div>
+            
+            <!-- Dashboard Sections -->
+            <div class="card" id="dashboardSection" style="display: none;">
+                <div class="card-header">
+                    <h2 class="card-title">لوحة التحكم</h2>
+                </div>
+                
+                <div class="points-display">
+                    <div class="points-card">
+                        <div class="points-number" id="userPoints">0</div>
+                        <div>نقاطك</div>
+                    </div>
+                    <div class="points-card">
+                        <div class="points-number" id="userBalance">0.00</div>
+                        <div>رصيدك ($)</div>
+                    </div>
+                    <div class="points-card">
+                        <div class="points-number" id="userPosts">0</div>
+                        <div>منشوراتك</div>
+                    </div>
+                    <div class="points-card">
+                        <div class="points-number" id="userChats">0</div>
+                        <div>دردشاتك</div>
+                    </div>
+                </div>
+                
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <i class="fas fa-hand-holding-usd"></i>
+                        <h3>جمع التبرعات</h3>
+                        <p>تمكين المحسنين من المساهمة في دعم الشباب على الزواج</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-users"></i>
+                        <h3>بناء المجتمع</h3>
+                        <p>خلق بيئة اجتماعية داعمة تشجع على الزواج والاستقرار</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-heart"></i>
+                        <h3>الزواج المستقر</h3>
+                        <p>مساعدة الشباب على بناء أسر مستقرة وسعيدة</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Donation Section -->
+            <div class="card" id="donationSection" style="display: none;">
+                <div class="card-header">
+                    <h2 class="card-title">التبرع والإيداع</h2>
+                </div>
+                <p>اختر العملة المراد الإيداع بها. بعد الإيداع، انقر على "تم الإيداع بنجاح" وسيتم إرسال إشعار لإدارة المنصة.</p>
+                
+                <div class="donation-grid" id="cryptoDonationGrid"></div>
+                
+                <div class="traditional-donation">
+                    <h3>طرق الدفع التقليدية</h3>
+                    <div class="traditional-methods">
+                        <div class="method-card">
+                            <i class="fas fa-university"></i>
+                            <h4>حوالة بنكية</h4>
+                            <p>البنك الأهلي - 123456789</p>
+                        </div>
+                        <div class="method-card">
+                            <i class="fas fa-mobile-alt"></i>
+                            <h4>محافظ إلكترونية</h4>
+                            <p>STC Pay - 0551234567</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="donationMessage" class="message"></div>
+            </div>
+            
+            <!-- Exchange Section -->
+            <div class="card" id="exchangeSection" style="display: none;">
+                <div class="card-header">
+                    <h2 class="card-title">تبادل النقاط</h2>
+                </div>
+                
+                <div class="exchange-section">
+                    <div class="balance-info">
+                        <div class="balance-item">
+                            <div class="balance-label">رصيد الدولار</div>
+                            <div class="balance-value" id="exchangeBalance">0.00 $</div>
+                        </div>
+                        <div class="balance-item">
+                            <div class="balance-label">رصيد النقاط</div>
+                            <div class="balance-value" id="exchangePoints">0 نقطة</div>
+                        </div>
+                    </div>
+                    
+                    <div class="exchange-rate">
+                        <div class="exchange-item">
+                            <div class="exchange-amount">1$</div>
+                            <div class="exchange-label">دولار أمريكي</div>
+                        </div>
+                        <div class="exchange-arrow">
+                            <i class="fas fa-exchange-alt"></i>
+                        </div>
+                        <div class="exchange-item">
+                            <div class="exchange-amount">1000</div>
+                            <div class="exchange-label">نقطة</div>
+                        </div>
+                    </div>
+                    
+                    <div class="exchange-tabs">
+                        <div class="exchange-tab active" data-direction="toPoints">تحويل إلى نقاط</div>
+                        <div class="exchange-tab" data-direction="toDollars">تحويل إلى دولار</div>
+                    </div>
+                    
+                    <div class="exchange-form" id="toPointsForm">
+                        <div class="exchange-input-group">
+                            <label for="dollarAmount">المبلغ بالدولار ($)</label>
+                            <input type="number" id="dollarAmount" class="exchange-input" min="1" step="0.01" placeholder="0.00">
+                        </div>
+                        
+                        <div class="exchange-arrow">
+                            <i class="fas fa-long-arrow-alt-left"></i>
+                        </div>
+                        
+                        <div class="exchange-input-group">
+                            <label for="pointsAmount">المكافئ بالنقاط</label>
+                            <input type="number" id="pointsAmount" class="exchange-input" placeholder="0" readonly>
+                        </div>
+                    </div>
+                    
+                    <div class="exchange-form" id="toDollarsForm" style="display: none;">
+                        <div class="exchange-input-group">
+                            <label for="pointsInput">المبلغ بالنقاط</label>
+                            <input type="number" id="pointsInput" class="exchange-input" min="1000" step="1000" placeholder="1000">
+                        </div>
+                        
+                        <div class="exchange-arrow">
+                            <i class="fas fa-long-arrow-alt-right"></i>
+                        </div>
+                        
+                        <div class="exchange-input-group">
+                            <label for="dollarsOutput">المكافئ بالدولار ($)</label>
+                            <input type="number" id="dollarsOutput" class="exchange-input" placeholder="0.00" readonly>
+                        </div>
+                    </div>
+                    
+                    <button class="exchange-btn" id="exchangeBtn">تنفيذ التحويل</button>
+                    
+                    <p class="exchange-note">سعر الصرف: 1 دولار = 1000 نقطة</p>
+                </div>
+                
+                <div id="exchangeMessage" class="message"></div>
+            </div>
+            
+            <!-- Luck Wheel Section -->
+            <div class="card" id="luck-wheelSection" style="display: none;">
+                <div class="card-header">
+                    <h2 class="card-title">عجلة الحظ</h2>
+                </div>
+                
+                <div class="wheel-section">
+                    <p>اختر عدد الدورات واختبر حظك! كل تدويرة تكلف 10 نقاط. إذا اخترت 10 دورات في وقت واحد، ستدفع 90 نقاط فقط!</p>
+                    
+                    <div class="balance-info">
+                        <div class="balance-item">
+                            <div class="balance-label">رصيد النقاط</div>
+                            <div class="balance-value" id="wheelPointsBalance">0 نقطة</div>
+                        </div>
+                        <div class="balance-item">
+                            <div class="balance-label">التكلفة</div>
+                            <div class="balance-value" id="wheelCost">0 نقطة</div>
+                        </div>
+                    </div>
+                    
+                    <div class="wheel-controls">
+                        <div class="spin-option active" data-spins="1">لفة واحدة (10 نقاط)</div>
+                        <div class="spin-option" data-spins="5">5 لفات (45 نقطة)</div>
+                        <div class="spin-option" data-spins="10">10 لفات (90 نقطة)</div>
+                    </div>
+                    
+                    <div class="wheel-timer-info">
+                        <h4>مؤقت الدوران</h4>
+                        <div class="wheel-timer-display" id="wheelTimerDisplayMain">جاهز للدوران</div>
+                        <p>يجب الانتظار 30 ثانية بين كل دوران. الدوران المجاني لا يخصم نقاط.</p>
+                    </div>
+                    
+                    <div class="wheel-container">
+                        <div class="wheel-pointer"></div>
+                        <div class="wheel" id="luckWheel"></div>
+                        <div class="wheel-center" id="spinButton">
+                            <i class="fas fa-redo-alt"></i>
+                        </div>
+                        <div id="wheelTimerDisplay">جاهز للدوران</div>
+                    </div>
+                    
+                    <div class="wheel-result" id="wheelResult">
+                        <h3 id="resultTitle">نتيجة الدوران</h3>
+                        <p id="resultMessage">انتظر نتيجة الدوران...</p>
+                    </div>
+                    
+                    <div class="wheel-prizes">
+                        <h3>الجوائز المتاحة</h3>
+                        <div class="prizes-grid">
+                            <div class="prize-card">
+                                <i class="fas fa-times-circle"></i>
+                                <div>حظ أوفر</div>
+                            </div>
+                            <div class="prize-card">
+                                <i class="fas fa-coins"></i>
+                                <div>10 نقاط</div>
+                            </div>
+                            <div class="prize-card">
+                                <i class="fas fa-sync-alt"></i>
+                                <div>دورة مجانية</div>
+                            </div>
+                            <div class="prize-card">
+                                <i class="fas fa-dollar-sign"></i>
+                                <div>1 دولار</div>
+                            </div>
+                            <div class="prize-card">
+                                <i class="fas fa-dollar-sign"></i>
+                                <div>10 دولار</div>
+                            </div>
+                            <div class="prize-card">
+                                <i class="fas fa-dollar-sign"></i>
+                                <div>0.5 دولار</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="wheelMessage" class="message"></div>
+            </div>
+            
+            <!-- Posts Section -->
+            <div class="card" id="postsSection" style="display: none;">
+                <div class="card-header">
+                    <h2 class="card-title">المنشورات</h2>
+                </div>
+                <p>شارك أفكارك، اطلب المساعدة، أو شجع الآخرين على هذه المنصة المتميزة.</p>
+                
+                <div class="post-form">
+                    <textarea id="postContent" placeholder="شارك أفكارك أو اطلب المساعدة... (300 حرف كحد أقصى)"></textarea>
+                    <button class="post-btn" id="publishPostBtn">نشر المنشور (10 نقاط)</button>
+                </div>
+                <div id="postMessage" class="message"></div>
+                
+                <h3>أحدث المنشورات</h3>
+                <div class="post-list" id="postsList"></div>
+            </div>
+            
+            <!-- Transfer Section -->
+            <div class="card" id="transferSection" style="display: none;">
+                <div class="card-header">
+                    <h2 class="card-title">تحويل النقاط</h2>
+                </div>
+                <p>قم بتحويل نقاطك إلى مستخدم آخر باستخدام معرفه الفريد.</p>
+                
+                <div class="form-group">
+                    <label for="transferRecipientId">معرف المستلم (ID)</label>
+                    <input type="text" id="transferRecipientId" placeholder="أدخل معرف المستخدم (مثال: 123456)">
+                </div>
+                
+                <div class="form-group">
+                    <label for="transferAmount">عدد النقاط</label>
+                    <input type="number" id="transferAmount" min="1" placeholder="أدخل عدد النقاط">
+                </div>
+                
+                <div class="form-group">
+                    <label for="transferMessage">رسالة (اختياري)</label>
+                    <textarea id="transferMessage" placeholder="أضف رسالة..." rows="3"></textarea>
+                </div>
+                
+                <button class="btn" id="transferBtn">تحويل النقاط</button>
+                <div id="transferMessage" class="message"></div>
+            </div>
+            
+            <!-- Withdrawal Section -->
+            <div class="card" id="withdrawalSection" style="display: none;">
+                <div class="card-header">
+                    <h2 class="card-title">سحب النقاط</h2>
+                </div>
+                <p>يمكنك سحب أموالك عندما تصل إلى الحد الأدنى المطلوب ($10).</p>
+                
+                <div class="form-group">
+                    <label for="withdrawalAmount">المبلغ ($)</label>
+                    <input type="number" id="withdrawalAmount" min="10" step="0.01" placeholder="أدخل المبلغ (الحد الأدنى $10)">
+                </div>
+                
+                <div class="form-group">
+                    <label for="withdrawalMethod">طريقة الاستلام</label>
+                    <select id="withdrawalMethod">
+                        <option value="bank">حوالة بنكية</option>
+                        <option value="wallet">محفظة إلكترونية</option>
+                        <option value="cash">نقداً</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="withdrawalDetails">تفاصيل الحساب</label>
+                    <textarea id="withdrawalDetails" placeholder="أدخل تفاصيل الحساب..." rows="3"></textarea>
+                </div>
+                
+                <div class="withdraw-info">
+                    <h4>ملاحظة هامة</h4>
+                    <p>عند طلب السحب، سيتم إرسال معلوماتك تلقائياً إلى بوت التيلجرام، وستتلقى تأكيداً خلال 24 ساعة.</p>
+                </div>
+                
+                <button class="btn" id="withdrawalBtn">طلب السحب</button>
+                <div id="withdrawalMessage" class="message"></div>
+            </div>
+            
+            <!-- Invite Section -->
+            <div class="card" id="inviteSection" style="display: none;">
+                <div class="card-header">
+                    <h2 class="card-title">دعوة الأصدقاء</h2>
+                </div>
+                <p>ادع أصدقائك للانضمام إلى المنصة واحصل على 50 نقطة لكل صديق يسجل بنجاح!</p>
+                
+                <div class="form-group">
+                    <label>رابط الدعوة الشخصي</label>
+                    <input type="text" id="invitationLink" value="" readonly>
+                </div>
+                
+                <div class="invite-buttons">
+                    <button class="btn" id="copyInvitationLink">نسخ الرابط</button>
+                    <button class="btn btn-secondary" id="shareInvitation">مشاركة</button>
+                </div>
+                
+                <div class="invite-stats">
+                    <h3>الأصدقاء الذين دعوتهم</h3>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-number" id="invitedFriendsCount">0</div>
+                            <div>الدعوات الناجحة</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number" id="invitedPointsEarned">0</div>
+                            <div>النقاط المكتسبة</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number" id="totalInvitations">0</div>
+                            <div>إجمالي الدعوات</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Profile Section -->
+            <div class="card" id="profileSection" style="display: none;">
+                <div class="profile-header">
+                    <div class="profile-avatar" id="profileAvatar">U</div>
+                    <div class="profile-info">
+                        <h2 class="profile-name" id="profileName">مستخدم</h2>
+                        <div class="profile-id" id="profileId">ID: 000000</div>
+                        <div class="profile-stats">
+                            <div class="profile-stat">
+                                <div class="profile-stat-value" id="profilePoints">0</div>
+                                <div class="profile-stat-label">نقاط</div>
+                            </div>
+                            <div class="profile-stat">
+                                <div class="profile-stat-value" id="profileBalance">0.00</div>
+                                <div class="profile-stat-label">رصيد ($)</div>
+                            </div>
+                            <div class="profile-stat">
+                                <div class="profile-stat-value" id="profilePosts">0</div>
+                                <div class="profile-stat-label">منشورات</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="profile-tabs">
+                    <div class="profile-tab active" data-tab="personal">المعلومات الشخصية</div>
+                    <div class="profile-tab" data-tab="activity">النشاط</div>
+                </div>
+                
+                <div class="profile-content">
+                    <div class="profile-tab-content active" id="personalTab">
+                        <div class="profile-edit-form">
+                            <div class="profile-edit-section">
+                                <h3>المعلومات الأساسية</h3>
+                                <div class="form-group">
+                                    <label for="profileFullName">الاسم الكامل</label>
+                                    <input type="text" id="profileFullName" placeholder="أدخل اسمك الكامل">
+                                </div>
+                                <div class="form-group">
+                                    <label for="profileEmail">البريد الإلكتروني</label>
+                                    <input type="email" id="profileEmail" placeholder="أدخل بريدك الإلكتروني">
+                                </div>
+                                <div class="form-group">
+                                    <label for="profilePhone">رقم الهاتف</label>
+                                    <input type="tel" id="profilePhone" placeholder="أدخل رقم هاتفك">
+                                </div>
+                                <button class="btn" id="updateProfileBtn">حفظ التغييرات</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="profile-tab-content" id="activityTab" style="display: none;">
+                        <div class="activity-feed" id="userActivityFeed"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    <script src="utils.js"></script>
+    <script src="auth.js"></script>
+    <script src="posts.js"></script>
+    <script src="wheel.js"></script>
+    <script src="exchange.js"></script>
+    <script src="donation.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
