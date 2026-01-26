@@ -1,0 +1,1220 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>خريطة إدلب العقارية - متصل بقاعدة البيانات</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css" />
+  
+    <style>
+    /* إخفاء الهيدر الرئيسي */
+    header, .header, #header, .navbar, #navbar {
+      display: none !important;
+    }
+    
+    /* إخفاء نص تشغيل بواسطة بلوجر */
+    footer, .footer, .blogger-link {
+      display: none !important;
+    }
+    
+    /* إذا كان هناك مساحة فارغة تبقى بعد الإخفاء */
+    body {
+      padding-top: 0 !important;
+    }
+    
+    * {
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f4f4f9;
+      color: #333;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    h1 {
+      color: #2c3e50;
+      margin: 10px 0;
+      font-size: 1.5rem;
+      text-align: center;
+      padding: 0 10px;
+    }
+
+    /* تنسيق الصف العلوي */
+    .top-row {
+      display: flex;
+      gap: 8px;
+      margin: 10px 0;
+      align-items: center;
+      flex-wrap: wrap;
+      justify-content: center;
+      padding: 0 10px;
+      width: 100%;
+    }
+
+    .top-row button,
+    .top-row select {
+      font-size: 0.9rem;
+      padding: 8px 12px;
+      border-radius: 5px;
+      border: 1px solid #3498db;
+      background-color: #3498db;
+      color: white;
+      cursor: pointer;
+      min-width: max-content;
+      flex: 1 1 auto;
+      max-width: 100%;
+    }
+
+    .top-row button:hover,
+    .top-row select:hover {
+      background-color: #2980b9;
+    }
+
+    /* تنسيق الخريطة */
+    #map {
+      height: 70vh;
+      width: 95%;
+      margin: 10px auto;
+      border: 2px solid #3498db;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      overflow: hidden;
+    }
+
+    /* نافذة إضافة نقطة جديدة */
+    #addPointModal {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 5px 25px rgba(0, 0, 0, 0.3);
+      z-index: 1000;
+      width: 90%;
+      max-width: 500px;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    #addPointModal h3 {
+      margin-top: 0;
+      color: #2c3e50;
+      text-align: center;
+    }
+
+    .modal-form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .form-group label {
+      margin-bottom: 5px;
+      font-weight: bold;
+      color: #2c3e50;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 1rem;
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    .form-buttons {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 15px;
+    }
+
+    .form-buttons button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+
+    #savePointBtn {
+      background-color: #2ecc71;
+      color: white;
+    }
+
+    #cancelPointBtn {
+      background-color: #e74c3c;
+      color: white;
+    }
+
+    /* تنسيق النافذة المنبثقة للعقار */
+    .property-popup {
+      padding: 15px;
+      width: 300px !important;
+    }
+
+    .property-popup h3 {
+      margin-top: 0;
+      color: #2c3e50;
+      text-align: center;
+      border-bottom: 2px solid #3498db;
+      padding-bottom: 10px;
+    }
+
+    .property-details {
+      margin: 15px 0;
+    }
+
+    .property-detail {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #eee;
+    }
+
+    .detail-label {
+      font-weight: bold;
+      color: #555;
+    }
+
+    .detail-value {
+      color: #333;
+    }
+
+    .price-link {
+      display: block;
+      text-align: center;
+      background-color: #3498db;
+      color: white;
+      padding: 10px;
+      border-radius: 5px;
+      text-decoration: none;
+      margin: 15px 0;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .price-link:hover {
+      background-color: #2980b9;
+    }
+
+    .whatsapp-btn {
+      display: block;
+      text-align: center;
+      background-color: #25D366;
+      color: white;
+      padding: 10px;
+      border-radius: 5px;
+      text-decoration: none;
+      margin: 10px 0;
+      font-weight: bold;
+    }
+
+    .whatsapp-btn:hover {
+      background-color: #1da851;
+    }
+
+    .property-description {
+      background-color: #f9f9f9;
+      padding: 10px;
+      border-radius: 5px;
+      margin: 10px 0;
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    /* نافذة تفاصيل العقار */
+    #propertyDetailsModal {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 5px 25px rgba(0, 0, 0, 0.3);
+      z-index: 1000;
+      width: 90%;
+      max-width: 500px;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      border-bottom: 2px solid #3498db;
+      padding-bottom: 10px;
+    }
+
+    .modal-header h3 {
+      margin: 0;
+      color: #2c3e50;
+    }
+
+    .close-modal {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #e74c3c;
+    }
+
+    /* تنسيق العلامات (Markers) */
+    .price-marker {
+      background-color: white;
+      border: 2px solid;
+      border-radius: 5px;
+      padding: 3px 8px;
+      font-weight: bold;
+      font-size: 14px;
+      text-align: center;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+      white-space: nowrap;
+      cursor: pointer;
+    }
+
+    .blue-marker {
+      border-color: #3498db;
+      color: #3498db;
+    }
+
+    .green-marker {
+      border-color: #2ecc71;
+      color: #2ecc71;
+    }
+
+    .red-marker {
+      border-color: #e74c3c;
+      color: #e74c3c;
+    }
+
+    /* تنسيق الشريط التوضيحي (Legend) */
+    .legend {
+      width: 95%;
+      margin: 10px auto;
+      padding: 10px;
+      background-color: white;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      margin: 5px 0;
+    }
+
+    .legend-color {
+      width: 15px;
+      height: 15px;
+      border-radius: 50%;
+    }
+
+    .legend-label {
+      font-size: 0.8rem;
+      color: #333;
+    }
+
+    .legend-color.blue {
+      background-color: #3498db;
+    }
+
+    .legend-color.green {
+      background-color: #2ecc71;
+    }
+
+    .legend-color.red {
+      background-color: #e74c3c;
+    }
+
+    /* زر إضافة نقطة جديدة */
+    #addNewPointBtn {
+      background-color: #9b59b6;
+    }
+
+    #addNewPointBtn:hover {
+      background-color: #8e44ad;
+    }
+
+    /* زر تحديد موقع نقطة */
+    #locatePointBtn {
+      background-color: #f39c12;
+    }
+
+    #locatePointBtn:hover {
+      background-color: #d68910;
+    }
+
+    /* زر تحميل البيانات */
+    #loadDataBtn {
+      background-color: #1abc9c;
+    }
+
+    #loadDataBtn:hover {
+      background-color: #16a085;
+    }
+
+    /* تحميل مؤشر */
+    .loader {
+      display: none;
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #3498db;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 2s linear infinite;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 1001;
+    }
+
+    @keyframes spin {
+      0% { transform: translate(-50%, -50%) rotate(0deg); }
+      100% { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+
+    /* رسائل التحميل */
+    #loadingMessage {
+      display: none;
+      position: fixed;
+      top: 60%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: rgba(0,0,0,0.8);
+      color: white;
+      padding: 15px 20px;
+      border-radius: 10px;
+      z-index: 1001;
+      text-align: center;
+    }
+
+    /* تحسينات للشاشات الصغيرة */
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 1.3rem;
+      }
+      
+      .top-row button,
+      .top-row select {
+        font-size: 0.8rem;
+        padding: 6px 8px;
+      }
+      
+      .property-popup {
+        width: 250px !important;
+      }
+      
+      .legend {
+        font-size: 0.8rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      h1 {
+        font-size: 1.1rem;
+      }
+      
+      .top-row {
+        gap: 5px;
+      }
+      
+      .top-row button,
+      .top-row select {
+        font-size: 0.7rem;
+        padding: 5px 6px;
+      }
+      
+      .legend {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 10px 15px;
+      }
+      
+      .property-popup {
+        width: 200px !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="loader" id="loader"></div>
+  <div id="loadingMessage"></div>
+  
+  <h1>خريطة مدينة إدلب العقارية - متصل بقاعدة البيانات</h1>
+
+  <!-- الصف العلوي للخيارات -->
+  <div class="top-row">
+    <button class="map-toggle" id="map-toggle">الأقمار الصناعية</button>
+    <select class="region-select" id="region-select">
+      <option value="idlib">إدلب</option>
+      <option value="aljisr">الجسر</option>
+      <option value="salqin">سلقين</option>
+      <option value="sarmada">سرمدا</option>
+      <option value="ariha">اريحا</option>
+    </select>
+    <select class="price-filter" id="price-filter">
+      <option value="all">جميع الاسعار</option>
+      <option value="6000-10000">6000$ - 10000$</option>
+      <option value="10000-15000">10000$ - 15000$</option>
+      <option value="15000+">15000$ فما فوق</option>
+    </select>
+    <select class="room-filter" id="room-filter">
+      <option value="all">جميع الغرف</option>
+      <option value="1">1 غرفة</option>
+      <option value="2">2 غرف</option>
+      <option value="3">3 غرف</option>
+      <option value="4+">4 غرف فما فوق</option>
+    </select>
+    <button id="filter-ready">عقارات مكتملة التجهيز</button>
+    <button id="loadDataBtn">تحميل البيانات</button>
+    <button id="addNewPointBtn">إضافة عقار جديد</button>
+    <button id="locatePointBtn">تحديد موقع</button>
+  </div>
+
+  <div id="map"></div>
+
+  <!-- الشريط التوضيحي (Legend) -->
+  <div class="legend">
+    <div class="legend-item">
+      <div class="legend-color blue"></div>
+      <span class="legend-label">الزرقاء: تمثل الإيجار فوق 100$</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color green"></div>
+      <span class="legend-label">النقاط الخضراء: تمثل العقارات للبيع</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color red"></div>
+      <span class="legend-label">الحمراء: تمثل الإيجار تحت 100$</span>
+    </div>
+  </div>
+
+  <div>
+    للتواصل عبر الأرقام التالية: <a href="https://wa.me/+447737796592" target="_blank">00447737796592</a> | © 2023
+  </div>
+
+  <!-- نافذة إضافة نقطة جديدة -->
+  <div id="addPointModal">
+    <h3>إضافة عقار جديد</h3>
+    <form class="modal-form" id="pointForm">
+      <div class="form-group">
+        <label for="propertyTitle">عنوان العقار:</label>
+        <input type="text" id="propertyTitle" placeholder="مثال: شقة فاخرة في حي الأمل" required>
+      </div>
+      <div class="form-group">
+        <label for="propertyPrice">سعر العقار ($):</label>
+        <input type="number" id="propertyPrice" placeholder="مثال: 12000" required>
+      </div>
+      <div class="form-group">
+        <label for="propertyType">نوع العقار:</label>
+        <select id="propertyType">
+          <option value="للإيجار (فوق 100$)">للإيجار (فوق 100$)</option>
+          <option value="للبيع">للبيع</option>
+          <option value="للإيجار (تحت 100$)">للإيجار (تحت 100$)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="propertyColor">لون المؤشر:</label>
+        <select id="propertyColor">
+          <option value="blue">أزرق (للإيجار فوق 100$)</option>
+          <option value="green">أخضر (للبيع)</option>
+          <option value="red">أحمر (للإيجار تحت 100$)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="propertyRooms">عدد الغرف:</label>
+        <select id="propertyRooms">
+          <option value="1">1 غرفة</option>
+          <option value="2">2 غرف</option>
+          <option value="3">3 غرف</option>
+          <option value="4">4 غرف</option>
+          <option value="5">5 غرف فأكثر</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="propertyReady">حالة التجهيز:</label>
+        <select id="propertyReady">
+          <option value="true">مكتمل التجهيز</option>
+          <option value="false">غير مكتمل التجهيز</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="propertyPhone">رقم التواصل:</label>
+        <input type="tel" id="propertyPhone" placeholder="مثال: 0991234567" required>
+      </div>
+      <div class="form-group">
+        <label for="propertyRegion">المنطقة:</label>
+        <select id="propertyRegion">
+          <option value="idlib">إدلب</option>
+          <option value="aljisr">الجسر</option>
+          <option value="salqin">سلقين</option>
+          <option value="sarmada">سرمدا</option>
+          <option value="ariha">اريحا</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="propertyDescription">وصف العقار:</label>
+        <textarea id="propertyDescription" placeholder="أضف وصفاً مفصلاً للعقار..."></textarea>
+      </div>
+      <div class="form-buttons">
+        <button type="button" id="savePointBtn">حفظ العقار في قاعدة البيانات</button>
+        <button type="button" id="cancelPointBtn">إلغاء</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- نافذة تفاصيل العقار -->
+  <div id="propertyDetailsModal">
+    <div class="modal-header">
+      <h3 id="propertyDetailsTitle">تفاصيل العقار</h3>
+      <button class="close-modal" id="closeDetailsBtn">&times;</button>
+    </div>
+    <div id="propertyDetailsContent">
+      <!-- سيتم تعبئة المحتوى ديناميكياً -->
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.min.js"></script>
+
+  <script>
+    // رابط Google Apps Script Web App
+    // قم بتغيير هذا الرابط إلى رابط النشر الخاص بك
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxQWGuIG7nDIoKqtccrXaE39_lZENqGm0B2SqjcHnHEqxUH3qnUpY0RTQr3hN0Wvdo6/exec";
+    
+    // إحداثيات المناطق
+    const regions = {
+      idlib: [35.9306, 36.6339],
+      aljisr: [35.814985, 36.319943],
+      salqin: [36.138257, 36.453657],
+      sarmada: [36.1833, 36.7167],
+      ariha: [35.8167, 36.6167]
+    };
+
+    // مصفوفة العقارات
+    let properties = [];
+    
+    // مصفوفة العلامات
+    let markers = [];
+    
+    // موقع النقطة الجديدة
+    let newPointLocation = null;
+    let locationMarker = null;
+
+    // إنشاء الخريطة
+    const map = L.map('map').setView(regions.idlib, 12);
+
+    // إضافة طبقة الخريطة العادية من OpenStreetMap
+    const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    // إضافة طبقة الأقمار الصناعية من Esri
+    const esriLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+      attribution: 'Tiles © Esri — Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+    });
+
+    // تحميل البيانات من Google Sheets
+    async function loadDataFromGoogleSheets() {
+      showLoader('جاري تحميل البيانات...');
+      
+      try {
+        const url = `${GOOGLE_SCRIPT_URL}?action=getProperties`;
+        const response = await fetch(url);
+        const data = await response.json();
+        
+        if (data.status === 'success') {
+          properties = data.data;
+          console.log(`تم تحميل ${properties.length} عقار من قاعدة البيانات`);
+          addPropertiesToMap(properties);
+          showMessage('تم تحميل البيانات بنجاح', 'success');
+        } else {
+          throw new Error(data.message || 'خطأ في تحميل البيانات');
+        }
+      } catch (error) {
+        console.error('خطأ في تحميل البيانات:', error);
+        showMessage(`خطأ في تحميل البيانات: ${error.message}`, 'error');
+        
+        // إذا فشل التحميل، استخدم بيانات افتراضية
+        loadDefaultData();
+      } finally {
+        hideLoader();
+      }
+    }
+
+    // تحميل بيانات افتراضية في حالة فشل الاتصال
+    function loadDefaultData() {
+      properties = [
+        {
+          id: 1,
+          title: "شقة فاخرة في حي الأمل",
+          price: 6000,
+          type: "للإيجار (فوق 100$)",
+          color: "blue",
+          rooms: 2,
+          ready: true,
+          phone: "0991234567",
+          description: "شقة فاخرة بموقع مميز، غرفتين نوم، صالة كبيرة، مطبخ مجهز، 3 حمامات، تكييف مركزي، إنترنت سريع",
+          coordinates: [35.9306, 36.6339],
+          region: "idlib",
+          createdDate: new Date().toISOString(),
+          updatedDate: new Date().toISOString()
+        },
+        {
+          id: 2,
+          title: "فيلا للبيع في الجسر",
+          price: 8000,
+          type: "للبيع",
+          color: "green",
+          rooms: 3,
+          ready: false,
+          phone: "0945678901",
+          description: "فيلا حديثة البناء، 3 غرف نوم، حديقة خاصة، موقف سيارات، قريبة من الخدمات",
+          coordinates: [35.9406, 36.6339],
+          region: "idlib",
+          createdDate: new Date().toISOString(),
+          updatedDate: new Date().toISOString()
+        }
+      ];
+      
+      addPropertiesToMap(properties);
+      showMessage('تم تحميل البيانات الافتراضية', 'info');
+    }
+
+    // حفظ عقار جديد في Google Sheets
+    async function savePropertyToGoogleSheets(property) {
+      showLoader('جاري حفظ العقار...');
+      
+      try {
+        // تحويل البيانات إلى FormData
+        const formData = new FormData();
+        formData.append('action', 'addProperty');
+        formData.append('title', property.title);
+        formData.append('price', property.price);
+        formData.append('type', property.type);
+        formData.append('color', property.color);
+        formData.append('rooms', property.rooms);
+        formData.append('ready', property.ready);
+        formData.append('phone', property.phone);
+        formData.append('description', property.description);
+        formData.append('coordinates', JSON.stringify(property.coordinates));
+        formData.append('region', property.region);
+        
+        const response = await fetch(GOOGLE_SCRIPT_URL, {
+          method: 'POST',
+          body: new URLSearchParams(formData)
+        });
+        
+        const data = await response.json();
+        
+        if (data.status === 'success') {
+          showMessage('تم حفظ العقار بنجاح في قاعدة البيانات', 'success');
+          return data.data; // إرجاع العقار الذي تم إنشاؤه
+        } else {
+          throw new Error(data.message || 'خطأ في حفظ البيانات');
+        }
+      } catch (error) {
+        console.error('خطأ في حفظ البيانات:', error);
+        showMessage(`خطأ في حفظ البيانات: ${error.message}`, 'error');
+        return null;
+      } finally {
+        hideLoader();
+      }
+    }
+
+    // دالة لإنشاء علامة تعرض السعر
+    function createPriceMarker(property) {
+      // تحديد لون العلامة بناءً على نوع العقار
+      let markerClass = '';
+      if (property.color === 'blue') markerClass = 'blue-marker';
+      else if (property.color === 'green') markerClass = 'green-marker';
+      else if (property.color === 'red') markerClass = 'red-marker';
+      
+      // إنشاء عنصر HTML للعلامة
+      const markerHtml = `
+        <div class="price-marker ${markerClass}">
+          ${property.price}$
+        </div>
+      `;
+      
+      // إنشاء علامة مخصصة
+      const customIcon = L.divIcon({
+        html: markerHtml,
+        className: 'custom-price-marker',
+        iconSize: [60, 30],
+        iconAnchor: [30, 15]
+      });
+      
+      return L.marker(property.coordinates, { icon: customIcon });
+    }
+
+    // دالة لعرض تفاصيل العقار
+    function showPropertyDetails(property) {
+      const modal = document.getElementById('propertyDetailsModal');
+      const title = document.getElementById('propertyDetailsTitle');
+      const content = document.getElementById('propertyDetailsContent');
+      
+      title.textContent = property.title;
+      
+      // تنسيق التاريخ
+      const createdDate = new Date(property.createdDate).toLocaleDateString('ar-EG');
+      
+      // إنشاء محتوى تفاصيل العقار
+      content.innerHTML = `
+        <div class="property-details">
+          <div class="property-detail">
+            <span class="detail-label">السعر:</span>
+            <span class="detail-value">${property.price}$</span>
+          </div>
+          <div class="property-detail">
+            <span class="detail-label">النوع:</span>
+            <span class="detail-value">${property.type}</span>
+          </div>
+          <div class="property-detail">
+            <span class="detail-label">عدد الغرف:</span>
+            <span class="detail-value">${property.rooms}</span>
+          </div>
+          <div class="property-detail">
+            <span class="detail-label">الحالة:</span>
+            <span class="detail-value">${property.ready ? 'مكتمل التجهيز' : 'غير مكتمل'}</span>
+          </div>
+          <div class="property-detail">
+            <span class="detail-label">المنطقة:</span>
+            <span class="detail-value">${getRegionName(property.region)}</span>
+          </div>
+          <div class="property-detail">
+            <span class="detail-label">تاريخ الإضافة:</span>
+            <span class="detail-value">${createdDate}</span>
+          </div>
+        </div>
+        
+        <div class="property-description">
+          <strong>الوصف:</strong><br>
+          ${property.description || 'لا يوجد وصف متوفر'}
+        </div>
+        
+        <a href="https://wa.me/${property.phone}" class="whatsapp-btn" target="_blank">
+          <i class="fab fa-whatsapp"></i> التواصل عبر واتساب: ${property.phone}
+        </a>
+        
+        <div style="text-align: center; margin-top: 15px; font-size: 0.8rem; color: #666;">
+          ID: ${property.id}
+        </div>
+      `;
+      
+      modal.style.display = 'block';
+    }
+
+    // دالة للحصول على اسم المنطقة
+    function getRegionName(regionCode) {
+      const regionNames = {
+        idlib: 'إدلب',
+        aljisr: 'الجسر',
+        salqin: 'سلقين',
+        sarmada: 'سرمدا',
+        ariha: 'اريحا'
+      };
+      return regionNames[regionCode] || regionCode;
+    }
+
+    // دالة لإضافة العقارات إلى الخريطة
+    function addPropertiesToMap(propertiesToShow) {
+      // إزالة العلامات القديمة
+      markers.forEach(marker => map.removeLayer(marker));
+      markers = [];
+
+      propertiesToShow.forEach(property => {
+        const marker = createPriceMarker(property);
+        
+        // إنشاء محتوى النافذة المنبثقة
+        const popupContent = `
+          <div class="property-popup">
+            <h3>${property.title}</h3>
+            <div class="property-details">
+              <div class="property-detail">
+                <span class="detail-label">السعر:</span>
+                <span class="detail-value">${property.price}$</span>
+              </div>
+              <div class="property-detail">
+                <span class="detail-label">النوع:</span>
+                <span class="detail-value">${property.type}</span>
+              </div>
+              <div class="property-detail">
+                <span class="detail-label">الغرف:</span>
+                <span class="detail-value">${property.rooms}</span>
+              </div>
+            </div>
+            <div class="price-link" data-property-id="${property.id}">
+              عرض تفاصيل العقار
+            </div>
+            <a href="https://wa.me/${property.phone}" class="whatsapp-btn" target="_blank">
+              <i class="fab fa-whatsapp"></i> تواصل عبر واتساب
+            </a>
+          </div>
+        `;
+        
+        marker.bindPopup(popupContent);
+        marker.addTo(map);
+        
+        // إضافة حدث للنقر على رابط التفاصيل
+        marker.on('popupopen', function() {
+          const popup = marker.getPopup();
+          const detailLink = popup.getElement().querySelector('.price-link');
+          if (detailLink) {
+            detailLink.addEventListener('click', function() {
+              const propertyId = parseInt(this.getAttribute('data-property-id'));
+              const property = properties.find(p => p.id === propertyId);
+              if (property) {
+                showPropertyDetails(property);
+                map.closePopup();
+              }
+            });
+          }
+        });
+        
+        markers.push(marker);
+      });
+    }
+
+    // فلترة العقارات بناءً على عدد الغرف
+    function filterPropertiesByRooms(rooms) {
+      let filteredProperties = [];
+      
+      switch (rooms) {
+        case "1":
+          filteredProperties = properties.filter(property => property.rooms === 1);
+          break;
+        case "2":
+          filteredProperties = properties.filter(property => property.rooms === 2);
+          break;
+        case "3":
+          filteredProperties = properties.filter(property => property.rooms === 3);
+          break;
+        case "4+":
+          filteredProperties = properties.filter(property => property.rooms >= 4);
+          break;
+        default:
+          filteredProperties = properties;
+      }
+      
+      addPropertiesToMap(filteredProperties);
+    }
+
+    // فلترة العقارات بناءً على السعر
+    function filterPropertiesByPrice(priceRange) {
+      let filteredProperties = [];
+      
+      switch (priceRange) {
+        case "6000-10000":
+          filteredProperties = properties.filter(property => property.price >= 6000 && property.price <= 10000);
+          break;
+        case "10000-15000":
+          filteredProperties = properties.filter(property => property.price >= 10000 && property.price <= 15000);
+          break;
+        case "15000+":
+          filteredProperties = properties.filter(property => property.price >= 15000);
+          break;
+        default:
+          filteredProperties = properties;
+      }
+      
+      addPropertiesToMap(filteredProperties);
+    }
+
+    // عرض/إخفاء مؤشر التحميل
+    function showLoader(message = 'جاري التحميل...') {
+      document.getElementById('loader').style.display = 'block';
+      document.getElementById('loadingMessage').style.display = 'block';
+      document.getElementById('loadingMessage').textContent = message;
+    }
+
+    function hideLoader() {
+      document.getElementById('loader').style.display = 'none';
+      document.getElementById('loadingMessage').style.display = 'none';
+    }
+
+    // عرض رسالة للمستخدم
+    function showMessage(message, type = 'info') {
+      const colors = {
+        success: '#2ecc71',
+        error: '#e74c3c',
+        info: '#3498db',
+        warning: '#f39c12'
+      };
+      
+      const div = document.createElement('div');
+      div.textContent = message;
+      div.style.cssText = `
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: ${colors[type] || colors.info};
+        color: white;
+        padding: 15px 20px;
+        border-radius: 10px;
+        z-index: 1002;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        animation: fadeInOut 3s ease-in-out;
+        text-align: center;
+      `;
+      
+      document.body.appendChild(div);
+      
+      setTimeout(() => {
+        div.style.animation = 'fadeOut 0.5s ease-in-out';
+        setTimeout(() => div.remove(), 500);
+      }, 2500);
+    }
+
+    // أحداث الصفحة عند التحميل
+    document.addEventListener('DOMContentLoaded', () => {
+      // تحميل البيانات عند بدء التشغيل
+      loadDataFromGoogleSheets();
+      
+      // زر تحميل البيانات
+      document.getElementById('loadDataBtn').addEventListener('click', loadDataFromGoogleSheets);
+      
+      // فلترة حسب عدد الغرف
+      document.getElementById('room-filter').addEventListener('change', (e) => {
+        filterPropertiesByRooms(e.target.value);
+      });
+      
+      // فلترة حسب السعر
+      document.getElementById('price-filter').addEventListener('change', (e) => {
+        filterPropertiesByPrice(e.target.value);
+      });
+      
+      // فلترة العقارات الجاهزة
+      document.getElementById('filter-ready').addEventListener('click', () => {
+        const filteredProperties = properties.filter(property => property.ready);
+        addPropertiesToMap(filteredProperties);
+        showMessage(`عرض ${filteredProperties.length} عقار مكتمل التجهيز`, 'info');
+      });
+      
+      // تحديث الخريطة بناءً على المنطقة المختارة
+      document.getElementById('region-select').addEventListener('change', function() {
+        const selectedRegion = regions[this.value];
+        map.setView(selectedRegion, 12);
+      });
+      
+      // زر التبديل بين الخريطة العادية والأقمار الصناعية
+      let isSatellite = false;
+      document.getElementById('map-toggle').addEventListener('click', () => {
+        if (isSatellite) {
+          map.removeLayer(esriLayer);
+          map.addLayer(osmLayer);
+          document.getElementById('map-toggle').textContent = "الأقمار الصناعية";
+        } else {
+          map.removeLayer(osmLayer);
+          map.addLayer(esriLayer);
+          document.getElementById('map-toggle').textContent = "الخريطة العادية";
+        }
+        isSatellite = !isSatellite;
+      });
+      
+      // إدارة نافذة إضافة نقطة جديدة
+      const addPointModal = document.getElementById('addPointModal');
+      const addNewPointBtn = document.getElementById('addNewPointBtn');
+      const cancelPointBtn = document.getElementById('cancelPointBtn');
+      const savePointBtn = document.getElementById('savePointBtn');
+      const locatePointBtn = document.getElementById('locatePointBtn');
+      
+      // فتح نافذة إضافة نقطة جديدة
+      addNewPointBtn.addEventListener('click', () => {
+        addPointModal.style.display = 'block';
+        newPointLocation = null;
+        
+        // إعادة تعيين النموذج
+        document.getElementById('pointForm').reset();
+        
+        // إذا كان هناك علامة موقع، قم بإزالتها
+        if (locationMarker) {
+          map.removeLayer(locationMarker);
+          locationMarker = null;
+        }
+      });
+      
+      // إغلاق نافذة إضافة نقطة جديدة
+      cancelPointBtn.addEventListener('click', () => {
+        addPointModal.style.display = 'none';
+        document.getElementById('pointForm').reset();
+        
+        // إزالة علامة الموقع إذا كانت موجودة
+        if (locationMarker) {
+          map.removeLayer(locationMarker);
+          locationMarker = null;
+        }
+      });
+      
+      // زر تحديد موقع النقطة
+      locatePointBtn.addEventListener('click', () => {
+        addPointModal.style.display = 'block';
+        
+        // تفعيل وضع تحديد الموقع
+        map.on('click', function(e) {
+          newPointLocation = [e.latlng.lat, e.latlng.lng];
+          
+          // إزالة العلامة القديمة إذا كانت موجودة
+          if (locationMarker) {
+            map.removeLayer(locationMarker);
+          }
+          
+          // إضافة علامة في الموقع المحدد
+          locationMarker = L.marker(newPointLocation, {
+            icon: L.AwesomeMarkers.icon({
+              icon: 'map-pin',
+              markerColor: 'purple'
+            })
+          }).addTo(map);
+          
+          locationMarker.bindPopup("الموقع المحدد للعقار الجديد").openPopup();
+          
+          // إزالة حدث النقر بعد تحديد الموقع
+          map.off('click');
+          
+          showMessage("تم تحديد الموقع! الآن قم بتعبئة باقي البيانات واحفظ العقار.", 'success');
+        });
+        
+        showMessage("الرجاء النقر على الخريطة لتحديد موقع العقار الجديد", 'info');
+      });
+      
+      // حفظ العقار الجديد
+      savePointBtn.addEventListener('click', async () => {
+        // الحصول على البيانات من النموذج
+        const title = document.getElementById('propertyTitle').value;
+        const price = parseInt(document.getElementById('propertyPrice').value);
+        const type = document.getElementById('propertyType').value;
+        const color = document.getElementById('propertyColor').value;
+        const rooms = parseInt(document.getElementById('propertyRooms').value);
+        const ready = document.getElementById('propertyReady').value === 'true';
+        const phone = document.getElementById('propertyPhone').value;
+        const region = document.getElementById('propertyRegion').value;
+        const description = document.getElementById('propertyDescription').value;
+        
+        // التحقق من البيانات
+        if (!title || !price || !phone) {
+          showMessage("الرجاء تعبئة جميع الحقول الإلزامية (العنوان، السعر، رقم التواصل)", 'error');
+          return;
+        }
+        
+        // إذا لم يتم تحديد موقع، استخدم موقع الخريطة الحالي
+        if (!newPointLocation) {
+          const center = map.getCenter();
+          newPointLocation = [center.lat, center.lng];
+        }
+        
+        // إنشاء العقار الجديد
+        const newProperty = {
+          title: title,
+          price: price,
+          type: type,
+          color: color,
+          rooms: rooms,
+          ready: ready,
+          phone: phone,
+          description: description,
+          coordinates: newPointLocation,
+          region: region
+        };
+        
+        // حفظ العقار في Google Sheets
+        const savedProperty = await savePropertyToGoogleSheets(newProperty);
+        
+        if (savedProperty) {
+          // إضافة العقار إلى المصفوفة المحلية
+          properties.push(savedProperty);
+          
+          // تحديث الخريطة
+          addPropertiesToMap(properties);
+          
+          // إغلاق النافذة وإعادة تعيين النموذج
+          addPointModal.style.display = 'none';
+          document.getElementById('pointForm').reset();
+          
+          // إزالة علامة الموقع
+          if (locationMarker) {
+            map.removeLayer(locationMarker);
+            locationMarker = null;
+          }
+        }
+      });
+      
+      // إغلاق نافذة التفاصيل
+      document.getElementById('closeDetailsBtn').addEventListener('click', () => {
+        document.getElementById('propertyDetailsModal').style.display = 'none';
+      });
+      
+      // إغلاق النوافذ عند النقر خارجها
+      window.addEventListener('click', (event) => {
+        const addModal = document.getElementById('addPointModal');
+        const detailsModal = document.getElementById('propertyDetailsModal');
+        
+        if (event.target === addModal) {
+          addModal.style.display = 'none';
+          document.getElementById('pointForm').reset();
+        }
+        
+        if (event.target === detailsModal) {
+          detailsModal.style.display = 'none';
+        }
+      });
+    });
+
+    // إضافة أنماط CSS للرسائل المتحركة
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes fadeInOut {
+        0% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+        15% { opacity: 1; transform: translateX(-50%) translateY(0); }
+        85% { opacity: 1; transform: translateX(-50%) translateY(0); }
+        100% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+      }
+      
+      @keyframes fadeOut {
+        from { opacity: 1; }
+        to { opacity: 0; }
+      }
+    `;
+    document.head.appendChild(style);
+  </script>
+</body>
+</html>
