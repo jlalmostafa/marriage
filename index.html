@@ -288,6 +288,59 @@
       color: #e74c3c;
     }
 
+    /* تنسيق فيديو اليوتيوب */
+    .property-video-container {
+      width: 100%;
+      margin: 15px 0;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .property-video {
+      width: 100%;
+      aspect-ratio: 16/9;
+      border: none;
+      display: block;
+    }
+
+    .video-placeholder {
+      width: 100%;
+      aspect-ratio: 16/9;
+      background-color: #f0f0f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+      color: #666;
+      font-size: 0.9rem;
+    }
+
+    /* زر المشاركة عبر واتساب */
+    .whatsapp-share-btn {
+      display: block;
+      text-align: center;
+      background-color: #25D366;
+      color: white;
+      padding: 12px;
+      border-radius: 5px;
+      text-decoration: none;
+      margin: 10px 0;
+      font-weight: bold;
+      cursor: pointer;
+      border: none;
+      width: 100%;
+      font-size: 1rem;
+    }
+
+    .whatsapp-share-btn:hover {
+      background-color: #1da851;
+    }
+
+    .whatsapp-share-btn i {
+      margin-left: 5px;
+    }
+
     /* تنسيق العلامات (Markers) */
     .price-marker {
       background-color: white;
@@ -444,6 +497,11 @@
       .legend {
         font-size: 0.8rem;
       }
+      
+      #propertyDetailsModal {
+        width: 95%;
+        padding: 15px;
+      }
     }
 
     @media (max-width: 480px) {
@@ -591,6 +649,11 @@
         </select>
       </div>
       <div class="form-group">
+        <label for="propertyVideo">رابط فيديو يوتيوب (اختياري):</label>
+        <input type="text" id="propertyVideo" placeholder="مثال: https://youtube.com/... أو https://youtube.com/shorts/...">
+        <small style="color: #666; margin-top: 5px;">يمكنك إضافة رابط فيديو يوتيوب عادي أو رابط ريلز (YouTube Shorts)</small>
+      </div>
+      <div class="form-group">
         <label for="propertyDescription">وصف العقار:</label>
         <textarea id="propertyDescription" placeholder="أضف وصفاً مفصلاً للعقار..."></textarea>
       </div>
@@ -617,8 +680,7 @@
 
   <script>
     // رابط Google Apps Script Web App
-    // قم بتغيير هذا الرابط إلى رابط النشر الخاص بك
-    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxQWGuIG7nDIoKqtccrXaE39_lZENqGm0B2SqjcHnHEqxUH3qnUpY0RTQr3hN0Wvdo6/exec";
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxFfXExd_rumST87hC0pge6okPMNQK25Mr-Q_iiyBHiTDWjdLntO1-Kr415Z5PweQg/exec";
     
     // إحداثيات المناطق
     const regions = {
@@ -651,6 +713,73 @@
     const esriLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
       attribution: 'Tiles © Esri — Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
     });
+
+    // دالة لاستخراج ID الفيديو من رابط يوتيوب
+    function extractYouTubeVideoId(url) {
+      if (!url) return null;
+      
+      let videoId = null;
+      
+      // تحقق من التنسيقات المختلفة
+      const patterns = [
+        /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/shorts\/)([a-zA-Z0-9_-]{11})/,
+        /(?:youtube\.com\/v\/|youtube\.com\/v\/)([a-zA-Z0-9_-]{11})/,
+        /(?:youtube\.com\/watch\?.*v=)([a-zA-Z0-9_-]{11})/
+      ];
+      
+      for (const pattern of patterns) {
+        const match = url.match(pattern);
+        if (match && match[1]) {
+          videoId = match[1];
+          break;
+        }
+      }
+      
+      return videoId;
+    }
+
+    // دالة لإنشاء رابط تضمين الفيديو
+    function createYouTubeEmbedUrl(videoId, isShort = false) {
+      if (!videoId) return null;
+      
+      if (isShort) {
+        // ريلز (YouTube Shorts)
+        return `https://www.youtube.com/embed/${videoId}`;
+      } else {
+        // فيديو عادي
+        return `https://www.youtube.com/embed/${videoId}`;
+      }
+    }
+
+    // دالة لإنشاء رسالة واتساب جاهزة
+    function createWhatsAppMessage(property) {
+      const regionNames = {
+        idlib: 'إدلب',
+        aljisr: 'الجسر',
+        salqin: 'سلقين',
+        sarmada: 'سرمدا',
+        ariha: 'اريحا'
+      };
+      
+      const regionName = regionNames[property.region] || property.region;
+      const readyStatus = property.ready ? 'مكتمل التجهيز' : 'غير مكتمل التجهيز';
+      
+      let message = `📍 *تفاصيل العقار:* ${property.title}\n\n`;
+      message += `💰 *السعر:* ${property.price}$\n`;
+      message += `🏠 *النوع:* ${property.type}\n`;
+      message += `🚪 *عدد الغرف:* ${property.rooms}\n`;
+      message += `✅ *الحالة:* ${readyStatus}\n`;
+      message += `📍 *المنطقة:* ${regionName}\n\n`;
+      
+      if (property.description) {
+        message += `📝 *الوصف:* ${property.description}\n\n`;
+      }
+      
+      message += `📞 *رقم التواصل:* ${property.phone}\n`;
+      message += `🔗 *رابط العقار على الخريطة:* ${window.location.href}`;
+      
+      return encodeURIComponent(message);
+    }
 
     // تحميل البيانات من Google Sheets
     async function loadDataFromGoogleSheets() {
@@ -695,6 +824,7 @@
           description: "شقة فاخرة بموقع مميز، غرفتين نوم، صالة كبيرة، مطبخ مجهز، 3 حمامات، تكييف مركزي، إنترنت سريع",
           coordinates: [35.9306, 36.6339],
           region: "idlib",
+          videoUrl: "",
           createdDate: new Date().toISOString(),
           updatedDate: new Date().toISOString()
         },
@@ -710,6 +840,7 @@
           description: "فيلا حديثة البناء، 3 غرف نوم، حديقة خاصة، موقف سيارات، قريبة من الخدمات",
           coordinates: [35.9406, 36.6339],
           region: "idlib",
+          videoUrl: "",
           createdDate: new Date().toISOString(),
           updatedDate: new Date().toISOString()
         }
@@ -735,6 +866,7 @@
         formData.append('ready', property.ready);
         formData.append('phone', property.phone);
         formData.append('description', property.description);
+        formData.append('videoUrl', property.videoUrl || '');
         formData.append('coordinates', JSON.stringify(property.coordinates));
         formData.append('region', property.region);
         
@@ -786,7 +918,7 @@
       return L.marker(property.coordinates, { icon: customIcon });
     }
 
-    // دالة لعرض تفاصيل العقار
+    // دالة لعرض تفاصيل العقار مع الفيديو
     function showPropertyDetails(property) {
       const modal = document.getElementById('propertyDetailsModal');
       const title = document.getElementById('propertyDetailsTitle');
@@ -797,8 +929,35 @@
       // تنسيق التاريخ
       const createdDate = new Date(property.createdDate).toLocaleDateString('ar-EG');
       
+      // تحقق إذا كان هناك فيديو
+      let videoHtml = '';
+      if (property.videoUrl) {
+        const videoId = extractYouTubeVideoId(property.videoUrl);
+        if (videoId) {
+          const isShort = property.videoUrl.includes('/shorts/');
+          const embedUrl = createYouTubeEmbedUrl(videoId, isShort);
+          
+          if (embedUrl) {
+            videoHtml = `
+              <div class="property-video-container">
+                <iframe 
+                  class="property-video"
+                  src="${embedUrl}" 
+                  title="فيديو العقار"
+                  frameborder="0" 
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                  allowfullscreen>
+                </iframe>
+              </div>
+            `;
+          }
+        }
+      }
+      
       // إنشاء محتوى تفاصيل العقار
       content.innerHTML = `
+        ${videoHtml}
+        
         <div class="property-details">
           <div class="property-detail">
             <span class="detail-label">السعر:</span>
@@ -831,6 +990,10 @@
           ${property.description || 'لا يوجد وصف متوفر'}
         </div>
         
+        <button class="whatsapp-share-btn" id="shareWhatsAppBtn">
+          <i class="fab fa-whatsapp"></i> مشاركة العقار عبر واتساب
+        </button>
+        
         <a href="https://wa.me/${property.phone}" class="whatsapp-btn" target="_blank">
           <i class="fab fa-whatsapp"></i> التواصل عبر واتساب: ${property.phone}
         </a>
@@ -839,6 +1002,16 @@
           ID: ${property.id}
         </div>
       `;
+      
+      // إضافة حدث لزر مشاركة واتساب
+      const shareBtn = document.getElementById('shareWhatsAppBtn');
+      if (shareBtn) {
+        shareBtn.addEventListener('click', function() {
+          const message = createWhatsAppMessage(property);
+          const whatsappUrl = `https://wa.me/?text=${message}`;
+          window.open(whatsappUrl, '_blank');
+        });
+      }
       
       modal.style.display = 'block';
     }
@@ -1128,6 +1301,7 @@
         const ready = document.getElementById('propertyReady').value === 'true';
         const phone = document.getElementById('propertyPhone').value;
         const region = document.getElementById('propertyRegion').value;
+        const videoUrl = document.getElementById('propertyVideo').value;
         const description = document.getElementById('propertyDescription').value;
         
         // التحقق من البيانات
@@ -1151,6 +1325,7 @@
           rooms: rooms,
           ready: ready,
           phone: phone,
+          videoUrl: videoUrl,
           description: description,
           coordinates: newPointLocation,
           region: region
