@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>خريطة إدلب العقارية - متصل بقاعدة البيانات</title>
+    <title>خريطة إدلب العقارية  </title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css" />
@@ -39,6 +39,7 @@
       flex-direction: column;
       align-items: center;
       min-height: 100vh;
+      position: relative;
     }
 
     h1 {
@@ -80,6 +81,15 @@
       background-color: #2980b9;
     }
 
+    /* إخفاء أزرار المسؤول */
+    .admin-btn {
+      display: none !important;
+    }
+    
+    .admin-btn.visible {
+      display: inline-block !important;
+    }
+
     /* تنسيق الخريطة */
     #map {
       height: 70vh;
@@ -89,6 +99,110 @@
       border-radius: 15px;
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
       overflow: hidden;
+    }
+
+    /* زر المسؤول */
+    .admin-access-btn {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      background-color: #9b59b6;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      font-size: 20px;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      z-index: 999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .admin-access-btn:hover {
+      background-color: #8e44ad;
+      transform: scale(1.1);
+    }
+
+    /* نافذة كلمة سر المسؤول */
+    #adminPasswordModal {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: white;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 5px 25px rgba(0, 0, 0, 0.3);
+      z-index: 1002;
+      width: 90%;
+      max-width: 400px;
+    }
+    
+    #adminPasswordModal h3 {
+      margin-top: 0;
+      color: #2c3e50;
+      text-align: center;
+      border-bottom: 2px solid #9b59b6;
+      padding-bottom: 15px;
+    }
+    
+    .password-form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      margin-top: 15px;
+    }
+    
+    .password-input {
+      padding: 12px;
+      border: 2px solid #ddd;
+      border-radius: 5px;
+      font-size: 16px;
+      text-align: center;
+      font-family: 'Arial', sans-serif;
+    }
+    
+    .password-input:focus {
+      border-color: #9b59b6;
+      outline: none;
+    }
+    
+    .password-buttons {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 10px;
+    }
+    
+    .password-btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1rem;
+      min-width: 100px;
+    }
+    
+    #submitPasswordBtn {
+      background-color: #2ecc71;
+      color: white;
+    }
+    
+    #cancelPasswordBtn {
+      background-color: #e74c3c;
+      color: white;
+    }
+    
+    .password-error {
+      color: #e74c3c;
+      text-align: center;
+      font-size: 0.9rem;
+      margin-top: 10px;
+      display: none;
     }
 
     /* نافذة إضافة نقطة جديدة */
@@ -502,6 +616,14 @@
         width: 95%;
         padding: 15px;
       }
+      
+      .admin-access-btn {
+        bottom: 15px;
+        left: 15px;
+        width: 45px;
+        height: 45px;
+        font-size: 18px;
+      }
     }
 
     @media (max-width: 480px) {
@@ -528,6 +650,14 @@
       .property-popup {
         width: 200px !important;
       }
+      
+      .admin-access-btn {
+        bottom: 10px;
+        left: 10px;
+        width: 40px;
+        height: 40px;
+        font-size: 16px;
+      }
     }
   </style>
 </head>
@@ -536,7 +666,12 @@
   <div class="loader" id="loader"></div>
   <div id="loadingMessage"></div>
   
-  <h1>خريطة مدينة إدلب العقارية - متصل بقاعدة البيانات</h1>
+  <!-- زر المسؤول -->
+  <button class="admin-access-btn" id="adminAccessBtn" title="دخول المسؤول">
+    <i class="fas fa-user-shield"></i>
+  </button>
+  
+  <h1>خريطة مدينة إدلب العقارية   </h1>
 
   <!-- الصف العلوي للخيارات -->
   <div class="top-row">
@@ -562,9 +697,9 @@
       <option value="4+">4 غرف فما فوق</option>
     </select>
     <button id="filter-ready">عقارات مكتملة التجهيز</button>
-    <button id="loadDataBtn">تحميل البيانات</button>
-    <button id="addNewPointBtn">إضافة عقار جديد</button>
-    <button id="locatePointBtn">تحديد موقع</button>
+    <button id="loadDataBtn"  style="display:none;">تحميل البيانات</button>
+    <button id="addNewPointBtn" class="admin-btn">إضافة عقار جديد</button>
+    <button id="locatePointBtn" class="admin-btn">تحديد موقع</button>
   </div>
 
   <div id="map"></div>
@@ -573,20 +708,33 @@
   <div class="legend">
     <div class="legend-item">
       <div class="legend-color blue"></div>
-      <span class="legend-label">الزرقاء: تمثل الإيجار فوق 100$</span>
+      <span class="legend-label" style="display:none;">الزرقاء: تمثل الإيجار فوق 100$</span>
     </div>
     <div class="legend-item">
       <div class="legend-color green"></div>
-      <span class="legend-label">النقاط الخضراء: تمثل العقارات للبيع</span>
+      <span class="legend-label" style="display:none;">النقاط الخضراء: تمثل العقارات للبيع</span>
     </div>
     <div class="legend-item">
       <div class="legend-color red"></div>
-      <span class="legend-label">الحمراء: تمثل الإيجار تحت 100$</span>
+      <span class="legend-label" style="display:none;">الحمراء: تمثل الإيجار تحت 100$</span>
     </div>
   </div>
 
   <div>
-    للتواصل عبر الأرقام التالية: <a href="https://wa.me/+447737796592" target="_blank">00447737796592</a> | © 2023
+    للتواصل عبر الأرقام التالية: <a href="https://wa.me/+963949340870" target="_blank">00963949340870</a> | © 2023
+  </div>
+
+  <!-- نافذة كلمة سر المسؤول -->
+  <div id="adminPasswordModal">
+    <h3>دخول المسؤول</h3>
+    <div class="password-form">
+      <input type="password" id="adminPassword" class="password-input" placeholder="أدخل كلمة السر" autocomplete="off">
+      <div class="password-error" id="passwordError">كلمة السر غير صحيحة</div>
+      <div class="password-buttons">
+        <button type="button" id="submitPasswordBtn" class="password-btn">دخول</button>
+        <button type="button" id="cancelPasswordBtn" class="password-btn">إلغاء</button>
+      </div>
+    </div>
   </div>
 
   <!-- نافذة إضافة نقطة جديدة -->
@@ -636,7 +784,7 @@
       </div>
       <div class="form-group">
         <label for="propertyPhone">رقم التواصل:</label>
-        <input type="tel" id="propertyPhone" placeholder="مثال: 0991234567" required>
+        <input type="tel" id="propertyPhone" placeholder="مثال: 0991234567" required value="+963949340870">
       </div>
       <div class="form-group">
         <label for="propertyRegion">المنطقة:</label>
@@ -682,6 +830,12 @@
     // رابط Google Apps Script Web App
     const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxFfXExd_rumST87hC0pge6okPMNQK25Mr-Q_iiyBHiTDWjdLntO1-Kr415Z5PweQg/exec";
     
+    // كلمة سر المسؤول
+    const ADMIN_PASSWORD = "09911";
+    
+    // حالة المسؤول
+    let isAdmin = false;
+    
     // إحداثيات المناطق
     const regions = {
       idlib: [35.9306, 36.6339],
@@ -700,6 +854,7 @@
     // موقع النقطة الجديدة
     let newPointLocation = null;
     let locationMarker = null;
+    let mapClickHandler = null;
 
     // إنشاء الخريطة
     const map = L.map('map').setView(regions.idlib, 12);
@@ -820,7 +975,7 @@
           color: "blue",
           rooms: 2,
           ready: true,
-          phone: "0991234567",
+          phone: "+963949340870",
           description: "شقة فاخرة بموقع مميز، غرفتين نوم، صالة كبيرة، مطبخ مجهز، 3 حمامات، تكييف مركزي، إنترنت سريع",
           coordinates: [35.9306, 36.6339],
           region: "idlib",
@@ -836,7 +991,7 @@
           color: "green",
           rooms: 3,
           ready: false,
-          phone: "0945678901",
+          phone: "+963949340870",
           description: "فيلا حديثة البناء، 3 غرف نوم، حديقة خاصة، موقف سيارات، قريبة من الخدمات",
           coordinates: [35.9406, 36.6339],
           region: "idlib",
@@ -1008,7 +1163,8 @@
       if (shareBtn) {
         shareBtn.addEventListener('click', function() {
           const message = createWhatsAppMessage(property);
-          const whatsappUrl = `https://wa.me/?text=${message}`;
+          // استخدام رقم العقار المخزن في قاعدة البيانات
+          const whatsappUrl = `https://wa.me/${property.phone}?text=${message}`;
           window.open(whatsappUrl, '_blank');
         });
       }
@@ -1178,8 +1334,73 @@
       }, 2500);
     }
 
+    // دالة لتفعيل وضع تحديد الموقع
+    function activateLocationMode() {
+      // إعادة تعيين المتغيرات
+      newPointLocation = null;
+      
+      // إذا كان هناك علامة موقع سابقة، قم بإزالتها
+      if (locationMarker) {
+        map.removeLayer(locationMarker);
+        locationMarker = null;
+      }
+      
+      // إلغاء أي حدث نقر سابق على الخريطة
+      if (mapClickHandler) {
+        map.off('click', mapClickHandler);
+      }
+      
+      showMessage("الرجاء النقر على الخريطة لتحديد موقع العقار الجديد", 'info');
+      
+      // إضافة حدث النقر على الخريطة لتحديد الموقع
+      mapClickHandler = function(e) {
+        newPointLocation = [e.latlng.lat, e.latlng.lng];
+        
+        // إزالة العلامة القديمة إذا كانت موجودة
+        if (locationMarker) {
+          map.removeLayer(locationMarker);
+        }
+        
+        // إضافة علامة في الموقع المحدد
+        locationMarker = L.marker(newPointLocation, {
+          icon: L.AwesomeMarkers.icon({
+            icon: 'map-pin',
+            markerColor: 'purple'
+          })
+        }).addTo(map);
+        
+        locationMarker.bindPopup("الموقع المحدد للعقار الجديد").openPopup();
+        
+        // إزالة حدث النقر بعد تحديد الموقع
+        map.off('click', mapClickHandler);
+        
+        // انتظر 3 ثوانٍ ثم افتح نافذة إضافة العقار
+        setTimeout(() => {
+          document.getElementById('addPointModal').style.display = 'block';
+          showMessage("تم تحديد الموقع! الآن قم بتعبئة باقي البيانات واحفظ العقار.", 'success');
+        }, 3000);
+      };
+      
+      map.on('click', mapClickHandler);
+    }
+
+    // دالة لإظهار/إخفاء أزرار المسؤول
+    function toggleAdminButtons(show) {
+      const adminButtons = document.querySelectorAll('.admin-btn');
+      adminButtons.forEach(button => {
+        if (show) {
+          button.classList.add('visible');
+        } else {
+          button.classList.remove('visible');
+        }
+      });
+    }
+
     // أحداث الصفحة عند التحميل
     document.addEventListener('DOMContentLoaded', () => {
+      // إخفاء أزرار المسؤول افتراضيًا
+      toggleAdminButtons(false);
+      
       // تحميل البيانات عند بدء التشغيل
       loadDataFromGoogleSheets();
       
@@ -1231,63 +1452,84 @@
       const savePointBtn = document.getElementById('savePointBtn');
       const locatePointBtn = document.getElementById('locatePointBtn');
       
-      // فتح نافذة إضافة نقطة جديدة
-      addNewPointBtn.addEventListener('click', () => {
-        addPointModal.style.display = 'block';
-        newPointLocation = null;
+      // إدارة نافذة كلمة سر المسؤول
+      const adminPasswordModal = document.getElementById('adminPasswordModal');
+      const adminAccessBtn = document.getElementById('adminAccessBtn');
+      const submitPasswordBtn = document.getElementById('submitPasswordBtn');
+      const cancelPasswordBtn = document.getElementById('cancelPasswordBtn');
+      const adminPasswordInput = document.getElementById('adminPassword');
+      const passwordError = document.getElementById('passwordError');
+      
+      // فتح نافذة كلمة سر المسؤول
+      adminAccessBtn.addEventListener('click', () => {
+        adminPasswordModal.style.display = 'block';
+        adminPasswordInput.focus();
+        passwordError.style.display = 'none';
+      });
+      
+      // إغلاق نافذة كلمة سر المسؤول
+      cancelPasswordBtn.addEventListener('click', () => {
+        adminPasswordModal.style.display = 'none';
+        adminPasswordInput.value = '';
+        passwordError.style.display = 'none';
+      });
+      
+      // التحقق من كلمة السر
+      submitPasswordBtn.addEventListener('click', () => {
+        const enteredPassword = adminPasswordInput.value;
         
-        // إعادة تعيين النموذج
-        document.getElementById('pointForm').reset();
-        
-        // إذا كان هناك علامة موقع، قم بإزالتها
-        if (locationMarker) {
-          map.removeLayer(locationMarker);
-          locationMarker = null;
+        if (enteredPassword === ADMIN_PASSWORD) {
+          isAdmin = true;
+          adminPasswordModal.style.display = 'none';
+          adminPasswordInput.value = '';
+          passwordError.style.display = 'none';
+          toggleAdminButtons(true);
+          showMessage('تم الدخول كمسؤول بنجاح', 'success');
+        } else {
+          passwordError.style.display = 'block';
+          adminPasswordInput.value = '';
+          adminPasswordInput.focus();
         }
+      });
+      
+      // السماح بالضغط على Enter في حقل كلمة السر
+      adminPasswordInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          submitPasswordBtn.click();
+        }
+      });
+      
+      // تعيين الرقم الافتراضي في حقل الهاتف
+      document.getElementById('propertyPhone').value = '+963949340870';
+      
+      // فتح نافذة إضافة نقطة جديدة - لا تظهر النافذة مباشرة
+      addNewPointBtn.addEventListener('click', () => {
+        // تفعيل وضع تحديد الموقع
+        activateLocationMode();
       });
       
       // إغلاق نافذة إضافة نقطة جديدة
       cancelPointBtn.addEventListener('click', () => {
         addPointModal.style.display = 'none';
         document.getElementById('pointForm').reset();
+        document.getElementById('propertyPhone').value = '+963949340870';
         
         // إزالة علامة الموقع إذا كانت موجودة
         if (locationMarker) {
           map.removeLayer(locationMarker);
           locationMarker = null;
         }
+        
+        // إلغاء أي حدث نقر على الخريطة
+        if (mapClickHandler) {
+          map.off('click', mapClickHandler);
+          mapClickHandler = null;
+        }
       });
       
       // زر تحديد موقع النقطة
       locatePointBtn.addEventListener('click', () => {
-        addPointModal.style.display = 'block';
-        
-        // تفعيل وضع تحديد الموقع
-        map.on('click', function(e) {
-          newPointLocation = [e.latlng.lat, e.latlng.lng];
-          
-          // إزالة العلامة القديمة إذا كانت موجودة
-          if (locationMarker) {
-            map.removeLayer(locationMarker);
-          }
-          
-          // إضافة علامة في الموقع المحدد
-          locationMarker = L.marker(newPointLocation, {
-            icon: L.AwesomeMarkers.icon({
-              icon: 'map-pin',
-              markerColor: 'purple'
-            })
-          }).addTo(map);
-          
-          locationMarker.bindPopup("الموقع المحدد للعقار الجديد").openPopup();
-          
-          // إزالة حدث النقر بعد تحديد الموقع
-          map.off('click');
-          
-          showMessage("تم تحديد الموقع! الآن قم بتعبئة باقي البيانات واحفظ العقار.", 'success');
-        });
-        
-        showMessage("الرجاء النقر على الخريطة لتحديد موقع العقار الجديد", 'info');
+        activateLocationMode();
       });
       
       // حفظ العقار الجديد
@@ -1324,7 +1566,7 @@
           color: color,
           rooms: rooms,
           ready: ready,
-          phone: phone,
+          phone: phone, // الرقم الذي أدخله المستخدم (أو الافتراضي)
           videoUrl: videoUrl,
           description: description,
           coordinates: newPointLocation,
@@ -1344,11 +1586,18 @@
           // إغلاق النافذة وإعادة تعيين النموذج
           addPointModal.style.display = 'none';
           document.getElementById('pointForm').reset();
+          document.getElementById('propertyPhone').value = '+963949340870';
           
           // إزالة علامة الموقع
           if (locationMarker) {
             map.removeLayer(locationMarker);
             locationMarker = null;
+          }
+          
+          // إلغاء أي حدث نقر على الخريطة
+          if (mapClickHandler) {
+            map.off('click', mapClickHandler);
+            mapClickHandler = null;
           }
         }
       });
@@ -1362,14 +1611,22 @@
       window.addEventListener('click', (event) => {
         const addModal = document.getElementById('addPointModal');
         const detailsModal = document.getElementById('propertyDetailsModal');
+        const adminModal = document.getElementById('adminPasswordModal');
         
         if (event.target === addModal) {
           addModal.style.display = 'none';
           document.getElementById('pointForm').reset();
+          document.getElementById('propertyPhone').value = '+963949340870';
         }
         
         if (event.target === detailsModal) {
           detailsModal.style.display = 'none';
+        }
+        
+        if (event.target === adminModal) {
+          adminModal.style.display = 'none';
+          adminPasswordInput.value = '';
+          passwordError.style.display = 'none';
         }
       });
     });
