@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>عروض العقارات</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+    <style>
+     /* إخفاء الهيدر الرئيسي */
+     header, 
+     .header, 
+     #header, 
+     .navbar,
+     #navbar {
+       display: none !important;
+     }
+     
+     /* إذا كان هناك مساحة فارغة تبقى بعد الإخفاء */
+     body {
+       padding-top: 0 !important;
+     }
+      
+      
+      /* CSS لتجاوب الصفحة مع جميع أحجام الشاشات */
+@media (max-width: 1200px) {
+    .container {
+        padding: 0 15px;
+    }
+}
+
+@media (max-width: 992px) {
+    .filter-options {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    .filter-box {
+        margin: 5px;
+        width: 45%;
+    }
+}
+
+@media (max-width: 768px) {
+    .listing {
+        padding: 15px;
+    }
+    
+    .filter-box {
+        width: 100%;
+        margin: 5px 0;
+    }
+    
+    .video-container {
+        border-radius: 10px;
+    }
+    
+    button {
+        padding: 10px;
+        font-size: 14px;
+    }
+    )
+    .whatsapp {
+        padding: 8px;
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 576px) {
+    .container {
+        padding: 0 10px;
+    }
+    
+    h2 {
+        font-size: 20px;
+    }
+    
+    .listing {
+        padding: 10px;
+    }
+    
+    .listing h3 {
+        font-size: 16px;
+    }
+    
+    .listing p {
+        font-size: 14px;
+    }
+    
+    .filter-box label {
+        font-size: 12px;
+    }
+    
+    .filter-box select {
+        padding: 8px;
+        font-size: 12px;
+    }
+    
+    button {
+        padding: 8px 12px;
+        font-size: 12px;
+        margin: 3px;
+    }
+    
+    #showFormBtn, .submit-btn {
+        padding: 8px 15px;
+        font-size: 14px;
+    }
+    
+    .form-group input, .form-group select {
+        padding: 6px;
+        font-size: 14px;
+    }
+    
+    #secretCodeInput {
+        width: 150px;
+        padding: 8px;
+    }
+}
+
+@media (max-width: 400px) {
+    .filter-box {
+        padding: 8px;
+    }
+    
+    .filter-box label {
+        margin-bottom: 5px;
+    }
+    
+    button {
+        padding: 6px 10px;
+        font-size: 11px;
+    }
+    
+    .whatsapp {
+        font-size: 12px;
+        padding: 6px;
+    }
+    
+    #showFormBtn, .submit-btn {
+        padding: 6px 12px;
+        font-size: 12px;
+    }
+    
+    .form-group label {
+        font-size: 14px;
+    }
+}
+   </style>
+  
+  
+          <style>
+            
+           footer, .footer, .blogger-link {
+    display: none !important;
+} 
+            
+            
+      button {
+            padding: 8px 15px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: #007BFF;
+            color: white;
+        }
+        button:hover {
+            opacity: 0.1;
+        }
+        .form-group {
+            margin-bottom: 15px;
+            display: none; /* إخفاء خانات الإدخال بشكل افتراضي */
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        .submit-btn {
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 15px;
+        }
+        .submit-btn:hover {
+            background-color: #218838;
+        }
+        #result {
+            margin-top: 20px;
+        }
+        #showFormBtn {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+        #showFormBtn:hover {
+            background-color: #0056b3;
+        }
+    </style>
+  
+  <style>
+  
+  
+  button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.comments {
+  max-height: 200px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  padding: 10px;
+  margin-top: 10px;
+  background-color: #f9f9f9;
+}
+
+.comments p {
+  padding: 5px;
+  border-bottom: 1px solid #eee;
+  margin: 5px 0;
+}
+      /*  body {
+            font-family: Arial, sans-serif;
+            direction: rtl;
+            background-color: #f5f5f5;
+            text-align: center;
+            width: 100%;
+        }*/
+        
+        .container {
+            margin: auto;
+            padding: 0px;
+        }
+        .filter-options {
+            display: flex;
+            justify-content: flex-start;
+            flex-wrap: nowrap;
+            margin-bottom: 20px;
+            gap: 0px;
+            overflow-x: auto;
+        }
+        .filter-box {
+            background-color: #007BFF;
+            padding: 15px;
+            border-radius: 15px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            color: white;
+            text-align: center;
+            width: 100px;
+            white-space: nowrap;
+            margin: 0;
+            flex-shrink: 0;
+        }
+        .filter-box label {
+            display: block;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+        .filter-box select {
+            width: 100%;
+            padding: 14px;
+            font-size: 14px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            background-color: white;
+            color: #333;
+        }
+        .listing {
+            background: white;
+            margin: 5px auto;
+            padding: 5px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            text-align: right;
+            max-width: 800px;
+        }
+        .listing h3, .listing p {
+            color: #333;
+        }
+        .video-container {
+             border-radius: 15px;
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+        }
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        .whatsapp {
+            display: block;
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #25D366;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .filter-box {
+                width: 150px;
+                padding: 5px;
+            }
+            .filter-box label {
+                font-size: 10px;
+            }
+            .filter-box select {
+                font-size: 14px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .filter-box {
+                width: 90px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        
+     <button id="showFormBtn" style="display:none;">إظهار خانات الإضافة</button>
+        
+        <form id="dataForm">
+            <div class="form-group">
+                <label for="videoUrl1">رابط فيديو يوتيوب:</label>
+                <input type="url" id="videoUrl1" required placeholder="https://www.youtube.com/watch?v=...">
+            </div>
+            <div class="form-group">
+                <label for="price1">السعر:</label>
+                <input type="number" id="price1" required placeholder="السعر بالدولار">
+            </div>
+            <div class="form-group">
+                <label for="description1">الوصف:</label>
+                <input type="text" id="description1" required placeholder="وصف العقار">
+            </div>
+            <div class="form-group">
+                <label for="region1">المنطقة:</label>
+                <select id="region1" required>
+                    <option value="">اختر المنطقة</option>
+                    <option value="a">إدلب</option>
+                    <option value="b">سلقين</option>
+                    <option value="c">جسر الشغور</option>
+                    <option value="d">أريحا</option>
+                    <option value="e">سرمدا</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>الحالة:</label>
+                <div>
+                    <label><input type="radio" name="ready1" value="T" required> جاهز</label>
+                    <label><input type="radio" name="ready1" value="F" required> غير جاهز</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <button type="submit" class="submit-btn">إضافة العقار</button>
+            </div>
+        </form>
+        
+        <div id="result"></div>
+        
+        <div class="filter-options">
+            <div class="filter-box">
+                <label>تصفية حسب السعر:</label>
+                <select id="priceFilter">
+                    <option value="all">الكل</option>
+                    <option value="5000-10000">5000$ - 10000$</option>
+                    <option value="10000-15000">10000$ - 15000$</option>
+                    <option value="15000+">أكثر من 15000$</option>
+                </select>
+            </div>
+            <div class="filter-box">
+                <label>تصفية حسب الجاهزية:</label>
+                <select id="readyFilter">
+                    <option value="all">الكل</option>
+                    <option value="T">جاهز</option>
+                    <option value="F">غير جاهز</option>
+                </select>
+            </div>
+            <div class="filter-box">
+                <label>تصفية حسب المنطقة:</label>
+                <select id="areaFilter">
+                    <option value="all">الكل</option>
+                    <option value="a">إدلب</option>
+                    <option value="b">سلقين</option>
+                    <option value="c">جسر الشغور</option>
+                    <option value="d">أريحا</option>
+                    <option value="e">سرمدا</option>
+                </select>
+            </div>
+        </div>
+        
+        
+        
+        
+        <div id="listings">
+            <div class="loading">جاري تحميل البيانات...</div>
+        </div>
+        
+        <!-- إضافة خانة إدخال الرقم السري في نهاية الصفحة -->
+        <div style="text-align: center; margin-top: 20px; padding: 20px; background-color: #f0f0f0; border-radius: 5px;">
+            <h3> تحقق من قيمة</h3>
+            <input type="password" id="secretCodeInput" placeholder="أدخل الرقم " style="padding: 10px; width: 200px; border-radius: 5px; border: 1px solid #ccc;">
+            <button onclick="checkSecretCode()" style="padding: 10px 15px; margin-right: 10px;">تحقق</button>
+            <p id="codeResult" style="color: red;"></p>
+        </div>
+    </div>
+
+        
+        
+        
+        <!-- إضافة خانة الرقم 10203040 في نهاية الصفحة -->
+      
+    
+
+  
+  
+  
+  
+<script>
+    // البيانات والمتغيرات العامة
+    let allListings = [];
+    const GOOGLE_SHEET_ID = '1851C5ECZgAm4sipw9zXTTOvD_cSoIXxjRHx6XzbBgtY';
+    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw27JTgyMyc9S09R9kLvC5-ZFPRx-r06sdqS2eEi2entBoTL3CSTgsqo4zlEfpmY12O/exec';
+    
+    // تحويل روابط اليوتيوب لتكون قابلة للتضمين
+    function parseVideoUrl(videoUrl) {
+        if (!videoUrl) return "";
+        
+        try {
+            let videoId = '';
+            
+            if (videoUrl.includes("youtube.com/watch?v=")) {
+                videoId = videoUrl.split("v=")[1].split("&")[0];
+            } 
+            else if (videoUrl.includes("youtu.be/")) {
+                videoId = videoUrl.split("youtu.be/")[1].split("?")[0];
+            }
+            else if (videoUrl.includes("youtube.com/shorts/")) {
+                videoId = videoUrl.split("shorts/")[1].split("?")[0];
+            }
+            else if (videoUrl.includes("youtube.com/embed/")) {
+                videoId = videoUrl.split("embed/")[1].split("?")[0];
+            }
+            
+            if (videoId) {
+                return `https://www.youtube.com/embed/${videoId}?rel=0&showinfo=0&autoplay=0`;
+            }
+            return videoUrl;
+        } catch (e) {
+            console.error("خطأ في تحليل رابط الفيديو:", e);
+            return videoUrl;
+        }
+    }
+    
+    // تحويل رمز المنطقة إلى اسم
+    function getAreaName(areaCode) {
+        const areas = {
+            'a': 'إدلب',
+            'b': 'سلقين',
+            'c': 'جسر الشغور',
+            'd': 'أريحا',
+            'e': 'سرمدا'
+        };
+        return areas[areaCode] || areaCode;
+    }
+    
+    // جلب البيانات من Google Sheets
+    async function fetchData() {
+        const url = `https://docs.google.com/spreadsheets/d/${GOOGLE_SHEET_ID}/export?format=xlsx&t=${Date.now()}`;
+        
+        try {
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error(`خطأ في جلب البيانات: ${response.status}`);
+            }
+            
+            const data = await response.arrayBuffer();
+            const workbook = XLSX.read(data, { type: 'array' });
+            const sheet = workbook.Sheets[workbook.SheetNames[0]];
+            const jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: "" });
+            
+            allListings = [];
+            for (let i = 0; i < jsonData.length; i += 7) {
+                const row = jsonData.slice(i, i + 7);
+                
+                if (row[0] && row[0].toString().trim() !== "") {
+                    allListings.push({
+                        فيديو: row[0]?.toString().trim() || "",
+                        السعر: parseInt(row[1]) || 0,
+                        الوصف: row[2]?.toString().trim() || "لا يوجد وصف",
+                        المنطقة: row[3]?.toString().trim() || "غير معروف",
+                        جاهز: (row[4]?.toString().trim().toUpperCase() === "T") ? "T" : "F",
+                        الإعجابات: parseInt(row[5]) || 0,
+                        التعليقات: row[6]?.toString().trim() || ""
+                    });
+                }
+            }
+            
+            applyFilters();
+        } catch (error) {
+            console.error("حدث خطأ أثناء تحميل البيانات:", error);
+            document.getElementById('listings').innerHTML = `
+                <div class="error">
+                    حدث خطأ أثناء تحميل البيانات: ${error.message}<br>
+                    يرجى التأكد من صحة بيانات المصدر وحاول مرة أخرى
+                </div>
+            `;
+        }
+    }
+    
+    // تطبيق الفلاتر على البيانات
+    function applyFilters() {
+        const priceFilter = document.getElementById("priceFilter").value;
+        const readyFilter = document.getElementById("readyFilter").value;
+        const areaFilter = document.getElementById("areaFilter").value;
+        
+        const filteredListings = allListings.filter(item => {
+            let priceMatch = false;
+            if (priceFilter === "all") priceMatch = true;
+            else if (priceFilter === "5000-10000" && item.السعر >= 5000 && item.السعر <= 10000) priceMatch = true;
+            else if (priceFilter === "10000-15000" && item.السعر > 10000 && item.السعر <= 15000) priceMatch = true;
+            else if (priceFilter === "15000+" && item.السعر > 15000) priceMatch = true;
+            
+            const readyMatch = readyFilter === "all" || item.جاهز === readyFilter;
+            const areaMatch = areaFilter === "all" || item.المنطقة === areaFilter;
+            
+            return priceMatch && readyMatch && areaMatch;
+        });
+        
+        displayListings(filteredListings);
+    }
+    
+    // عرض العقارات في الصفحة
+    function displayListings(data) {
+        const listingsContainer = document.getElementById('listings');
+        
+        if (data.length === 0) {
+            listingsContainer.innerHTML = '<div class="listing">لا توجد عقارات مطابقة للبحث</div>';
+            return;
+        }
+        
+        listingsContainer.innerHTML = "";
+        
+        data.forEach((item, index) => {
+            const videoUrl = parseVideoUrl(item.فيديو);
+            const autoplay = index === 0 ? "&autoplay=1" : "";
+            
+            let commentsHTML = '<p>لا توجد تعليقات</p>';
+            if (item.التعليقات && item.التعليقات.trim() !== "") {
+                commentsHTML = item.التعليقات.split('|')
+                    .filter(comment => comment.trim() !== "")
+                    .map(comment => `<p>${comment.trim()}</p>`)
+                    .join('');
+            }
+            
+            const listing = document.createElement('div');
+            listing.className = 'listing';
+            listing.innerHTML = `
+                <div class="video-container">
+                    ${videoUrl ? `
+                    <iframe src="${videoUrl}${autoplay}" 
+                            frameborder="0" 
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                            allowfullscreen></iframe>
+                    ` : '<p>رابط الفيديو غير متوفر</p>'}
+                </div>
+                <h3>${item.الوصف}</h3>
+                <p><strong>السعر:</strong> ${item.السعر.toLocaleString()} دولار</p>
+                <p><strong>الحالة:</strong> ${item.جاهز === "T" ? "جاهز" : "غير جاهز"}</p>
+                <p><strong>المنطقة:</strong> ${getAreaName(item.المنطقة)}</p>
+                <div>
+                    <button onclick="likeListing(${index}, event)" style="display:none;">👍 (${item.الإعجابات})</button>
+                    <button onclick="showCommentForm(${index})" style="display:none;"> 💬</button>
+                    <button onclick="toggleComments(${index})"style="display:none;" > 👁️‍🗨️</button>
+                    <a class="whatsapp" href="https://wa.me/+963949340870" target="_blank">تواصل عبر واتساب</a>
+                </div>
+                <div class="comments" id="comments-${index}" style="display:none;">
+                    <h4>التعليقات:</h4>
+                    ${commentsHTML}
+                </div>
+                <div id="commentForm-${index}" style="display:none; margin-top:15px;">
+                    <textarea id="commentText-${index}" rows="3" style="width:80%; padding:8px;" placeholder="أكتب تعليقك هنا..."></textarea>
+                
+<button onclick="submitComment(${index}, event)">إرسال التعليق</button>
+                </div>
+            `;
+            
+            listingsContainer.appendChild(listing);
+        });
+    }
+    
+    function checkSecretCode() {
+        const secretCode = document.getElementById('secretCodeInput').value;
+        const codeResult = document.getElementById('codeResult');
+        
+        if (secretCode === 'jlal20022') {
+            codeResult.textContent = 'الرقم صحيح! تم تفعيل خانات الإضافة';
+            codeResult.style.color = 'green';
+            document.getElementById('showFormBtn').style.display = 'block';
+        } else {
+            codeResult.textContent = 'الرقم غير صحيح! حاول مرة أخرى';
+            codeResult.style.color = 'red';
+            document.getElementById('showFormBtn').style.display = 'none';
+            document.querySelectorAll('.form-group').forEach(el => el.style.display = 'none');
+        }
+    }
+    
+    // إظهار/إخفاء التعليقات
+    function toggleComments(index) {
+        const commentsDiv = document.getElementById(`comments-${index}`);
+        if (commentsDiv) {
+            commentsDiv.style.display = commentsDiv.style.display === 'none' ? 'block' : 'none';
+        }
+    }
+    
+    // إضافة إعجاب
+    async function likeListing(index, event) {
+  try {
+    // الحصول على الزر الذي تم النقر عليه من الحدث
+    const likeButton = event.target;
+    likeButton.disabled = true; // تعطيل الزر أثناء التحميل
+    
+    const response = await fetch(GOOGLE_SCRIPT_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: new URLSearchParams({
+        action: "like",
+        row: (index * 7) + 6
+      })
+    });
+    
+    if (!response.ok) {
+      throw new Error("فشل في تسجيل الإعجاب");
+    }
+    
+    const result = await response.text();
+    if (result.includes("تم")) {
+      // تحديث العدد مباشرة دون إعادة تحميل
+      const currentLikes = parseInt(likeButton.textContent.match(/\((\d+)\)/)[1]) || 0;
+      likeButton.textContent = `👍 (${currentLikes + 1})`;
+    } else {
+      throw new Error(result);
+    }
+  } catch (error) {
+    console.error("Error:", error);
+    alert(`حدث خطأ أثناء تسجيل الإعجاب: ${error.message}`);
+  } finally {
+    event.target.disabled = false; // إعادة تمكين الزر
+  }
+}
+
+
+
+    function showCommentForm(index) {
+        const commentForm = document.getElementById(`commentForm-${index}`);
+        if (commentForm) {
+            commentForm.style.display = commentForm.style.display === 'none' ? 'block' : 'none';
+        }
+    }
+    
+    // إرسال تعليق جديد
+    async function submitComment(index, event) {
+  event.preventDefault(); // منع إعادة تحميل الصفحة
+  
+  const commentText = document.getElementById(`commentText-${index}`).value.trim();
+  const commentButton = event.target;
+  
+  if (!commentText) {
+    alert("الرجاء إدخال نص التعليق");
+    return;
+  }
+  
+  try {
+    commentButton.disabled = true;
+    
+    // إرسال التعليق إلى السيرفر
+    const response = await fetch(GOOGLE_SCRIPT_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: new URLSearchParams({
+        action: "comment",
+        row: (index * 7) + 7,
+        value: commentText
+      })
+    });
+    
+    if (!response.ok) {
+      throw new Error("فشل في إضافة التعليق");
+    }
+    
+    // تحديث واجهة المستخدم مباشرة
+    const commentsContainer = document.getElementById(`comments-${index}`);
+    
+    // إنشاء عنصر التعليق الجديد
+    const commentElement = document.createElement('p');
+    commentElement.textContent = commentText;
+    
+    // إضافة التعليق إلى القائمة
+    if (commentsContainer.querySelector('p:first-child')?.textContent === 'لا توجد تعليقات') {
+      commentsContainer.innerHTML = '<h4>التعليقات:</h4>';
+    }
+    commentsContainer.appendChild(commentElement);
+    
+    // مسح حقل النص وإخفاء النموذج
+    document.getElementById(`commentText-${index}`).value = '';
+    document.getElementById(`commentForm-${index}`).style.display = 'none';
+    
+  } catch (error) {
+    console.error("Error:", error);
+    alert(`حدث خطأ أثناء إضافة التعليق: ${error.message}`);
+  } finally {
+    commentButton.disabled = false;
+  }
+}
+    // دالة لجلب البيانات الحالية من الجدول
+    async function fetchCurrentData() {
+        const url = `https://docs.google.com/spreadsheets/d/${GOOGLE_SHEET_ID}/export?format=xlsx&t=${Date.now()}`;
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error(`خطأ في جلب البيانات: ${response.status}`);
+        }
+        
+        const data = await response.arrayBuffer();
+        const workbook = XLSX.read(data, { type: 'array' });
+        const sheet = workbook.Sheets[workbook.SheetNames[0]];
+        return XLSX.utils.sheet_to_json(sheet, { header: 1, defval: "" });
+    }
+    
+    // دالة لتحضير البيانات الجديدة مع إدراجها في أول 6 خلايا
+    function prepareNewData(currentData, formData) {
+        // إنشاء صف العقار الجديد (7 خلايا)
+        const newListing = [
+            formData.videoUrl1,    // الخلية 1: رابط الفيديو
+            formData.price1,      // الخلية 2: السعر
+            formData.description1, // الخلية 3: الوصف
+            formData.region1,     // الخلية 4: المنطقة
+            formData.ready1 === "T" ? "T" : "F", // الخلية 5: الحالة
+            0,                   // الخلية 6: الإعجابات (تبدأ من الصفر)
+            ""                   // الخلية 7: التعليقات (تبدأ فارغة)
+        ];
+        
+        // تقسيم البيانات الحالية إلى عقارات (كل عقار 7 خلايا)
+        const allListings = [];
+        for (let i = 0; i < currentData.length; i += 7) {
+            const listing = currentData.slice(i, i + 7);
+            if (listing[0] && listing[0].toString().trim() !== "") {
+                allListings.push(listing);
+            }
+        }
+        
+        // إضافة العقار الجديد في البداية
+        allListings.unshift(newListing);
+        
+        // دمج البيانات مع الحفاظ على تنسيق 7 خلايا لكل عقار
+        const updatedData = [];
+        allListings.forEach(listing => {
+            // التأكد من أن كل عقار لديه 7 خلايا
+            while (listing.length < 7) {
+                listing.push("");
+            }
+            updatedData.push(...listing.slice(0, 7));
+        });
+        
+        return updatedData;
+    }
+    
+    // إرسال بيانات عقار جديد
+    document.getElementById('dataForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const formData = {
+            videoUrl1: document.getElementById('videoUrl1').value.trim(),
+            price1: document.getElementById('price1').value.trim(),
+            description1: document.getElementById('description1').value.trim(),
+            region1: document.getElementById('region1').value,
+            ready1: document.querySelector('input[name="ready1"]:checked').value
+        };
+        
+        // التحقق من البيانات المطلوبة
+        if (!formData.videoUrl1 || !formData.price1 || !formData.description1 || !formData.region1) {
+            document.getElementById('result').innerHTML = `
+                <div class="error">الرجاء ملء جميع الحقول المطلوبة</div>
+            `;
+            return;
+        }
+        
+        try {
+            // جلب البيانات الحالية
+            const currentData = await fetchCurrentData();
+            
+            // تحضير البيانات المحدثة مع إدراجها في أول 6 خلايا
+            const updatedData = prepareNewData(currentData, formData);
+            
+            // إرسال البيانات المحدثة إلى Google Sheets
+            const response = await fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({
+                    action: "updateSheet",
+                    data: JSON.stringify(updatedData)
+                })
+            });
+            
+            if (!response.ok) {
+                throw new Error("فشل في إضافة العقار");
+            }
+            
+            const result = await response.text();
+            document.getElementById('result').innerHTML = `
+                <div class="success">${result}</div>
+            `;
+            document.getElementById('dataForm').reset();
+            fetchData(); // تحديث العرض
+        } catch (error) {
+            console.error("Error:", error);
+            document.getElementById('result').innerHTML = `
+                <div class="error">حدث خطأ أثناء إضافة العقار: ${error.message}</div>
+            `;
+        }
+    });
+    
+    // تهيئة الصفحة عند التحميل
+    window.onload = function() {
+        // إظهار/إخفاء نموذج الإضافة
+        document.getElementById('showFormBtn').addEventListener('click', function() {
+            document.querySelectorAll('.form-group').forEach(el => el.style.display = 'block');
+            this.style.display = 'none';
+        });
+        
+        // إضافة مستمعات الأحداث للفلاتر
+        document.querySelectorAll('#priceFilter, #readyFilter, #areaFilter').forEach(filter => {
+            filter.addEventListener('change', applyFilters);
+        });
+        
+        // جلب البيانات الأولية
+        fetchData();
+    };
+</script>
+</body>
+</html>
