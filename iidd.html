@@ -8,7 +8,6 @@
     <!-- الروابط الخارجية -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -16,8 +15,6 @@
             box-sizing: border-box;
             font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
         }
-        
-        
         
         /* المحتوى الرئيسي */
         .main-content {
@@ -72,7 +69,6 @@
             align-items: center;
             z-index: 1000;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-          
         }
         
         .bottom-nav-bar:hover {
@@ -678,6 +674,7 @@
             justify-content: center;
             gap: 8px;
             transition: background-color 0.2s;
+            cursor: pointer;
         }
         
         .whatsapp-btn:hover {
@@ -1024,8 +1021,6 @@
     
     <!-- شريط التصفية العلوي -->
     <div class="filter-bar" id="filterBar">
-        <div class="property-count" id="propertyyCount">جاري التحميل...</div>
-        
         <div class="filter-group">
             <span class="filter-label">السعر:</span>
             <select class="filter-select" id="priceFilter">
@@ -1061,12 +1056,8 @@
     <!-- المحتوى الرئيسي -->
     <main class="main-content">
         <!-- قسم التحقق العلوي -->
-        <div class="verify-section" id="verifySection">
-            <input type="password" class="verify-input" id="secretCodeInput" placeholder="أدخل كلمة المرور لإضافة عقار جديد">
-            <button class="verify-btn" id="verifyBtn">
-                <i class="fas fa-key"></i> تحقق
-            </button>
-        </div>
+
+        
         <div class="result-message" id="codeResult"></div>
         
         <!-- نموذج الإضافة العلوي -->
@@ -1142,31 +1133,42 @@
             </div>
         </div>
     </main>
-    
-      <nav class="bottom-nav-bar" id="bottomNavBar">
-      <div class="nav-indicator" id="navIndicator"></div>
-      
-      <a href="https://adleb.netlify.app/" class="nav-item active" id="navMap">
-          <div class="nav-icon">
-              <i class="fas fa-map-marked-alt"></i>
-          </div>
-          <div class="nav-text">الخريطة العقارية</div>
-      </a>
-      
-      <a href="https://adleb.netlify.app/iidd.html" class="nav-item" id="navVideo">
-          <div class="nav-icon">
-              <i class="fas fa-video"></i>
-              <span class="notification" id="propertyCount">3</span>
-          </div>
-          <div class="nav-text">عروض الفيديو</div>
-      </a>
-  </nav>
+            <div class="verify-section" id="verifySection">
+            <input type="password" class="verify-input" id="secretCodeInput" placeholder="أدخل كلمة المرور لإضافة عقار جديد">
+            <button class="verify-btn" id="verifyBtn">
+                <i class="fas fa-key"></i> تحقق
+            </button>
+        </div>
+        <br>
+        <br/>
+        <br>
+    <!-- شريط التنقل السفلي -->
+    <nav class="bottom-nav-bar" id="bottomNavBar">
+        <div class="nav-indicator" id="navIndicator"></div>
+        
+        <a href="https://adleb.netlify.app/" class="nav-item active" id="navMap">
+            <div class="nav-icon">
+                <i class="fas fa-map-marked-alt"></i>
+            </div>
+            <div class="nav-text">الخريطة العقارية</div>
+        </a>
+        
+        <a href="https://adleb.netlify.app/iidd.html" class="nav-item" id="navVideo">
+            <div class="nav-icon">
+                <i class="fas fa-video"></i>
+                <span class="notification" id="propertyCount">3</span>
+            </div>
+            <div class="nav-text">عروض الفيديو</div>
+        </a>
+    </nav>
+
     <!-- السكريبت الرئيسي -->
     <script>
         // البيانات والمتغيرات العامة
         let allListings = [];
         const GOOGLE_SHEET_ID = '1851C5ECZgAm4sipw9zXTTOvD_cSoIXxjRHx6XzbBgtY';
         const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw27JTgyMyc9S09R9kLvC5-ZFPRx-r06sdqS2eEi2entBoTL3CSTgsqo4zlEfpmY12O/exec';
+        const WHATSAPP_NUMBER = '+963969 315 579'; // رقم الواتساب
         
         // تهيئة الصفحة عند التحميل
         document.addEventListener('DOMContentLoaded', function() {
@@ -1322,6 +1324,33 @@
             displayListings(filteredListings);
         }
         
+        // إنشاء رابط واتساب مع الوصف ورابط الفيديو
+        function createWhatsAppLink(description, videoUrl, price, area, status) {
+            // تنظيف رقم الهاتف
+            const phoneNumber = WHATSAPP_NUMBER.replace(/\D/g, '');
+            
+            // تحضير الرسالة
+            const statusText = status === "T" ? "جاهز" : "تحت الإنشاء";
+            const areaName = getAreaName(area);
+            
+            const message = `مرحباً، أنا مهتم بالعقار التالي:
+
+${description}
+
+- السعر: ${price.toLocaleString()} $
+- المنطقة: ${areaName}
+- الحالة: ${statusText}
+- رابط الفيديو: ${videoUrl}
+
+أود الاستفسار عن المزيد من التفاصيل.`;
+
+            // ترميز الرسالة
+            const encodedMessage = encodeURIComponent(message);
+            
+            // إنشاء رابط الواتساب
+            return `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
+        }
+        
         // عرض العقارات
         function displayListings(data) {
             const listingsContainer = document.getElementById('listingsContainer');
@@ -1341,6 +1370,16 @@
             
             data.forEach((item, index) => {
                 const videoUrl = parseVideoUrl(item.فيديو);
+                const originalVideoUrl = item.فيديو || "";
+                
+                // إنشاء رابط واتساب لهذا العقار
+                const whatsappLink = createWhatsAppLink(
+                    item.الوصف,
+                    originalVideoUrl,
+                    item.السعر,
+                    item.المنطقة,
+                    item.جاهز
+                );
                 
                 let commentsHTML = '<p>لا توجد تعليقات</p>';
                 if (item.التعليقات && item.التعليقات.trim() !== "") {
@@ -1395,7 +1434,7 @@
                                 </button>
                             </div>
                             
-                            <a class="whatsapp-btn" href="https://wa.me/+963949340870" target="_blank">
+                            <a class="whatsapp-btn" href="${whatsappLink}" target="_blank">
                                 <i class="fab fa-whatsapp"></i> تواصل عبر واتساب
                             </a>
                             
