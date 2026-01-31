@@ -1083,7 +1083,8 @@
                     
                     <div class="form-group">
                         <label class="form-label" for="description1">الوصف</label>
-                        <input type="text" class="form-input" id="description1" required placeholder="وصف العقار">
+                        <textarea  cols="40" rows="10" type="text" class="form-input" id="description1" required placeholder="وصف العقار">
+                         </textarea>
                     </div>
                     
                     <div class="form-group">
@@ -1467,7 +1468,7 @@ ${description}
             const secretCode = document.getElementById('secretCodeInput').value;
             const codeResult = document.getElementById('codeResult');
             
-            if (secretCode === 'jlal20022') {
+            if (secretCode === '09911') {
                 codeResult.innerHTML = `
                     <i class="fas fa-check-circle"></i> تم التحقق بنجاح! يمكنك الآن إضافة عقار جديد
                 `;

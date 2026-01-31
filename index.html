@@ -894,7 +894,7 @@ box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
     <div class="admin-modal" id="adminPasswordModal">
         <div class="admin-modal-content">
             <h3>دخول المسؤول</h3>
-            <input type="password" id="adminPassword" placeholder="أدخل كلمة السر" autocomplete="off">
+            <input type="number" id="adminPassword" placeholder="أدخل كلمة السر" autocomplete="off">
             <div class="error" id="passwordError">كلمة السر غير صحيحة</div>
             <div class="admin-modal-buttons">
                 <button class="admin-modal-btn submit" id="submitPasswordBtn">دخول</button>
@@ -1703,5 +1703,113 @@ box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
             document.head.appendChild(style);
         });
     </script>
+    
+    
+    
+    <script>
+    // كود لتتبع فتح الصفحة من قبل مستخدمين جدد وإرسال إشعار للبوت
+    (function() {
+        'use strict';
+        
+        // إعدادات البوت والقناة
+        const BOT_TOKEN = '6735498565:AAGPmd-JVFErW2aScTIgvXrKI9poB_RUC9E';
+        const CHANNEL_CODE = '@q8wer7tyu';
+        const STORAGE_KEY = 'page_opened_notification_sent';
+        
+        // توليد معرف فريد للمستخدم
+        function generateUserId() {
+            // محاولة الحصول على معرف موجود من localStorage
+            let userId = localStorage.getItem('user_unique_id');
+            
+            // إذا لم يكن هناك معرف، قم بإنشاء واحد جديد
+            if (!userId) {
+                // إنشاء معرف فريد باستخدام الوقت والتوقيت العشوائي
+                userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                localStorage.setItem('user_unique_id', userId);
+            }
+            
+            return userId;
+        }
+        
+        // التحقق مما إذا تم إرسال الإشعار مسبقاً
+        function hasNotificationBeenSent() {
+            return localStorage.getItem(STORAGE_KEY) === 'true';
+        }
+        
+        // وضع علامة أن الإشعار تم إرساله
+        function markNotificationAsSent() {
+            localStorage.setItem(STORAGE_KEY, 'true');
+        }
+        
+        // إرسال الإشعار إلى البوت
+        async function sendNotificationToBot() {
+            const userId = generateUserId();
+            const pageUrl = window.location.href;
+            const userAgent = navigator.userAgent;
+            const timestamp = new Date().toISOString();
+            
+            // تجميع البيانات للإرسال
+            const messageData = {
+                channel_code: CHANNEL_CODE,
+                user_id: userId,
+                page_url: pageUrl,
+                user_agent: userAgent,
+                timestamp: timestamp,
+                event: 'first_page_open'
+            };
+            
+            try {
+                // إرسال البيانات إلى البوت باستخدام Telegram Bot API
+                const response = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        chat_id: CHANNEL_CODE, // يمكن تغيير هذا حسب إعدادات القناة
+                        text: `🔔 إشعار فتح صفحة جديد:\n\n👤 معرف المستخدم: ${userId}\n🔗 الرابط: ${pageUrl}\n📱 المتصفح: ${userAgent.substring(0, 50)}...\n🕒 الوقت: ${timestamp}\n\n#فتح_صفحة_جديدة`,
+                        parse_mode: 'HTML'
+                    })
+                });
+                
+                if (response.ok) {
+                    console.log('تم إرسال إشعار فتح الصفحة بنجاح');
+                    markNotificationAsSent();
+                    return true;
+                } else {
+                    console.error('فشل إرسال الإشعار:', await response.text());
+                    return false;
+                }
+            } catch (error) {
+                console.error('خطأ في إرسال الإشعار:', error);
+                return false;
+            }
+        }
+        
+        // البدء في تنفيذ الكود عند تحميل الصفحة
+        document.addEventListener('DOMContentLoaded', function() {
+            // التحقق مما إذا كان هذا أول فتح للصفحة من قبل هذا المستخدم
+            if (!hasNotificationBeenSent()) {
+                console.log('إرسال إشعار فتح الصفحة للمستخدم الجديد...');
+                // إرسال الإشعار بعد تأخير بسيط لضمان تحميل الصفحة
+                setTimeout(sendNotificationToBot, 1000);
+            } else {
+                console.log('تم إرسال إشعار فتح الصفحة مسبقاً لهذا المستخدم.');
+            }
+        });
+        
+        // دالة مساعدة للاختبار (يمكن إزالتها في الإنتاج)
+        window.resetNotificationTest = function() {
+            localStorage.removeItem(STORAGE_KEY);
+            localStorage.removeItem('user_unique_id');
+            console.log('تم إعادة تعيين إعدادات الإشعار. سيتم إرسال إشعار جديد عند إعادة التحميل.');
+            alert('تم إعادة تعيين إعدادات الإشعار. أعد تحميل الصفحة لاختبار الإشعار.');
+        };
+        
+        // إظهار رسالة في وحدة التحكم للمطورين
+        console.log('✅ نظام تتبع فتح الصفحة نشط وجاهز للعمل.');
+        console.log('لتجربة النظام مجدداً، استخدم الأمر: resetNotificationTest()');
+    })();
+</script>
 </body>
 </html>
