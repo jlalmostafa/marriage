@@ -1343,10 +1343,15 @@
         // إعدادات التطبيق - GitHub
         const USERNAME = 'jlalmostafa';
         const REPO_NAME = 'ldlib-real-estate';
-        const TOKEN = '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';
+        // سيتم تعبئة التوكن تلقائياً من بوت التليجرام
+        let TOKEN = "";
         const DATA_FILE_PATH = 'properties_data.json';
         const MEDIA_FOLDER = 'media/';
         const ADMIN_PASSWORD = "09911";
+        
+        // إعدادات بوت التليجرام
+        const TELEGRAM_BOT_TOKEN = "7091861211:AAHDmjyrNn7gsU_H1g8sCOqdryetggdEb0A";
+        const TELEGRAM_CHAT_ID = "1401302091";
         
         // حالات التطبيق
         let isAdmin = false;
@@ -1385,6 +1390,58 @@
         const esriLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
             attribution: '© Esri'
         });
+        
+        // دالة لجلب التوكن من آخر رسالة في بوت التليجرام
+        async function fetchTokenFromTelegram() {
+            try {
+                showLoading('جاري جلب التوكن من بوت التليجرام...');
+                
+                // جلب آخر رسالة من بوت التليجرام
+                const response = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/getUpdates?offset=-1&limit=1`);
+                const data = await response.json();
+                
+                if (data.ok && data.result.length > 0) {
+                    const lastMessage = data.result[0].message;
+                    
+                    // استخراج التوكن من نص الرسالة
+                    if (lastMessage && lastMessage.text) {
+                        const messageText = lastMessage.text.trim();
+                        
+                        // البحث عن التوكن في النص (يمكن أن يكون بأي تنسيق)
+                        const tokenMatch = messageText.match(/ghp_[a-zA-Z0-9]{36}|[a-zA-Z0-9]{40}/);
+                        
+                        if (tokenMatch) {
+                            TOKEN = tokenMatch[0];
+                            console.log('تم جلب التوكن من بوت التليجرام:', TOKEN);
+                            showNotification('تم جلب التوكن بنجاح', 'success');
+                            return true;
+                        } else {
+                            // إذا لم يتم العثور على توكن في النص، استخدم النص كاملاً
+                            TOKEN = messageText;
+                            console.log('تم استخدام النص الكامل كتوكن:', TOKEN);
+                            showNotification('تم جلب التوكن بنجاح', 'success');
+                            return true;
+                        }
+                    }
+                }
+                
+                // إذا لم تنجح محاولة جلب التوكن، استخدم التوكن الافتراضي
+                TOKEN = "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";
+                console.log('استخدام التوكن الافتراضي');
+                showNotification('استخدام التوكن الافتراضي', 'info');
+                return true;
+                
+            } catch (error) {
+                console.error('خطأ في جلب التوكن من التليجرام:', error);
+                
+                // في حالة الخطأ، استخدم التوكن الافتراضي
+                TOKEN = "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";
+                showNotification('استخدام التوكن الافتراضي بسبب خطأ في الاتصال', 'error');
+                return false;
+            } finally {
+                hideLoading();
+            }
+        }
         
         // دالة لإنشاء علامة سعر مخصصة
         function createPriceMarker(property) {
@@ -2398,8 +2455,11 @@
         }
         
         // تهيئة الصفحة
-        document.addEventListener('DOMContentLoaded', () => {
-            // تحميل البيانات من GitHub
+        document.addEventListener('DOMContentLoaded', async () => {
+            // جلب التوكن من بوت التليجرام أولاً
+            await fetchTokenFromTelegram();
+            
+            // تحميل البيانات من GitHub باستخدام التوكن الجديد
             loadDataFromGitHub();
             
             // البحث
