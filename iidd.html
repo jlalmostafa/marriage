@@ -6,320 +6,142 @@
     <title>عروض العقارات</title>
     
     <!-- الروابط الخارجية -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
-        }
-        
-        /* المحتوى الرئيسي */
-        .main-content {
-            flex: 1;
-            padding: 30px 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        
-        .logo {
-            font-size: 3.5rem;
-            color: #3b82f6;
-            margin-bottom: 20px;
-            text-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);
-        }
-        
-        h1 {
-            font-size: 2.5rem;
-            margin-bottom: 15px;
-            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-weight: 700;
-        }
-        
-        .description {
-            font-size: 1.1rem;
-            line-height: 1.6;
-            color: #94a3b8;
-            margin-bottom: 40px;
-            max-width: 600px;
-        }
-        
-        /* شريط التنقل السفلي */
-        .bottom-nav-bar {
-            position: fixed;
-            bottom: 0;
-            right: 0;
-            width: 100%;
-            height: 40px;
-            
-            backdrop-filter: blur(20px);
-            border-top: 1px solid rgba(59, 130, 246, 0.2);
-            box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.4);
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            z-index: 1000;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        
-        .bottom-nav-bar:hover {
-            box-shadow: 0 -15px 50px rgba(0, 0, 0, 0.5);
-            border-top-color: rgba(59, 130, 246, 0.4);
-        }
-        
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-decoration: none;
-            color: #94a3b8;
-            transition: all 0.3s ease;
-            position: relative;
-            padding: 8px 20px;
-            border-radius: 12px;
-            flex: 1;
-            max-width: 180px;
-            height: 55px;
-        }
-        
-        .nav-item:hover {
-            color: #3b82f6;
-            background: rgba(59, 130, 246, 0.1);
-            transform: translateY(-5px);
-        }
-        
-        .nav-item.active {
-            color: #3b82f6;
-        }
-        
-        .nav-item.active::before {
-            content: '';
-            position: absolute;
-            top: -8px;
-            width: 6px;
-            height: 6px;
-            background-color: #3b82f6;
-            border-radius: 50%;
-            box-shadow: 0 0 10px #3b82f6;
-        }
-        
-        .nav-item.active .nav-icon {
-            animation: iconFloat 3s ease-in-out infinite;
-        }
-        
-        .nav-icon {
-            font-size: 1.8rem;
-            margin-bottom: 5px;
-            transition: all 0.3s ease;
-            position: relative;
-        }
-        
-        .nav-icon::after {
-            content: '';
-            position: absolute;
-            bottom: -2px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 0;
-            height: 2px;
-            background: #3b82f6;
-            transition: width 0.3s ease;
-        }
-        
-        .nav-item.active .nav-icon::after,
-        .nav-item:hover .nav-icon::after {
-            width: 100%;
-        }
-        
-        .nav-text {
-            font-size: 0.85rem;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-            transition: all 0.3s ease;
-        }
-        
-        .nav-item:hover .nav-text {
-            color: #60a5fa;
-        }
-        
-        /* تأثير الأنميشن */
-        @keyframes iconFloat {
-            0%, 100% {
-                transform: translateY(0);
-            }
-            50% {
-                transform: translateY(-5px);
-            }
-        }
-        
-        /* المؤشر */
-        .nav-indicator {
-            position: absolute;
-            top: -15px;
-            height: 3px;
-            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
-            border-radius: 3px;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 1001;
-        }
-        
-        /* تصميم متجاوب */
-        @media (max-width: 768px) {
-            .bottom-nav-bar {
-                height: 65px;
-            }
-            
-            .nav-item {
-                padding: 6px 15px;
-                height: 50px;
-            }
-            
-            .nav-icon {
-                font-size: 1.6rem;
-            }
-            
-            .nav-text {
-                font-size: 0.75rem;
-            }
-            
-            h1 {
-                font-size: 2rem;
-            }
-            
-            .description {
-                font-size: 1rem;
-                padding: 0 15px;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .bottom-nav-bar {
-                height: 60px;
-            }
-            
-            .nav-item {
-                padding: 5px 10px;
-                height: 45px;
-            }
-            
-            .nav-icon {
-                font-size: 1.4rem;
-                margin-bottom: 3px;
-            }
-            
-            .nav-text {
-                font-size: 0.7rem;
-            }
-            
-            h1 {
-                font-size: 1.8rem;
-            }
-        }
-        
-        /* تأثير النقر */
-        .nav-item:active {
-            transform: scale(0.95);
-        }
-        
-        /* إشعار */
-        .notification {
-            position: absolute;
-            top: -8px;
-            right: 20px;
-            background: #ef4444;
-            color: white;
-            font-size: 0.7rem;
-            padding: 2px 6px;
-            border-radius: 10px;
-            animation: pulse 2s infinite;
-        }
-        
-        @keyframes pulse {
-            0%, 100% {
-                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
-            }
-            50% {
-                box-shadow: 0 0 0 6px rgba(239, 68, 68, 0);
-            }
-        }
-    </style>
-    <!-- الأنماط الرئيسية -->
+    
     <style>
         /* إعادة تعيين وتحسين عام */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            direction: rtl;
             background-color: #f0f2f5;
             color: #1c1e21;
             line-height: 1.34;
             min-height: 100vh;
-            padding-top: 60px;
+            padding-bottom: 70px;
         }
         
-        /* الهيدر العلوي */
+        /* ========== شريط التنقل العلوي المبسط ========== */
         .top-header {
-            position: fixed;
+            position: sticky;
             top: 0;
             right: 0;
             width: 100%;
-            height: 60px;
+            height: 56px;
             background-color: #ffffff;
             border-bottom: 1px solid #dddfe2;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
             display: flex;
             align-items: center;
-            padding: 0 20px;
+            justify-content: space-between;
+            padding: 0 16px;
             z-index: 1000;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
         
         .logo-container {
             display: flex;
             align-items: center;
-            margin-left: 20px;
         }
         
         .logo {
-            font-size: 24px;
+            font-size: 28px;
             color: #1877f2;
-            margin-left: 10px;
+            margin-left: 8px;
         }
         
         .site-title {
             font-size: 20px;
-            font-weight: 600;
+            font-weight: 700;
+            color: #1877f2;
+        }
+        
+        .add-property-btn {
+            background-color: #1877f2;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: background-color 0.2s;
+        }
+        
+        .add-property-btn:hover {
+            background-color: #166fe5;
+        }
+        
+        /* ========== المحتوى الرئيسي ========== */
+        .main-content {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 16px;
+        }
+        
+        /* قسم التحقق العلوي */
+        .verify-section {
+            background-color: #ffffff;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            border: 1px solid #dddfe2;
+            display: none; /* مخفي افتراضيًا */
+        }
+        
+        .verify-section.active {
+            display: flex;
+        }
+        
+        .verify-input {
+            flex: 1;
+            padding: 10px 12px;
+            border: 1px solid #dddfe2;
+            border-radius: 6px;
+            font-size: 14px;
             color: #1c1e21;
         }
         
-        /* شريط التصفية العلوي */
-        .filter-bar {
-            background-color: #ffffff;
-            padding: 12px 20px;
-            border-bottom: 1px solid #dddfe2;
-            position: sticky;
-            top: 60px;
-            z-index: 999;
+        .verify-input:focus {
+            outline: none;
+            border-color: #1877f2;
+        }
+        
+        .verify-btn {
+            background-color: #1877f2;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
             display: flex;
-            gap: 15px;
             align-items: center;
-            overflow-x: auto;
-            white-space: nowrap;
+            gap: 6px;
+        }
+        
+        .verify-btn:hover {
+            background-color: #166fe5;
+        }
+        
+        /* الفلاتر */
+        .filters-container {
+            background-color: #ffffff;
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin-bottom: 16px;
+            border: 1px solid #dddfe2;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
         }
         
         .filter-group {
@@ -352,20 +174,368 @@
             background-color: #ffffff;
         }
         
-        .property-count {
-            font-size: 14px;
-            color: #65676b;
-            margin-right: auto;
+        /* بطاقات العقارات */
+        .listings-container {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
         }
         
-        /* المحتوى الرئيسي */
-        .main-content {
-            max-width: 680px;
-            margin: 0 auto;
+        .listing-card {
+            background-color: #ffffff;
+            border-radius: 8px;
+            border: 1px solid #dddfe2;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        /* حاوية الوسائط مع أبعاد مصغرة */
+        .media-container {
+            position: relative;
+            width: 100%;
+            height: 250px;
+            overflow: hidden;
+            background-color: #000;
+        }
+        
+        .media-container img {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .media-container img.loaded {
+            opacity: 1;
+        }
+        
+        .media-container video {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        /* حاوية يوتيوب مع أبعاد مصغرة */
+        .youtube-container {
+            position: relative;
+            width: 100%;
+            height: 250px;
+            overflow: hidden;
+            background-color: #000;
+        }
+        
+        .youtube-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        
+        /* مكان للفيديوهات واليوتيوب قبل التحميل */
+        .media-placeholder {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        
+        .play-video-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            margin-bottom: 12px;
+            transition: transform 0.2s, background-color 0.2s;
+        }
+        
+        .play-video-btn:hover {
+            transform: scale(1.05);
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+        
+        .video-placeholder-text {
+            color: white;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .youtube-thumbnail {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.7;
+        }
+        
+        .listing-content {
             padding: 16px;
         }
         
-        /* نموذج الإضافة العلوي */
+        .listing-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+        
+        .listing-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1c1e21;
+            line-height: 1.4;
+            flex: 1;
+        }
+        
+        .price-tag {
+            background-color: #e7f3ff;
+            color: #1877f2;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: 600;
+            margin-right: 12px;
+        }
+        
+        .listing-details {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        
+        .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            color: #65676b;
+        }
+        
+        .detail-icon {
+            color: #1877f2;
+            font-size: 14px;
+        }
+        
+        .status-badge {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .status-ready {
+            background-color: #e7f6ea;
+            color: #0a7c2f;
+        }
+        
+        .status-not-ready {
+            background-color: #fef2e8;
+            color: #c55400;
+        }
+        
+        /* أزرار التفاعل */
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #dddfe2;
+        }
+        
+        .action-btn {
+            flex: 1;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        
+        .action-btn i {
+            font-size: 14px;
+        }
+        
+        .like-btn {
+            background-color: #f0f2f5;
+            color: #65676b;
+        }
+        
+        .like-btn:hover {
+            background-color: #e4e6eb;
+        }
+        
+        .like-btn.liked {
+            background-color: #e7f3ff;
+            color: #1877f2;
+        }
+        
+        .comment-btn {
+            background-color: #f0f2f5;
+            color: #65676b;
+        }
+        
+        .comment-btn:hover {
+            background-color: #e4e6eb;
+        }
+        
+        .view-comments-btn {
+            background-color: #f0f2f5;
+            color: #65676b;
+        }
+        
+        .view-comments-btn:hover {
+            background-color: #e4e6eb;
+        }
+        
+        .delete-btn {
+            background-color: #fef2f2;
+            color: #dc2626;
+            display: none; /* مخفي افتراضيًا */
+        }
+        
+        .delete-btn:hover {
+            background-color: #fee2e2;
+        }
+        
+        .delete-btn.visible {
+            display: flex;
+        }
+        
+        .whatsapp-btn {
+            background-color: #25D366;
+            color: white;
+            text-decoration: none;
+            padding: 10px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: background-color 0.2s;
+            cursor: pointer;
+        }
+        
+        .whatsapp-btn:hover {
+            background-color: #1da851;
+        }
+        
+        /* التعليقات */
+        .comments-section {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            margin-top: 12px;
+        }
+        
+        .comments-section.expanded {
+            max-height: 300px;
+        }
+        
+        .comments-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #dddfe2;
+        }
+        
+        .comments-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1c1e21;
+        }
+        
+        .comments-list {
+            max-height: 200px;
+            overflow-y: auto;
+            margin-bottom: 12px;
+        }
+        
+        .comment-item {
+            background-color: #f0f2f5;
+            padding: 10px 12px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            font-size: 14px;
+            line-height: 1.4;
+            color: #1c1e21;
+        }
+        
+        .comment-form {
+            margin-top: 12px;
+        }
+        
+        .comment-textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #dddfe2;
+            border-radius: 6px;
+            background-color: #f0f2f5;
+            font-size: 14px;
+            color: #1c1e21;
+            resize: vertical;
+            min-height: 80px;
+            margin-bottom: 8px;
+        }
+        
+        .comment-textarea:focus {
+            outline: none;
+            border-color: #1877f2;
+            background-color: #ffffff;
+        }
+        
+        .submit-comment-btn {
+            background-color: #1877f2;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .submit-comment-btn:hover {
+            background-color: #166fe5;
+        }
+        
+        /* نموذج الإضافة */
         .add-form-container {
             background-color: #ffffff;
             border-radius: 8px;
@@ -509,311 +679,7 @@
             background-color: #d8dadf;
         }
         
-        /* بطاقات العقارات */
-        .listings-container {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-        
-        .listing-card {
-            background-color: #ffffff;
-            border-radius: 8px;
-            border: 1px solid #dddfe2;
-            overflow: hidden;
-        }
-        
-        .video-container {
-            position: relative;
-            padding-bottom: 56.25%;
-            height: 0;
-            overflow: hidden;
-            background-color: #000;
-        }
-        
-        .video-container iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-        
-        .listing-content {
-            padding: 16px;
-        }
-        
-        .listing-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 12px;
-        }
-        
-        .listing-title {
-            font-size: 16px;
-            font-weight: 600;
-            color: #1c1e21;
-            line-height: 1.4;
-            flex: 1;
-        }
-        
-        .price-tag {
-            background-color: #e7f3ff;
-            color: #1877f2;
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-size: 15px;
-            font-weight: 600;
-            margin-right: 12px;
-        }
-        
-        .listing-details {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            margin-bottom: 16px;
-        }
-        
-        .detail-item {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 14px;
-            color: #65676b;
-        }
-        
-        .detail-icon {
-            color: #1877f2;
-            font-size: 14px;
-        }
-        
-        .status-badge {
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 500;
-        }
-        
-        .status-ready {
-            background-color: #e7f6ea;
-            color: #0a7c2f;
-        }
-        
-        .status-not-ready {
-            background-color: #fef2e8;
-            color: #c55400;
-        }
-        
-        .action-buttons {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 12px;
-            padding-bottom: 12px;
-            border-bottom: 1px solid #dddfe2;
-        }
-        
-        .action-btn {
-            flex: 1;
-            padding: 8px 12px;
-            border: none;
-            border-radius: 6px;
-            font-size: 13px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-        }
-        
-        .action-btn i {
-            font-size: 14px;
-        }
-        
-        .like-btn {
-            background-color: #f0f2f5;
-            color: #65676b;
-        }
-        
-        .like-btn:hover {
-            background-color: #e4e6eb;
-        }
-        
-        .comment-btn {
-            background-color: #f0f2f5;
-            color: #65676b;
-        }
-        
-        .comment-btn:hover {
-            background-color: #e4e6eb;
-        }
-        
-        .view-comments-btn {
-            background-color: #f0f2f5;
-            color: #65676b;
-        }
-        
-        .view-comments-btn:hover {
-            background-color: #e4e6eb;
-        }
-        
-        .whatsapp-btn {
-            background-color: #25D366;
-            color: white;
-            text-decoration: none;
-            padding: 10px 16px;
-            border-radius: 6px;
-            font-size: 14px;
-            font-weight: 600;
-            text-align: center;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            transition: background-color 0.2s;
-            cursor: pointer;
-        }
-        
-        .whatsapp-btn:hover {
-            background-color: #1da851;
-        }
-        
-        /* التعليقات */
-        .comments-section {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease;
-            margin-top: 12px;
-        }
-        
-        .comments-section.expanded {
-            max-height: 400px;
-        }
-        
-        .comments-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 12px;
-            padding-bottom: 8px;
-            border-bottom: 1px solid #dddfe2;
-        }
-        
-        .comments-title {
-            font-size: 15px;
-            font-weight: 600;
-            color: #1c1e21;
-        }
-        
-        .comments-list {
-            max-height: 200px;
-            overflow-y: auto;
-            margin-bottom: 12px;
-        }
-        
-        .comment-item {
-            background-color: #f0f2f5;
-            padding: 10px 12px;
-            margin-bottom: 8px;
-            border-radius: 8px;
-            font-size: 14px;
-            line-height: 1.4;
-            color: #1c1e21;
-        }
-        
-        .comment-form {
-            margin-top: 12px;
-        }
-        
-        .comment-textarea {
-            width: 100%;
-            padding: 10px 12px;
-            border: 1px solid #dddfe2;
-            border-radius: 6px;
-            background-color: #f0f2f5;
-            font-size: 14px;
-            color: #1c1e21;
-            resize: vertical;
-            min-height: 80px;
-            margin-bottom: 8px;
-        }
-        
-        .comment-textarea:focus {
-            outline: none;
-            border-color: #1877f2;
-            background-color: #ffffff;
-        }
-        
-        .submit-comment-btn {
-            background-color: #1877f2;
-            color: white;
-            border: none;
-            padding: 8px 20px;
-            border-radius: 6px;
-            font-size: 13px;
-            font-weight: 500;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        
-        .submit-comment-btn:hover {
-            background-color: #166fe5;
-        }
-        
-        .submit-comment-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-        
-        /* قسم التحقق العلوي */
-        .verify-section {
-            background-color: #ffffff;
-            padding: 12px 16px;
-            border-radius: 8px;
-            margin-bottom: 16px;
-            border: 1px solid #dddfe2;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        
-        .verify-input {
-            flex: 1;
-            padding: 10px 12px;
-            border: 1px solid #dddfe2;
-            border-radius: 6px;
-            font-size: 14px;
-            color: #1c1e21;
-        }
-        
-        .verify-input:focus {
-            outline: none;
-            border-color: #1877f2;
-        }
-        
-        .verify-btn {
-            background-color: #1877f2;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 6px;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        
-        .verify-btn:hover {
-            background-color: #166fe5;
-        }
-        
+        /* رسالة نتيجة التحقق */
         .result-message {
             padding: 10px 12px;
             border-radius: 6px;
@@ -886,95 +752,129 @@
             margin-bottom: 16px;
         }
         
-        /* التصميم المتجاوب */
-        @media (max-width: 768px) {
-            .top-header {
-                padding: 0 16px;
-                height: 56px;
-            }
-            
-            .site-title {
-                font-size: 18px;
-            }
-            
-            .filter-bar {
-                padding: 10px 16px;
-                top: 56px;
-            }
-            
-            .main-content {
-                padding: 12px;
-            }
-            
-            .form-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .action-buttons {
-                flex-wrap: wrap;
-            }
-            
-            .action-btn {
-                min-width: calc(33.333% - 6px);
-            }
-            
-            .verify-section {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            
-            .verify-btn {
-                width: 100%;
-                justify-content: center;
-            }
+        /* تحسينات الوسائط */
+        .media-upload-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
         }
         
-        @media (max-width: 480px) {
-            .top-header {
-                padding: 0 12px;
-            }
-            
-            .logo {
-                font-size: 20px;
-            }
-            
-            .site-title {
-                font-size: 16px;
-            }
-            
-            .filter-bar {
-                padding: 8px 12px;
-            }
-            
-            .filter-select {
-                min-width: 100px;
-                padding: 6px 10px;
-                font-size: 13px;
-            }
-            
-            .filter-label {
-                font-size: 13px;
-            }
-            
-            .property-count {
-                font-size: 13px;
-            }
-            
-            .listing-header {
-                flex-direction: column;
-                gap: 8px;
-            }
-            
-            .price-tag {
-                align-self: flex-start;
-                margin-right: 0;
-            }
-            
-            .action-btn {
-                min-width: calc(50% - 4px);
-                font-size: 12px;
-                padding: 6px 8px;
-            }
+        .media-upload-btn {
+            background-color: #f0f2f5;
+            border: 2px dashed #dddfe2;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .media-upload-btn:hover {
+            background-color: #e4e6eb;
+            border-color: #1877f2;
+        }
+        
+        .media-upload-btn i {
+            font-size: 24px;
+            color: #65676b;
+            margin-bottom: 8px;
+        }
+        
+        .media-preview {
+            display: none;
+            max-width: 100%;
+            margin-top: 10px;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .media-preview img,
+        .media-preview video {
+            max-width: 100%;
+            max-height: 200px;
+            object-fit: contain;
+        }
+        
+        .remove-media-btn {
+            background-color: #ef4444;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+        
+        .remove-media-btn:hover {
+            background-color: #dc2626;
+        }
+        
+        /* ========== شريط التنقل السفلي ========== */
+        .bottom-nav-bar {
+            position: fixed;
+            bottom: 0;
+            right: 0;
+            width: 100%;
+            height: 60px;
+            background-color: #ffffff;
+            backdrop-filter: blur(20px);
+            border-top: 1px solid #dddfe2;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            color: #65676b;
+            transition: all 0.3s ease;
+            position: relative;
+            padding: 8px;
+            border-radius: 8px;
+            flex: 1;
+            max-width: 100px;
+            height: 100%;
+        }
+        
+        .nav-item:hover {
+            color: #1877f2;
+        }
+        
+        .nav-item.active {
+            color: #1877f2;
+        }
+        
+        .nav-icon {
+            font-size: 20px;
+            margin-bottom: 4px;
+        }
+        
+        .nav-text {
+            font-size: 10px;
+            font-weight: 500;
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            background-color: #e41e3f;
+            color: white;
+            font-size: 10px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
         }
         
         /* تحسينات للتمرير */
@@ -997,19 +897,86 @@
             background: #a8adb3;
         }
         
-        /* تأثيرات إضافية */
-        .pulse {
-            animation: pulse 2s infinite;
+        /* التصميم المتجاوب */
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 12px;
+            }
+            
+            .media-container, 
+            .youtube-container {
+                height: 200px;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .property-info {
+                flex-direction: column;
+                gap: 8px;
+            }
+            
+            .action-buttons {
+                flex-wrap: wrap;
+            }
+            
+            .action-btn {
+                min-width: calc(33.333% - 8px);
+            }
+            
+            .filters-container {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .filter-group {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .filter-select {
+                flex: 1;
+                min-width: auto;
+            }
         }
         
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
+        @media (max-width: 480px) {
+            .media-container, 
+            .youtube-container {
+                height: 180px;
+            }
+            
+            .top-header {
+                padding: 0 12px;
+            }
+            
+            .site-title {
+                font-size: 18px;
+            }
+            
+            .logo {
+                font-size: 24px;
+            }
+            
+            .action-btn {
+                min-width: calc(50% - 4px);
+                font-size: 12px;
+                padding: 6px 8px;
+            }
+            
+            .bottom-nav-bar {
+                height: 65px;
+            }
+            
+            .nav-text {
+                font-size: 9px;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- الهيدر العلوي -->
+    <!-- الهيدر العلوي المبسط -->
     <header class="top-header">
         <div class="logo-container">
             <div class="logo">
@@ -1017,50 +984,26 @@
             </div>
             <div class="site-title">عروض العقارات</div>
         </div>
+        
+        <button class="add-property-btn" id="openVerifyBtn">
+            <i class="fas fa-plus"></i> إضافة عقار
+        </button>
     </header>
-    
-    <!-- شريط التصفية العلوي -->
-    <div class="filter-bar" id="filterBar">
-        <div class="filter-group">
-            <span class="filter-label">السعر:</span>
-            <select class="filter-select" id="priceFilter">
-                <option value="all">الكل</option>
-                <option value="5000-10000">5K-10K $</option>
-                <option value="10000-15000">10K-15K $</option>
-                <option value="15000+">15K+ $</option>
-            </select>
-        </div>
-        
-        <div class="filter-group">
-            <span class="filter-label">الحالة:</span>
-            <select class="filter-select" id="readyFilter">
-                <option value="all">الكل</option>
-                <option value="T">جاهز</option>
-                <option value="F">تحت الإنشاء</option>
-            </select>
-        </div>
-        
-        <div class="filter-group">
-            <span class="filter-label">المنطقة:</span>
-            <select class="filter-select" id="areaFilter">
-                <option value="all">الكل</option>
-                <option value="a">إدلب</option>
-                <option value="b">سلقين</option>
-                <option value="c">جسر الشغور</option>
-                <option value="d">أريحا</option>
-                <option value="e">سرمدا</option>
-            </select>
-        </div>
-    </div>
     
     <!-- المحتوى الرئيسي -->
     <main class="main-content">
         <!-- قسم التحقق العلوي -->
-
+        <div class="verify-section" id="verifySection">
+            <input type="password" class="verify-input" id="secretCodeInput" placeholder="أدخل كلمة المرور لإضافة عقار جديد">
+            <button class="verify-btn" id="verifyBtn">
+                <i class="fas fa-key"></i> تحقق
+            </button>
+        </div>
         
+        <!-- رسالة نتيجة التحقق -->
         <div class="result-message" id="codeResult"></div>
         
-        <!-- نموذج الإضافة العلوي -->
+        <!-- نموذج إضافة العقار -->
         <div class="add-form-container" id="addFormContainer">
             <div class="form-header">
                 <h3 class="form-title">إضافة عقار جديد</h3>
@@ -1072,8 +1015,50 @@
             <form id="dataForm">
                 <div class="form-grid">
                     <div class="form-group">
-                        <label class="form-label" for="videoUrl1">رابط الفيديو</label>
-                        <input type="url" class="form-input" id="videoUrl1" required placeholder="رابط يوتيوب" dir="ltr">
+                        <label class="form-label" for="mediaType">نوع الوسائط</label>
+                        <select class="form-select" id="mediaType" required onchange="changeMediaInput()">
+                            <option value="">اختر نوع الوسائط</option>
+                            <option value="youtube">رابط يوتيوب</option>
+                            <option value="image">صورة</option>
+                            <option value="video">فيديو</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group" id="youtubeInputGroup" style="display: none;">
+                        <label class="form-label" for="youtubeUrl">رابط يوتيوب</label>
+                        <input type="url" class="form-input" id="youtubeUrl" placeholder="https://www.youtube.com/watch?v=..." dir="ltr">
+                        <small style="color: #666; font-size: 12px; margin-top: 5px; display: block;">قم بنسخ رابط الفيديو من يوتيوب ولصقه هنا</small>
+                    </div>
+                    
+                    <div class="form-group" id="imageInputGroup" style="display: none;">
+                        <label class="form-label">رفع صورة</label>
+                        <div class="media-upload-btn" id="imageUploadBtn">
+                            <i class="fas fa-image"></i>
+                            <p>انقر لرفع صورة</p>
+                            <input type="file" id="imageFile" accept="image/*" style="display: none;" onchange="previewImage(event)">
+                        </div>
+                        <div class="media-preview" id="imagePreview">
+                            <img id="previewImg" src="" alt="معاينة الصورة">
+                            <button type="button" class="remove-media-btn" onclick="removeImage()">إزالة الصورة</button>
+                        </div>
+                        <small style="color: #666; font-size: 12px; margin-top: 5px; display: block;">الحد الأقصى لحجم الصورة: 5MB</small>
+                    </div>
+                    
+                    <div class="form-group" id="videoInputGroup" style="display: none;">
+                        <label class="form-label">رفع فيديو</label>
+                        <div class="media-upload-btn" id="videoUploadBtn">
+                            <i class="fas fa-video"></i>
+                            <p>انقر لرفع فيديو</p>
+                            <input type="file" id="videoFile" accept="video/*" style="display: none;" onchange="previewVideo(event)">
+                        </div>
+                        <div class="media-preview" id="videoPreview">
+                            <video id="previewVideo" controls>
+                                <source id="videoSource" src="" type="video/mp4">
+                                متصفحك لا يدعم تشغيل الفيديو
+                            </video>
+                            <button type="button" class="remove-media-btn" onclick="removeVideo()">إزالة الفيديو</button>
+                        </div>
+                        <small style="color: #666; font-size: 12px; margin-top: 5px; display: block;">الحد الأقصى لحجم الفيديو: 20MB</small>
                     </div>
                     
                     <div class="form-group">
@@ -1083,8 +1068,7 @@
                     
                     <div class="form-group">
                         <label class="form-label" for="description1">الوصف</label>
-                        <textarea  cols="40" rows="10" type="text" class="form-input" id="description1" required placeholder="وصف العقار">
-                         </textarea>
+                        <textarea class="form-input" id="description1" required placeholder="وصف العقار" rows="3"></textarea>
                     </div>
                     
                     <div class="form-group">
@@ -1127,6 +1111,41 @@
             <div id="formResult"></div>
         </div>
         
+        <!-- الفلاتر -->
+        <div class="filters-container">
+            <div class="filter-group">
+                <span class="filter-label">السعر:</span>
+                <select class="filter-select" id="priceFilter">
+                    <option value="all">الكل</option>
+                    <option value="under-20000">تحت 20000$</option>
+                    <option value="20000-30000">بين 20000$-30000$</option>
+                    <option value="30000-40000">بين 30000$-40000$</option>
+                    <option value="over-40000">فوق 40000$</option>
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <span class="filter-label">الحالة:</span>
+                <select class="filter-select" id="readyFilter">
+                    <option value="all">الكل</option>
+                    <option value="T">جاهز</option>
+                    <option value="F">تحت الإنشاء</option>
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <span class="filter-label">المنطقة:</span>
+                <select class="filter-select" id="areaFilter">
+                    <option value="all">الكل</option>
+                    <option value="a">إدلب</option>
+                    <option value="b">سلقين</option>
+                    <option value="c">جسر الشغور</option>
+                    <option value="d">أريحا</option>
+                    <option value="e">سرمدا</option>
+                </select>
+            </div>
+        </div>
+        
         <!-- قائمة العقارات -->
         <div class="listings-container" id="listingsContainer">
             <div class="loading" id="loadingMessage">
@@ -1134,32 +1153,29 @@
             </div>
         </div>
     </main>
-            <div class="verify-section" id="verifySection">
-            <input type="password" class="verify-input" id="secretCodeInput" placeholder="أدخل كلمة المرور لإضافة عقار جديد">
-            <button class="verify-btn" id="verifyBtn">
-                <i class="fas fa-key"></i> تحقق
-            </button>
-        </div>
-        <br>
-        <br/>
-        <br>
+    
     <!-- شريط التنقل السفلي -->
-    <nav class="bottom-nav-bar" id="bottomNavBar">
-        <div class="nav-indicator" id="navIndicator"></div>
-        
-        <a href="https://ldlib-real-estate.netlify.app/" class="nav-item active" id="navMap">
+    <nav class="bottom-nav-bar">
+        <a href="https://ldlib-real-estate.netlify.app/" class="nav-item" id="navMap">
             <div class="nav-icon">
                 <i class="fas fa-map-marked-alt"></i>
             </div>
-            <div class="nav-text">الخريطة العقارية</div>
+            <div class="nav-text">الخريطة</div>
+        </a>
+        
+        <a href="#" class="nav-item active" id="navHome">
+            <div class="nav-icon">
+                <i class="fas fa-home"></i>
+            </div>
+            <div class="nav-text">العروض</div>
         </a>
         
         <a href="https://ldlib-real-estate.netlify.app/iidd.html" class="nav-item" id="navVideo">
             <div class="nav-icon">
                 <i class="fas fa-video"></i>
-                <span class="notification" id="propertyCount">3</span>
+                <span class="notification-badge" id="propertyCount">0</span>
             </div>
-            <div class="nav-text">عروض الفيديو</div>
+            <div class="nav-text">الفيديو</div>
         </a>
     </nav>
 
@@ -1167,47 +1183,356 @@
     <script>
         // البيانات والمتغيرات العامة
         let allListings = [];
-        const GOOGLE_SHEET_ID = '1851C5ECZgAm4sipw9zXTTOvD_cSoIXxjRHx6XzbBgtY';
-        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw27JTgyMyc9S09R9kLvC5-ZFPRx-r06sdqS2eEi2entBoTL3CSTgsqo4zlEfpmY12O/exec';
-        const WHATSAPP_NUMBER = '+963969 315 579'; // رقم الواتساب
+        let isVerified = false;
+        const USERNAME = 'jlalmostafa';
+        const REPO_NAME = 'ldlib-real-estate';
+        const TOKEN = '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';
+        const DATA_FILE_PATH = 'realestate_data.json';
+        const MEDIA_FOLDER = 'media/';
+        const WHATSAPP_NUMBER = '+963969 315 579';
         
-        // تهيئة الصفحة عند التحميل
-        document.addEventListener('DOMContentLoaded', function() {
-            // إضافة مستمعات الأحداث للفلاتر
-            document.querySelectorAll('#priceFilter, #readyFilter, #areaFilter').forEach(filter => {
-                filter.addEventListener('change', applyFilters);
-            });
+        // متغيرات الوسائط
+        let uploadedImage = null;
+        let uploadedVideo = null;
+        let imageFile = null;
+        let videoFile = null;
+        
+        // متغيرات لتحسين الأداء
+        let videoElements = [];
+        let imageObservers = [];
+        let scrollHandler = null;
+        
+        // ========== دالة تنسيق التاريخ ==========
+        function formatDate(dateString) {
+            if (!dateString) return 'غير محدد';
             
-            // زر التحقق
-            document.getElementById('verifyBtn').addEventListener('click', checkSecretCode);
-            
-            // زر الإدخال بالإنتر
-            document.getElementById('secretCodeInput').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    checkSecretCode();
+            try {
+                const date = new Date(dateString);
+                if (isNaN(date.getTime())) {
+                    return dateString;
                 }
+                
+                // تنسيق التاريخ باللغة العربية
+                const options = { 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                };
+                
+                return date.toLocaleDateString('ar-EG', options);
+            } catch (error) {
+                console.error('Error formatting date:', error);
+                return dateString;
+            }
+        }
+        
+        // ========== دالة التحقق من كلمة المرور ==========
+        function checkSecretCode() {
+            const secretCode = document.getElementById('secretCodeInput').value;
+            const codeResult = document.getElementById('codeResult');
+            
+            if (secretCode === '09911') {
+                isVerified = true;
+                codeResult.innerHTML = `
+                    <i class="fas fa-check-circle"></i> تم التحقق بنجاح! يمكنك الآن إضافة عقار جديد
+                `;
+                codeResult.className = 'result-message success-message';
+                codeResult.style.display = 'block';
+                
+                // إخفاء قسم التحقق
+                document.getElementById('verifySection').classList.remove('active');
+                
+                // إظهار نموذج الإضافة
+                document.getElementById('addFormContainer').classList.add('active');
+                
+                // إظهار أزرار الحذف في جميع البطاقات
+                showDeleteButtons();
+                
+                // مسح حقل الإدخال
+                document.getElementById('secretCodeInput').value = '';
+                
+                // إخفاء الرسالة بعد 5 ثوانٍ
+                setTimeout(() => {
+                    codeResult.style.display = 'none';
+                }, 5000);
+                
+                return true;
+            } else {
+                codeResult.innerHTML = `
+                    <i class="fas fa-times-circle"></i> كلمة المرور غير صحيحة
+                `;
+                codeResult.className = 'result-message error-message';
+                codeResult.style.display = 'block';
+                
+                // تأثير اهتزاز
+                document.getElementById('secretCodeInput').style.animation = 'none';
+                setTimeout(() => {
+                    document.getElementById('secretCodeInput').style.animation = 'shake 0.5s';
+                }, 10);
+                
+                // إخفاء الرسالة بعد 3 ثوانٍ
+                setTimeout(() => {
+                    codeResult.style.display = 'none';
+                }, 3000);
+                
+                return false;
+            }
+        }
+        
+        // ========== إظهار أزرار الحذف ==========
+        function showDeleteButtons() {
+            const deleteButtons = document.querySelectorAll('.delete-btn');
+            deleteButtons.forEach(btn => {
+                btn.classList.add('visible');
             });
-            
-            // زر إغلاق النموذج
-            document.getElementById('closeFormBtn').addEventListener('click', function() {
-                document.getElementById('addFormContainer').classList.remove('active');
-                document.getElementById('dataForm').reset();
-                document.getElementById('formResult').innerHTML = '';
+        }
+        
+        // ========== إخفاء أزرار الحذف ==========
+        function hideDeleteButtons() {
+            const deleteButtons = document.querySelectorAll('.delete-btn');
+            deleteButtons.forEach(btn => {
+                btn.classList.remove('visible');
             });
+        }
+        
+        // ========== دالة حذف العقار ==========
+        async function deleteListing(listingId) {
+            if (!isVerified) {
+                alert('يجب التحقق أولاً باستخدام كلمة المرور');
+                openVerifySection();
+                return;
+            }
             
-            // زر الإلغاء
-            document.getElementById('cancelBtn').addEventListener('click', function() {
-                document.getElementById('addFormContainer').classList.remove('active');
-                document.getElementById('dataForm').reset();
-                document.getElementById('formResult').innerHTML = '';
-            });
+            if (!confirm('هل أنت متأكد من حذف هذا العقار؟')) {
+                return;
+            }
             
-            // إرسال النموذج
-            document.getElementById('dataForm').addEventListener('submit', handleFormSubmit);
+            // حفظ النص الأصلي للزر
+            const deleteBtn = document.querySelector(`.delete-btn[data-id="${listingId}"]`);
+            let originalText = '';
+            if (deleteBtn) {
+                originalText = deleteBtn.innerHTML;
+                deleteBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                deleteBtn.disabled = true;
+            }
             
-            // جلب البيانات الأولية
-            fetchData();
-        });
+            try {
+                // البحث عن العقار باستخدام الـ id
+                const listingIndex = allListings.findIndex(item => item.id === listingId);
+                if (listingIndex === -1) return;
+                
+                // حذف العقار من المصفوفة
+                allListings.splice(listingIndex, 1);
+                
+                // حفظ التغييرات على GitHub
+                await saveToGitHub(allListings);
+                
+                // تحديث العداد
+                document.getElementById('propertyCount').textContent = `${allListings.length}`;
+                
+                // إعادة تطبيق الفلاتر لتحديث العرض
+                applyFilters();
+                
+                // إشعار نجاح
+                showNotification('تم حذف العقار بنجاح', 'success');
+                
+            } catch (error) {
+                console.error("Error:", error);
+                showNotification('حدث خطأ أثناء حذف العقار', 'error');
+            } finally {
+                // إعادة النص الأصلي للزر
+                if (deleteBtn) {
+                    deleteBtn.innerHTML = originalText;
+                    deleteBtn.disabled = false;
+                }
+            }
+        }
+        
+        // ========== دالة الإعجاب المحسنة ==========
+        async function likeListing(listingId) {
+            let originalText = '';
+            const likeButton = document.querySelector(`.like-btn[data-id="${listingId}"]`);
+            
+            // حفظ النص الأصلي للزر
+            if (likeButton) {
+                originalText = likeButton.innerHTML;
+                likeButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                likeButton.disabled = true;
+            }
+            
+            try {
+                // البحث عن العقار باستخدام الـ id
+                const listingIndex = allListings.findIndex(item => item.id === listingId);
+                if (listingIndex === -1) return;
+                
+                // تحديث البيانات محلياً
+                if (!allListings[listingIndex].likes) {
+                    allListings[listingIndex].likes = 0;
+                }
+                allListings[listingIndex].likes++;
+                
+                // حفظ على GitHub (في الخلفية دون انتظار)
+                saveToGitHub(allListings).then(() => {
+                    // تحديث الواجهة بعد الحفظ
+                    updateLikeButton(listingId, allListings[listingIndex].likes);
+                }).catch(error => {
+                    console.error("Error saving like:", error);
+                    // التراجع عن الإعجاب في حالة الخطأ
+                    allListings[listingIndex].likes--;
+                    updateLikeButton(listingId, allListings[listingIndex].likes);
+                    showNotification('حدث خطأ أثناء تسجيل الإعجاب', 'error');
+                });
+                
+            } catch (error) {
+                console.error("Error:", error);
+                showNotification('حدث خطأ أثناء تسجيل الإعجاب', 'error');
+                // إعادة النص الأصلي في حالة الخطأ
+                if (likeButton) {
+                    likeButton.innerHTML = originalText;
+                    likeButton.disabled = false;
+                }
+            }
+        }
+        
+        // ========== تحديث زر الإعجاب ==========
+        function updateLikeButton(listingId, likesCount) {
+            const likeButton = document.querySelector(`.like-btn[data-id="${listingId}"]`);
+            if (likeButton) {
+                likeButton.innerHTML = `<i class="fas fa-thumbs-up"></i> أعجبني (${likesCount})`;
+                likeButton.disabled = false;
+                
+                // تأثير بسيط
+                likeButton.classList.add('liked');
+                setTimeout(() => {
+                    likeButton.classList.remove('liked');
+                }, 1000);
+            }
+        }
+        
+        // ========== دالة فتح قسم التحقق ==========
+        function openVerifySection() {
+            document.getElementById('verifySection').classList.add('active');
+            document.getElementById('codeResult').style.display = 'none';
+            document.getElementById('secretCodeInput').value = '';
+            document.getElementById('secretCodeInput').focus();
+        }
+        
+        // ========== إشعارات ==========
+        function showNotification(message, type = 'info') {
+            // إزالة الإشعار السابق إذا كان موجودًا
+            const oldNotification = document.getElementById('customNotification');
+            if (oldNotification) {
+                oldNotification.remove();
+            }
+            
+            // إنشاء عنصر الإشعار
+            const notification = document.createElement('div');
+            notification.id = 'customNotification';
+            notification.style.cssText = `
+                position: fixed;
+                top: 80px;
+                right: 50%;
+                transform: translateX(50%);
+                padding: 12px 20px;
+                border-radius: 8px;
+                font-size: 14px;
+                font-weight: 500;
+                z-index: 9999;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                animation: slideDown 0.3s ease;
+            `;
+            
+            // تخصيص اللون حسب النوع
+            if (type === 'success') {
+                notification.style.backgroundColor = '#e7f6ea';
+                notification.style.color = '#0a7c2f';
+                notification.style.border = '1px solid #a8e6b9';
+                notification.innerHTML = `<i class="fas fa-check-circle"></i> ${message}`;
+            } else if (type === 'error') {
+                notification.style.backgroundColor = '#fde8e8';
+                notification.style.color = '#c53030';
+                notification.style.border = '1px solid #fecaca';
+                notification.innerHTML = `<i class="fas fa-times-circle"></i> ${message}`;
+            } else {
+                notification.style.backgroundColor = '#e7f3ff';
+                notification.style.color = '#1877f2';
+                notification.style.border = '1px solid #bbdfff';
+                notification.innerHTML = `<i class="fas fa-info-circle"></i> ${message}`;
+            }
+            
+            // إضافة الإشعار إلى الصفحة
+            document.body.appendChild(notification);
+            
+            // إزالة الإشعار بعد 3 ثوانٍ
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.style.animation = 'slideUp 0.3s ease';
+                    setTimeout(() => {
+                        if (notification.parentNode) {
+                            notification.remove();
+                        }
+                    }, 300);
+                }
+            }, 3000);
+        }
+        
+        // ========== أنماط للرسوم المتحركة ==========
+        const animationStyles = document.createElement('style');
+        animationStyles.textContent = `
+            @keyframes slideDown {
+                from { transform: translateX(50%) translateY(-20px); opacity: 0; }
+                to { transform: translateX(50%) translateY(0); opacity: 1; }
+            }
+            
+            @keyframes slideUp {
+                from { transform: translateX(50%) translateY(0); opacity: 1; }
+                to { transform: translateX(50%) translateY(-20px); opacity: 0; }
+            }
+            
+            @keyframes shake {
+                0%, 100% { transform: translateX(0); }
+                10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+                20%, 40%, 60%, 80% { transform: translateX(5px); }
+            }
+        `;
+        document.head.appendChild(animationStyles);
+        
+        // ========== بقية الدوال ==========
+        
+        // دالة لتشفير النص العربي
+        function encodeArabicText(text) {
+            try {
+                return unescape(encodeURIComponent(text));
+            } catch (e) {
+                console.error('Error encoding text:', e);
+                return text;
+            }
+        }
+        
+        // دالة لفك تشفير النص العربي
+        function decodeArabicText(text) {
+            try {
+                return decodeURIComponent(escape(text));
+            } catch (e) {
+                console.error('Error decoding text:', e);
+                return text;
+            }
+        }
+        
+        // تحويل رمز المنطقة إلى اسم
+        function getAreaName(areaCode) {
+            const areas = {
+                'a': 'إدلب',
+                'b': 'سلقين',
+                'c': 'جسر الشغور',
+                'd': 'أريحا',
+                'e': 'سرمدا'
+            };
+            return areas[areaCode] || areaCode;
+        }
         
         // تحويل روابط اليوتيوب
         function parseVideoUrl(videoUrl) {
@@ -1239,55 +1564,235 @@
             }
         }
         
-        // تحويل رمز المنطقة إلى اسم
-        function getAreaName(areaCode) {
-            const areas = {
-                'a': 'إدلب',
-                'b': 'سلقين',
-                'c': 'جسر الشغور',
-                'd': 'أريحا',
-                'e': 'سرمدا'
-            };
-            return areas[areaCode] || areaCode;
-        }
-        
-        // جلب البيانات من Google Sheets
-        async function fetchData() {
-            const url = `https://docs.google.com/spreadsheets/d/${GOOGLE_SHEET_ID}/export?format=xlsx&t=${Date.now()}`;
-            
+        // استخراج صورة مصغرة من رابط يوتيوب
+        function getYoutubeThumbnail(videoUrl) {
             try {
-                const response = await fetch(url);
-                if (!response.ok) {
-                    throw new Error(`خطأ في جلب البيانات: ${response.status}`);
+                let videoId = '';
+                
+                if (videoUrl.includes("youtube.com/watch?v=")) {
+                    videoId = videoUrl.split("v=")[1].split("&")[0];
+                } 
+                else if (videoUrl.includes("youtu.be/")) {
+                    videoId = videoUrl.split("youtu.be/")[1].split("?")[0];
+                }
+                else if (videoUrl.includes("youtube.com/shorts/")) {
+                    videoId = videoUrl.split("shorts/")[1].split("?")[0];
                 }
                 
-                const data = await response.arrayBuffer();
-                const workbook = XLSX.read(data, { type: 'array' });
-                const sheet = workbook.Sheets[workbook.SheetNames[0]];
-                const jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: "" });
+                if (videoId) {
+                    return `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+                }
+                return '';
+            } catch (e) {
+                console.error("خطأ في استخراج صورة اليوتيوب:", e);
+                return '';
+            }
+        }
+        
+        // دالات رفع الملفات
+        function changeMediaInput() {
+            const mediaType = document.getElementById('mediaType').value;
+            const youtubeGroup = document.getElementById('youtubeInputGroup');
+            const imageGroup = document.getElementById('imageInputGroup');
+            const videoGroup = document.getElementById('videoInputGroup');
+            
+            // إخفاء جميع المجموعات أولاً
+            youtubeGroup.style.display = 'none';
+            imageGroup.style.display = 'none';
+            videoGroup.style.display = 'none';
+            
+            // إظهار المجموعة المختارة
+            if (mediaType === 'youtube') {
+                youtubeGroup.style.display = 'block';
+            } else if (mediaType === 'image') {
+                imageGroup.style.display = 'block';
+            } else if (mediaType === 'video') {
+                videoGroup.style.display = 'block';
+            }
+            
+            // تنظيف المعاينات السابقة
+            removeImage();
+            removeVideo();
+            document.getElementById('youtubeUrl').value = '';
+        }
+        
+        function previewImage(event) {
+            const file = event.target.files[0];
+            if (file) {
+                // التحقق من حجم الملف (5MB كحد أقصى)
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('حجم الصورة كبير جداً. الحد الأقصى هو 5MB');
+                    event.target.value = '';
+                    return;
+                }
                 
-                allListings = [];
-                for (let i = 0; i < jsonData.length; i += 7) {
-                    const row = jsonData.slice(i, i + 7);
+                imageFile = file;
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.getElementById('imagePreview');
+                    const img = document.getElementById('previewImg');
+                    img.src = e.target.result;
+                    preview.style.display = 'block';
+                    uploadedImage = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+        
+        function previewVideo(event) {
+            const file = event.target.files[0];
+            if (file) {
+                // التحقق من حجم الملف (20MB كحد أقصى)
+                if (file.size > 20 * 1024 * 1024) {
+                    alert('حجم الفيديو كبير جداً. الحد الأقصى هو 20MB');
+                    event.target.value = '';
+                    return;
+                }
+                
+                videoFile = file;
+                const url = URL.createObjectURL(file);
+                const preview = document.getElementById('videoPreview');
+                const video = document.getElementById('previewVideo');
+                const source = document.getElementById('videoSource');
+                source.src = url;
+                video.load();
+                preview.style.display = 'block';
+                uploadedVideo = url;
+            }
+        }
+        
+        function removeImage() {
+            const preview = document.getElementById('imagePreview');
+            const img = document.getElementById('previewImg');
+            const fileInput = document.getElementById('imageFile');
+            
+            img.src = '';
+            preview.style.display = 'none';
+            fileInput.value = '';
+            uploadedImage = null;
+            imageFile = null;
+        }
+        
+        function removeVideo() {
+            const preview = document.getElementById('videoPreview');
+            const video = document.getElementById('previewVideo');
+            const source = document.getElementById('videoSource');
+            const fileInput = document.getElementById('videoFile');
+            
+            source.src = '';
+            video.load();
+            preview.style.display = 'none';
+            fileInput.value = '';
+            
+            if (uploadedVideo) {
+                URL.revokeObjectURL(uploadedVideo);
+                uploadedVideo = null;
+            }
+            videoFile = null;
+        }
+        
+        // رفع ملف إلى GitHub
+        async function uploadToGitHub(file, fileName) {
+            try {
+                const reader = new FileReader();
+                
+                return new Promise((resolve, reject) => {
+                    reader.onload = async function(e) {
+                        try {
+                            // تحويل الملف إلى base64
+                            const content = e.target.result.split(',')[1];
+                            
+                            const response = await fetch(
+                                `https://api.github.com/repos/${USERNAME}/${REPO_NAME}/contents/${MEDIA_FOLDER}${fileName}`,
+                                {
+                                    method: 'PUT',
+                                    headers: {
+                                        'Authorization': `token ${TOKEN}`,
+                                        'Accept': 'application/vnd.github.v3+json',
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify({
+                                        message: `رفع ملف ${fileName}`,
+                                        content: content,
+                                        branch: 'main'
+                                    })
+                                }
+                            );
+                            
+                            if (!response.ok) {
+                                const errorData = await response.json();
+                                console.error('GitHub API Error:', errorData);
+                                throw new Error(`خطأ في رفع الملف: ${response.status}`);
+                            }
+                            
+                            const data = await response.json();
+                            // إرجاع رابط الملف
+                            const downloadUrl = data.content.download_url;
+                            resolve(downloadUrl);
+                        } catch (error) {
+                            reject(error);
+                        }
+                    };
                     
-                    if (row[0] && row[0].toString().trim() !== "") {
-                        allListings.push({
-                            فيديو: row[0]?.toString().trim() || "",
-                            السعر: parseInt(row[1]) || 0,
-                            الوصف: row[2]?.toString().trim() || "لا يوجد وصف",
-                            المنطقة: row[3]?.toString().trim() || "غير معروف",
-                            جاهز: (row[4]?.toString().trim().toUpperCase() === "T") ? "T" : "F",
-                            الإعجابات: parseInt(row[5]) || 0,
-                            التعليقات: row[6]?.toString().trim() || ""
-                        });
+                    reader.readAsDataURL(file);
+                });
+            } catch (error) {
+                console.error('Error uploading to GitHub:', error);
+                throw error;
+            }
+        }
+        
+        // جلب البيانات من GitHub
+        async function fetchGitHubData() {
+            try {
+                showNotification('جاري تحميل البيانات...', 'info');
+                
+                const response = await fetch(
+                    `https://api.github.com/repos/${USERNAME}/${REPO_NAME}/contents/${DATA_FILE_PATH}`,
+                    {
+                        headers: {
+                            'Authorization': `token ${TOKEN}`,
+                            'Accept': 'application/vnd.github.v3+json'
+                        }
                     }
+                );
+                
+                if (!response.ok) {
+                    // إذا كان الملف غير موجود، نبدأ بمصفوفة فارغة
+                    if (response.status === 404) {
+                        allListings = [];
+                        // إنشاء الملف إذا لم يكن موجوداً
+                        await saveToGitHub(allListings);
+                        showNotification('تم إنشاء ملف البيانات الجديد', 'success');
+                    } else {
+                        throw new Error(`خطأ في جلب البيانات: ${response.status}`);
+                    }
+                } else {
+                    const data = await response.json();
+                    const base64Content = data.content;
+                    
+                    // فك تشفير Base64
+                    const binaryString = atob(base64Content);
+                    
+                    // تحويل إلى UTF-8
+                    const bytes = new Uint8Array(binaryString.length);
+                    for (let i = 0; i < binaryString.length; i++) {
+                        bytes[i] = binaryString.charCodeAt(i);
+                    }
+                    
+                    const decoder = new TextDecoder('utf-8');
+                    const content = decoder.decode(bytes);
+                    
+                    allListings = JSON.parse(content);
+                    showNotification(`تم تحميل ${allListings.length} عقار`, 'success');
                 }
                 
                 // تحديث العداد
-                document.getElementById('propertyCount').textContent = `${allListings.length} `;
+                document.getElementById('propertyCount').textContent = `${allListings.length}`;
                 document.getElementById('loadingMessage').style.display = 'none';
                 
                 applyFilters();
+                initializePerformanceOptimizations();
             } catch (error) {
                 console.error("حدث خطأ أثناء تحميل البيانات:", error);
                 document.getElementById('loadingMessage').innerHTML = `
@@ -1295,12 +1800,144 @@
                         <i class="fas fa-exclamation-triangle"></i>
                         <h3>حدث خطأ أثناء تحميل البيانات</h3>
                         <p>${error.message}</p>
-                        <button onclick="fetchData()" style="margin-top:10px; padding:8px 16px; background:#1877f2; color:white; border:none; border-radius:6px; cursor:pointer;">
+                        <button onclick="fetchGitHubData()" style="margin-top:10px; padding:8px 16px; background:#1877f2; color:white; border:none; border-radius:6px; cursor:pointer;">
                             إعادة المحاولة
                         </button>
                     </div>
                 `;
+                showNotification('حدث خطأ أثناء تحميل البيانات', 'error');
             }
+        }
+        
+        // حفظ البيانات في GitHub
+        async function saveToGitHub(data) {
+            try {
+                // التحقق من وجود الملف أولاً
+                const getResponse = await fetch(
+                    `https://api.github.com/repos/${USERNAME}/${REPO_NAME}/contents/${DATA_FILE_PATH}`,
+                    {
+                        headers: {
+                            'Authorization': `token ${TOKEN}`,
+                            'Accept': 'application/vnd.github.v3+json'
+                        }
+                    }
+                );
+                
+                let sha = null;
+                if (getResponse.ok) {
+                    const fileData = await getResponse.json();
+                    sha = fileData.sha;
+                }
+                
+                // تحويل البيانات إلى JSON مع تشفير UTF-8
+                const content = JSON.stringify(data, null, 2);
+                
+                // تشفير المحتوى إلى Base64 بشكل صحيح
+                const encoder = new TextEncoder();
+                const encodedContent = encoder.encode(content);
+                let binaryString = '';
+                for (let i = 0; i < encodedContent.length; i++) {
+                    binaryString += String.fromCharCode(encodedContent[i]);
+                }
+                const base64Content = btoa(binaryString);
+                
+                const response = await fetch(
+                    `https://api.github.com/repos/${USERNAME}/${REPO_NAME}/contents/${DATA_FILE_PATH}`,
+                    {
+                        method: 'PUT',
+                        headers: {
+                            'Authorization': `token ${TOKEN}`,
+                            'Accept': 'application/vnd.github.v3+json',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            message: 'تحديث بيانات العقارات',
+                            content: base64Content,
+                            sha: sha,
+                            branch: 'main'
+                        })
+                    }
+                );
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    console.error('GitHub API Error:', errorData);
+                    throw new Error(`خطأ في حفظ البيانات: ${response.status}`);
+                }
+                
+                return true;
+            } catch (error) {
+                console.error("Error saving to GitHub:", error);
+                throw error;
+            }
+        }
+        
+        // تحسينات الأداء - Lazy loading للصور
+        function initializeLazyLoading() {
+            // إلغاء أي مراقبين سابقين
+            imageObservers.forEach(observer => observer.disconnect());
+            imageObservers = [];
+            
+            // إنشاء Intersection Observer للصور
+            const imageObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const img = entry.target;
+                        img.src = img.dataset.src;
+                        img.classList.add('loaded');
+                        imageObserver.unobserve(img);
+                    }
+                });
+            }, {
+                rootMargin: '50px 0px',
+                threshold: 0.1
+            });
+            
+            // مراقبة جميع الصور
+            document.querySelectorAll('img[data-src]').forEach(img => {
+                imageObserver.observe(img);
+            });
+            
+            imageObservers.push(imageObserver);
+        }
+        
+        // إدارة الفيديوهات - إيقاف التشغيل عند التمرير
+        function initializeVideoManagement() {
+            // إزالة معالج التمرير السابق إذا كان موجوداً
+            if (scrollHandler) {
+                window.removeEventListener('scroll', scrollHandler);
+            }
+            
+            // جمع جميع عناصر الفيديو
+            videoElements = document.querySelectorAll('video');
+            
+            // معالج التمرير للتحكم في الفيديوهات
+            scrollHandler = function() {
+                videoElements.forEach(video => {
+                    const rect = video.getBoundingClientRect();
+                    const videoHeight = video.offsetHeight;
+                    const windowHeight = window.innerHeight;
+                    
+                    // إذا كان الفيديو خارج الشاشة بأكثر من نصف ارتفاعه، أوقفه
+                    if (rect.bottom < -videoHeight/2 || rect.top > windowHeight + videoHeight/2) {
+                        if (!video.paused) {
+                            video.pause();
+                        }
+                    }
+                });
+            };
+            
+            // إضافة مستمع التمرير
+            window.addEventListener('scroll', scrollHandler, { passive: true });
+        }
+        
+        // تهيئة جميع تحسينات الأداء
+        function initializePerformanceOptimizations() {
+            // إعطاء الوقت للعناصر لتحميل أولاً
+            setTimeout(() => {
+                initializeLazyLoading();
+                initializeVideoManagement();
+            }, 100);
         }
         
         // تطبيق الفلاتر
@@ -1312,12 +1949,13 @@
             const filteredListings = allListings.filter(item => {
                 let priceMatch = false;
                 if (priceFilter === "all") priceMatch = true;
-                else if (priceFilter === "5000-10000" && item.السعر >= 5000 && item.السعر <= 10000) priceMatch = true;
-                else if (priceFilter === "10000-15000" && item.السعر > 10000 && item.السعر <= 15000) priceMatch = true;
-                else if (priceFilter === "15000+" && item.السعر > 15000) priceMatch = true;
+                else if (priceFilter === "under-20000" && item.price < 20000) priceMatch = true;
+                else if (priceFilter === "20000-30000" && item.price >= 20000 && item.price <= 30000) priceMatch = true;
+                else if (priceFilter === "30000-40000" && item.price >= 30000 && item.price <= 40000) priceMatch = true;
+                else if (priceFilter === "over-40000" && item.price > 40000) priceMatch = true;
                 
-                const readyMatch = readyFilter === "all" || item.جاهز === readyFilter;
-                const areaMatch = areaFilter === "all" || item.المنطقة === areaFilter;
+                const readyMatch = readyFilter === "all" || item.ready === readyFilter;
+                const areaMatch = areaFilter === "all" || item.region === areaFilter;
                 
                 return priceMatch && readyMatch && areaMatch;
             });
@@ -1325,14 +1963,24 @@
             displayListings(filteredListings);
         }
         
-        // إنشاء رابط واتساب مع الوصف ورابط الفيديو
-        function createWhatsAppLink(description, videoUrl, price, area, status) {
-            // تنظيف رقم الهاتف
+        // إنشاء رابط واتساب مع الوصف
+        function createWhatsAppLink(description, price, area, status, mediaUrl, mediaType) {
             const phoneNumber = WHATSAPP_NUMBER.replace(/\D/g, '');
             
             // تحضير الرسالة
             const statusText = status === "T" ? "جاهز" : "تحت الإنشاء";
             const areaName = getAreaName(area);
+            
+            let mediaInfo = '';
+            if (mediaUrl) {
+                if (mediaType === 'youtube') {
+                    mediaInfo = `- رابط الفيديو: ${mediaUrl}`;
+                } else if (mediaType === 'image') {
+                    mediaInfo = `- رابط الصورة: ${mediaUrl}`;
+                } else if (mediaType === 'video') {
+                    mediaInfo = `- رابط الفيديو: ${mediaUrl}`;
+                }
+            }
             
             const message = `مرحباً، أنا مهتم بالعقار التالي:
 
@@ -1341,8 +1989,7 @@ ${description}
 - السعر: ${price.toLocaleString()} $
 - المنطقة: ${areaName}
 - الحالة: ${statusText}
-- رابط الفيديو: ${videoUrl}
-
+${mediaInfo ? mediaInfo + '\n' : ''}
 أود الاستفسار عن المزيد من التفاصيل.`;
 
             // ترميز الرسالة
@@ -1352,7 +1999,40 @@ ${description}
             return `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
         }
         
-        // عرض العقارات
+        // تحميل فيديو يوتيوب عند الطلب فقط
+        function loadYoutubeVideo(videoId, placeholderId) {
+            const placeholder = document.getElementById(placeholderId);
+            if (!placeholder) return;
+            
+            const embedUrl = `https://www.youtube.com/embed/${videoId}?rel=0&showinfo=0&autoplay=1`;
+            
+            placeholder.innerHTML = `
+                <iframe src="${embedUrl}" 
+                        frameborder="0" 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                        allowfullscreen></iframe>
+            `;
+        }
+        
+        // تحميل فيديو محلي عند الطلب فقط
+        function loadLocalVideo(videoUrl, placeholderId) {
+            const placeholder = document.getElementById(placeholderId);
+            if (!placeholder) return;
+            
+            placeholder.innerHTML = `
+                <video controls autoplay>
+                    <source src="${videoUrl}" type="video/mp4">
+                    متصفحك لا يدعم تشغيل الفيديو
+                </video>
+            `;
+            
+            // إضافة الفيديو الجديد إلى القائمة للمراقبة
+            setTimeout(() => {
+                videoElements = document.querySelectorAll('video');
+            }, 100);
+        }
+        
+        // عرض العقارات مع تحسينات الأداء
         function displayListings(data) {
             const listingsContainer = document.getElementById('listingsContainer');
             
@@ -1369,69 +2049,124 @@ ${description}
             
             let listingsHTML = '';
             
-            data.forEach((item, index) => {
-                const videoUrl = parseVideoUrl(item.فيديو);
-                const originalVideoUrl = item.فيديو || "";
+            data.forEach((item) => {
+                const youtubePlaceholderId = `youtube-placeholder-${item.id}`;
+                const videoPlaceholderId = `video-placeholder-${item.id}`;
                 
                 // إنشاء رابط واتساب لهذا العقار
                 const whatsappLink = createWhatsAppLink(
-                    item.الوصف,
-                    originalVideoUrl,
-                    item.السعر,
-                    item.المنطقة,
-                    item.جاهز
+                    item.description,
+                    item.price,
+                    item.region,
+                    item.ready,
+                    item.mediaUrl,
+                    item.mediaType
                 );
                 
                 let commentsHTML = '<p>لا توجد تعليقات</p>';
-                if (item.التعليقات && item.التعليقات.trim() !== "") {
-                    commentsHTML = item.التعليقات.split('|')
-                        .filter(comment => comment.trim() !== "")
-                        .map(comment => `<div class="comment-item">${comment.trim()}</div>`)
+                if (item.comments && item.comments.length > 0) {
+                    commentsHTML = item.comments
+                        .map(comment => `<div class="comment-item">${comment}</div>`)
                         .join('');
                 }
                 
-                listingsHTML += `
-                    <div class="listing-card">
-                        <div class="video-container">
-                            ${videoUrl ? `
-                            <iframe src="${videoUrl}" 
-                                    frameborder="0" 
-                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                                    allowfullscreen></iframe>
-                            ` : '<div style="display:flex; align-items:center; justify-content:center; height:100%; color:#fff; background:#000;">رابط الفيديو غير متوفر</div>'}
+                let mediaHTML = '';
+                
+                if (item.mediaUrl) {
+                    if (item.mediaType === 'youtube') {
+                        const videoId = parseVideoUrl(item.mediaUrl).split('/embed/')[1]?.split('?')[0] || '';
+                        const thumbnail = getYoutubeThumbnail(item.mediaUrl);
+                        
+                        if (videoId) {
+                            mediaHTML = `
+                                <div class="youtube-container">
+                                    <div class="media-placeholder" id="${youtubePlaceholderId}" onclick="loadYoutubeVideo('${videoId}', '${youtubePlaceholderId}')">
+                                        ${thumbnail ? `<img src="${thumbnail}" alt="معاينة الفيديو" class="youtube-thumbnail">` : ''}
+                                        <div class="play-video-btn">
+                                            <i class="fas fa-play"></i>
+                                        </div>
+                                        <div class="video-placeholder-text">انقر للتشغيل</div>
+                                    </div>
+                                </div>
+                            `;
+                        } else {
+                            mediaHTML = `
+                                <div class="media-container" style="display: flex; align-items: center; justify-content: center; background: #f0f2f5;">
+                                    <i class="fas fa-video" style="font-size: 36px; color: #bec3c9;"></i>
+                                </div>
+                            `;
+                        }
+                    } else if (item.mediaType === 'image') {
+                        mediaHTML = `
+                            <div class="media-container">
+                                <img data-src="${item.mediaUrl}" alt="صورة العقار" loading="lazy">
+                            </div>
+                        `;
+                    } else if (item.mediaType === 'video') {
+                        mediaHTML = `
+                            <div class="media-container">
+                                <div class="media-placeholder" id="${videoPlaceholderId}" onclick="loadLocalVideo('${item.mediaUrl}', '${videoPlaceholderId}')">
+                                    <div class="play-video-btn">
+                                        <i class="fas fa-play"></i>
+                                    </div>
+                                    <div class="video-placeholder-text">انقر للتشغيل</div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                } else {
+                    mediaHTML = `
+                        <div class="media-container" style="display: flex; align-items: center; justify-content: center; background: #f0f2f5;">
+                            <i class="fas fa-home" style="font-size: 36px; color: #bec3c9;"></i>
                         </div>
+                    `;
+                }
+                
+                // تنسيق تاريخ النشر
+                const publishDate = item.publishDate ? formatDate(item.publishDate) : 'غير محدد';
+                
+                listingsHTML += `
+                    <div class="listing-card" id="listing-${item.id}">
+                        ${mediaHTML}
                         
                         <div class="listing-content">
                             <div class="listing-header">
-                                <h3 class="listing-title">${item.الوصف}</h3>
-                                <div class="price-tag">${item.السعر.toLocaleString()} $</div>
+                                <h3 class="listing-title">${item.description}</h3>
+                                <div class="price-tag">${item.price.toLocaleString()} $</div>
                             </div>
                             
                             <div class="listing-details">
                                 <div class="detail-item">
                                     <i class="fas fa-map-marker-alt detail-icon"></i>
-                                    <span>${getAreaName(item.المنطقة)}</span>
+                                    <span>${getAreaName(item.region)}</span>
                                 </div>
                                 <div class="detail-item">
-                                    <span class="status-badge ${item.جاهز === "T" ? 'status-ready' : 'status-not-ready'}">
-                                        ${item.جاهز === "T" ? 'جاهز' : 'تحت الإنشاء'}
+                                    <i class="far fa-calendar-alt detail-icon"></i>
+                                    <span>${publishDate}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="status-badge ${item.ready === "T" ? 'status-ready' : 'status-not-ready'}">
+                                        ${item.ready === "T" ? 'جاهز' : 'تحت الإنشاء'}
                                     </span>
                                 </div>
                                 <div class="detail-item">
                                     <i class="fas fa-thumbs-up detail-icon"></i>
-                                    <span>${item.الإعجابات}</span>
+                                    <span>${item.likes || 0}</span>
                                 </div>
                             </div>
                             
                             <div class="action-buttons">
-                                <button class="action-btn like-btn" onclick="likeListing(${index}, event)">
-                                    <i class="fas fa-thumbs-up"></i> أعجبني (${item.الإعجابات})
+                                <button class="action-btn like-btn" onclick="likeListing(${item.id})" data-id="${item.id}">
+                                    <i class="fas fa-thumbs-up"></i> أعجبني (${item.likes || 0})
                                 </button>
-                                <button class="action-btn comment-btn" onclick="showCommentForm(${index})">
+                                <button class="action-btn comment-btn" onclick="showCommentForm(${item.id})">
                                     <i class="fas fa-comment"></i> تعليق
                                 </button>
-                                <button class="action-btn view-comments-btn" onclick="toggleComments(${index})">
+                                <button class="action-btn view-comments-btn" onclick="toggleComments(${item.id})">
                                     <i class="fas fa-eye"></i> عرض
+                                </button>
+                                <button class="action-btn delete-btn" onclick="deleteListing(${item.id})" data-id="${item.id}">
+                                    <i class="fas fa-trash"></i> حذف
                                 </button>
                             </div>
                             
@@ -1439,7 +2174,7 @@ ${description}
                                 <i class="fab fa-whatsapp"></i> تواصل عبر واتساب
                             </a>
                             
-                            <div class="comments-section" id="comments-${index}">
+                            <div class="comments-section" id="comments-${item.id}">
                                 <div class="comments-header">
                                     <h4 class="comments-title">التعليقات</h4>
                                 </div>
@@ -1448,9 +2183,9 @@ ${description}
                                     ${commentsHTML}
                                 </div>
                                 
-                                <div class="comment-form" id="commentForm-${index}" style="display:none;">
-                                    <textarea class="comment-textarea" id="commentText-${index}" placeholder="اكتب تعليقك هنا..."></textarea>
-                                    <button class="submit-comment-btn" onclick="submitComment(${index}, event)">
+                                <div class="comment-form" id="commentForm-${item.id}" style="display:none;">
+                                    <textarea class="comment-textarea" id="commentText-${item.id}" placeholder="اكتب تعليقك هنا..."></textarea>
+                                    <button class="submit-comment-btn" onclick="submitComment(${item.id})">
                                         <i class="fas fa-paper-plane"></i> إرسال
                                     </button>
                                 </div>
@@ -1461,256 +2196,161 @@ ${description}
             });
             
             listingsContainer.innerHTML = listingsHTML;
-        }
-        
-        // التحقق من كلمة السر
-        function checkSecretCode() {
-            const secretCode = document.getElementById('secretCodeInput').value;
-            const codeResult = document.getElementById('codeResult');
             
-            if (secretCode === '09911') {
-                codeResult.innerHTML = `
-                    <i class="fas fa-check-circle"></i> تم التحقق بنجاح! يمكنك الآن إضافة عقار جديد
-                `;
-                codeResult.className = 'result-message success-message';
-                codeResult.style.display = 'block';
-                
-                // إظهار نموذج الإضافة
-                document.getElementById('addFormContainer').classList.add('active');
-                
-                // مسح حقل الإدخال
-                document.getElementById('secretCodeInput').value = '';
-                
-                // إخفاء الرسالة بعد 5 ثوانٍ
-                setTimeout(() => {
-                    codeResult.style.display = 'none';
-                }, 5000);
-            } else {
-                codeResult.innerHTML = `
-                    <i class="fas fa-times-circle"></i> كلمة المرور غير صحيحة
-                `;
-                codeResult.className = 'result-message error-message';
-                codeResult.style.display = 'block';
-                
-                // تأثير اهتزاز
-                document.getElementById('secretCodeInput').style.animation = 'none';
-                setTimeout(() => {
-                    document.getElementById('secretCodeInput').style.animation = 'shake 0.5s';
-                }, 10);
-                
-                // إخفاء الرسالة بعد 3 ثوانٍ
-                setTimeout(() => {
-                    codeResult.style.display = 'none';
-                }, 3000);
+            // إظهار أزرار الحذف إذا كان المستخدم قد تحقق
+            if (isVerified) {
+                showDeleteButtons();
             }
+            
+            // تهيئة تحسينات الأداء بعد إضافة المحتوى الجديد
+            initializePerformanceOptimizations();
         }
         
         // إظهار/إخفاء التعليقات
-        function toggleComments(index) {
-            const commentsDiv = document.getElementById(`comments-${index}`);
+        function toggleComments(listingId) {
+            const commentsDiv = document.getElementById(`comments-${listingId}`);
             if (commentsDiv) {
                 commentsDiv.classList.toggle('expanded');
             }
         }
         
         // إظهار نموذج التعليق
-        function showCommentForm(index) {
-            const commentForm = document.getElementById(`commentForm-${index}`);
+        function showCommentForm(listingId) {
+            const commentForm = document.getElementById(`commentForm-${listingId}`);
             if (commentForm) {
                 commentForm.style.display = commentForm.style.display === 'none' ? 'block' : 'none';
             }
             
             // عرض قسم التعليقات
-            const commentsDiv = document.getElementById(`comments-${index}`);
+            const commentsDiv = document.getElementById(`comments-${listingId}`);
             if (commentsDiv) {
                 commentsDiv.classList.add('expanded');
             }
         }
         
-        // إضافة إعجاب
-        async function likeListing(index, event) {
-            try {
-                const likeButton = event.target;
-                likeButton.disabled = true;
-                
-                const response = await fetch(GOOGLE_SCRIPT_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: new URLSearchParams({
-                        action: "like",
-                        row: (index * 7) + 6
-                    })
-                });
-                
-                if (!response.ok) {
-                    throw new Error("فشل في تسجيل الإعجاب");
-                }
-                
-                const result = await response.text();
-                if (result.includes("تم")) {
-                    const currentLikes = parseInt(likeButton.textContent.match(/\((\d+)\)/)[1]) || 0;
-                    likeButton.innerHTML = `<i class="fas fa-thumbs-up"></i> أعجبني (${currentLikes + 1})`;
-                }
-            } catch (error) {
-                console.error("Error:", error);
-            } finally {
-                event.target.disabled = false;
-            }
-        }
-        
         // إرسال تعليق جديد
-        async function submitComment(index, event) {
-            event.preventDefault();
-            
-            const commentText = document.getElementById(`commentText-${index}`).value.trim();
-            const commentButton = event.target;
+        async function submitComment(listingId) {
+            const commentText = document.getElementById(`commentText-${listingId}`).value.trim();
             
             if (!commentText) return;
             
             try {
-                commentButton.disabled = true;
-                commentButton.innerHTML = `<i class="fas fa-spinner fa-spin"></i> جاري الإرسال...`;
+                // البحث عن العقار باستخدام الـ id
+                const listingIndex = allListings.findIndex(item => item.id === listingId);
+                if (listingIndex === -1) return;
                 
-                const response = await fetch(GOOGLE_SCRIPT_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: new URLSearchParams({
-                        action: "comment",
-                        row: (index * 7) + 7,
-                        value: commentText
-                    })
-                });
-                
-                if (!response.ok) {
-                    throw new Error("فشل في إضافة التعليق");
+                // تحديث البيانات محلياً
+                if (!allListings[listingIndex].comments) {
+                    allListings[listingIndex].comments = [];
                 }
+                allListings[listingIndex].comments.push(commentText);
+                
+                // حفظ على GitHub
+                await saveToGitHub(allListings);
                 
                 // تحديث الواجهة
-                const commentsList = document.querySelector(`#comments-${index} .comments-list`);
+                applyFilters();
                 
-                // إنشاء تعليق جديد
-                const commentElement = document.createElement('div');
-                commentElement.className = 'comment-item';
-                commentElement.textContent = commentText;
+                // مسح الحقل
+                document.getElementById(`commentText-${listingId}`).value = '';
                 
-                // إضافة التعليق
-                if (commentsList.querySelector('p:first-child')?.textContent === 'لا توجد تعليقات') {
-                    commentsList.innerHTML = '';
-                }
-                commentsList.appendChild(commentElement);
-                
-                // مسح الحقل وإخفاء النموذج
-                document.getElementById(`commentText-${index}`).value = '';
-                document.getElementById(`commentForm-${index}`).style.display = 'none';
-                
+                // إشعار
+                showNotification('تم إضافة التعليق بنجاح', 'success');
             } catch (error) {
                 console.error("Error:", error);
-            } finally {
-                commentButton.disabled = false;
-                commentButton.innerHTML = `<i class="fas fa-paper-plane"></i> إرسال`;
+                showNotification('حدث خطأ أثناء إضافة التعليق', 'error');
             }
         }
         
-        // دالة لجلب البيانات الحالية
-        async function fetchCurrentData() {
-            const url = `https://docs.google.com/spreadsheets/d/${GOOGLE_SHEET_ID}/export?format=xlsx&t=${Date.now()}`;
-            const response = await fetch(url);
-            if (!response.ok) {
-                throw new Error(`خطأ في جلب البيانات: ${response.status}`);
-            }
-            
-            const data = await response.arrayBuffer();
-            const workbook = XLSX.read(data, { type: 'array' });
-            const sheet = workbook.Sheets[workbook.SheetNames[0]];
-            return XLSX.utils.sheet_to_json(sheet, { header: 1, defval: "" });
-        }
-        
-        // إعداد البيانات الجديدة
-        function prepareNewData(currentData, formData) {
-            const newListing = [
-                formData.videoUrl1,
-                formData.price1,
-                formData.description1,
-                formData.region1,
-                formData.ready1 === "T" ? "T" : "F",
-                0,
-                ""
-            ];
-            
-            const allListings = [];
-            for (let i = 0; i < currentData.length; i += 7) {
-                const listing = currentData.slice(i, i + 7);
-                if (listing[0] && listing[0].toString().trim() !== "") {
-                    allListings.push(listing);
-                }
-            }
-            
-            allListings.unshift(newListing);
-            
-            const updatedData = [];
-            allListings.forEach(listing => {
-                while (listing.length < 7) {
-                    listing.push("");
-                }
-                updatedData.push(...listing.slice(0, 7));
-            });
-            
-            return updatedData;
-        }
-        
-        // معالجة إرسال النموذج
+        // معالجة إرسال النموذج - تم التصحيح هنا
         async function handleFormSubmit(e) {
             e.preventDefault();
             
-            const formData = {
-                videoUrl1: document.getElementById('videoUrl1').value.trim(),
-                price1: document.getElementById('price1').value.trim(),
-                description1: document.getElementById('description1').value.trim(),
-                region1: document.getElementById('region1').value,
-                ready1: document.querySelector('input[name="ready1"]:checked').value
-            };
+            const submitBtn = document.querySelector('#dataForm .submit-btn');
+            let originalText = '';
             
-            if (!formData.videoUrl1 || !formData.price1 || !formData.description1 || !formData.region1) {
-                document.getElementById('formResult').innerHTML = `
-                    <div class="error-display">
-                        <i class="fas fa-exclamation-circle"></i>
-                        الرجاء ملء جميع الحقول المطلوبة
-                    </div>
-                `;
-                return;
+            // حفظ النص الأصلي للزر
+            if (submitBtn) {
+                originalText = submitBtn.innerHTML;
+                submitBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> جاري الإضافة...`;
+                submitBtn.disabled = true;
             }
             
             try {
-                const submitBtn = document.querySelector('#dataForm .submit-btn');
-                const originalText = submitBtn.innerHTML;
-                submitBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> جاري الإضافة...`;
-                submitBtn.disabled = true;
+                const mediaType = document.getElementById('mediaType').value;
+                let mediaUrl = '';
                 
-                // جلب البيانات الحالية
-                const currentData = await fetchCurrentData();
-                
-                // تحضير البيانات المحدثة
-                const updatedData = prepareNewData(currentData, formData);
-                
-                // إرسال البيانات
-                const response = await fetch(GOOGLE_SCRIPT_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: new URLSearchParams({
-                        action: "updateSheet",
-                        data: JSON.stringify(updatedData)
-                    })
-                });
-                
-                if (!response.ok) {
-                    throw new Error("فشل في إضافة العقار");
+                // التحقق من الوسائط
+                if (mediaType === 'youtube') {
+                    mediaUrl = document.getElementById('youtubeUrl').value.trim();
+                    if (!mediaUrl) {
+                        document.getElementById('formResult').innerHTML = `
+                            <div class="error-display">
+                                <i class="fas fa-exclamation-circle"></i>
+                                الرجاء إدخال رابط يوتيوب
+                            </div>
+                        `;
+                        return;
+                    }
+                } else if (mediaType === 'image') {
+                    if (!imageFile) {
+                        document.getElementById('formResult').innerHTML = `
+                            <div class="error-display">
+                                <i class="fas fa-exclamation-circle"></i>
+                                الرجاء رفع صورة للعقار
+                            </div>
+                        `;
+                        return;
+                    }
+                } else if (mediaType === 'video') {
+                    if (!videoFile) {
+                        document.getElementById('formResult').innerHTML = `
+                            <div class="error-display">
+                                <i class="fas fa-exclamation-circle"></i>
+                                الرجاء رفع فيديو للعقار
+                            </div>
+                        `;
+                        return;
+                    }
                 }
+                
+                // إذا كان الملف صورة أو فيديو، رفعه إلى GitHub
+                if (mediaType === 'image' && imageFile) {
+                    const fileName = `image_${Date.now()}_${imageFile.name}`;
+                    mediaUrl = await uploadToGitHub(imageFile, fileName);
+                } else if (mediaType === 'video' && videoFile) {
+                    const fileName = `video_${Date.now()}_${videoFile.name}`;
+                    mediaUrl = await uploadToGitHub(videoFile, fileName);
+                }
+                
+                const formData = {
+                    id: Date.now(), // إنشاء معرف فريد
+                    description: document.getElementById('description1').value.trim(),
+                    price: parseInt(document.getElementById('price1').value.trim()),
+                    region: document.getElementById('region1').value,
+                    ready: document.querySelector('input[name="ready1"]:checked').value,
+                    likes: 0,
+                    comments: [],
+                    mediaUrl: mediaUrl,
+                    mediaType: mediaType,
+                    publishDate: new Date().toISOString().split('T')[0] // تاريخ اليوم
+                };
+                
+                if (!formData.description || !formData.price || !formData.region || !formData.ready) {
+                    document.getElementById('formResult').innerHTML = `
+                        <div class="error-display">
+                            <i class="fas fa-exclamation-circle"></i>
+                            الرجاء ملء جميع الحقول المطلوبة
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // إضافة العقار الجديد
+                allListings.unshift(formData);
+                
+                // حفظ على GitHub
+                await saveToGitHub(allListings);
                 
                 document.getElementById('formResult').innerHTML = `
                     <div class="success-display">
@@ -1719,40 +2359,117 @@ ${description}
                     </div>
                 `;
                 
+                // تحديث العداد
+                document.getElementById('propertyCount').textContent = `${allListings.length}`;
+                
                 // إعادة تعيين النموذج
                 document.getElementById('dataForm').reset();
+                removeImage();
+                removeVideo();
                 
-                // تحديث البيانات بعد ثانيتين
+                // إخفاء مجموعات الوسائط
+                document.getElementById('youtubeInputGroup').style.display = 'none';
+                document.getElementById('imageInputGroup').style.display = 'none';
+                document.getElementById('videoInputGroup').style.display = 'none';
+                document.getElementById('mediaType').selectedIndex = 0;
+                
+                // إخفاء النموذج بعد 2 ثانية
                 setTimeout(() => {
-                    fetchData();
+                    document.getElementById('addFormContainer').classList.remove('active');
                     document.getElementById('formResult').innerHTML = '';
+                    
+                    // تحديث البيانات
+                    applyFilters();
                 }, 2000);
+                
+                showNotification('تم إضافة العقار بنجاح', 'success');
                 
             } catch (error) {
                 console.error("Error:", error);
                 document.getElementById('formResult').innerHTML = `
                     <div class="error-display">
                         <i class="fas fa-exclamation-triangle"></i>
-                        ${error.message}
+                        ${error.message || "حدث خطأ أثناء الإضافة"}
                     </div>
                 `;
+                showNotification('حدث خطأ أثناء إضافة العقار', 'error');
             } finally {
-                const submitBtn = document.querySelector('#dataForm .submit-btn');
-                submitBtn.innerHTML = originalText;
-                submitBtn.disabled = false;
+                // إعادة النص الأصلي للزر
+                if (submitBtn) {
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                }
             }
         }
         
-        // تأثير الاهتزاز
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes shake {
-                0%, 100% { transform: translateX(0); }
-                10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-                20%, 40%, 60%, 80% { transform: translateX(5px); }
-            }
-        `;
-        document.head.appendChild(style);
+        // تهيئة الصفحة عند التحميل
+        document.addEventListener('DOMContentLoaded', function() {
+            // إضافة مستمعات الأحداث للفلاتر
+            document.querySelectorAll('#priceFilter, #readyFilter, #areaFilter').forEach(filter => {
+                filter.addEventListener('change', applyFilters);
+            });
+            
+            // زر التحقق
+            document.getElementById('verifyBtn').addEventListener('click', checkSecretCode);
+            
+            // زر الإدخال بالإنتر
+            document.getElementById('secretCodeInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    checkSecretCode();
+                }
+            });
+            
+            // زر فتح قسم التحقق من الأعلى
+            document.getElementById('openVerifyBtn').addEventListener('click', openVerifySection);
+            
+            // زر إغلاق النموذج
+            document.getElementById('closeFormBtn').addEventListener('click', function() {
+                document.getElementById('addFormContainer').classList.remove('active');
+                document.getElementById('dataForm').reset();
+                removeImage();
+                removeVideo();
+                document.getElementById('youtubeInputGroup').style.display = 'none';
+                document.getElementById('imageInputGroup').style.display = 'none';
+                document.getElementById('videoInputGroup').style.display = 'none';
+                document.getElementById('mediaType').selectedIndex = 0;
+                document.getElementById('formResult').innerHTML = '';
+                isVerified = false;
+                hideDeleteButtons();
+            });
+            
+            // زر الإلغاء
+            document.getElementById('cancelBtn').addEventListener('click', function() {
+                document.getElementById('addFormContainer').classList.remove('active');
+                document.getElementById('dataForm').reset();
+                removeImage();
+                removeVideo();
+                document.getElementById('youtubeInputGroup').style.display = 'none';
+                document.getElementById('imageInputGroup').style.display = 'none';
+                document.getElementById('videoInputGroup').style.display = 'none';
+                document.getElementById('mediaType').selectedIndex = 0;
+                document.getElementById('formResult').innerHTML = '';
+                isVerified = false;
+                hideDeleteButtons();
+            });
+            
+            // إرسال النموذج
+            document.getElementById('dataForm').addEventListener('submit', handleFormSubmit);
+            
+            // إضافة أحداث النقر لرفع الملفات
+            document.getElementById('imageUploadBtn').addEventListener('click', function() {
+                document.getElementById('imageFile').click();
+            });
+            
+            document.getElementById('videoUploadBtn').addEventListener('click', function() {
+                document.getElementById('videoFile').click();
+            });
+            
+            // جلب البيانات الأولية
+            fetchGitHubData();
+            
+            // تحديث البيانات كل 5 دقائق
+            setInterval(fetchGitHubData, 5 * 60 * 1000);
+        });
     </script>
 </body>
 </html>
