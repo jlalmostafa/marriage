@@ -973,6 +973,10 @@
                 font-size: 9px;
             }
         }
+        
+        .ddd{
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -1187,7 +1191,7 @@
         const USERNAME = 'jlalmostafa';
         const REPO_NAME = 'ldlib-real-estate';
         let TOKEN = "";
-        const DATA_FILE_PATH = 'realestate_data.json';
+        const DATA_FILE_PATH = 'properties_data.json';
         const MEDIA_FOLDER = 'media/';
         const WHATSAPP_NUMBER = '+963969 315 579';
         
@@ -2252,9 +2256,14 @@ ${mediaInfo ? mediaInfo + '\n' : ''}
                             </div>
                             
                             <div class="action-buttons">
+                           
+                           <button  class="ddd" onclick="likeListing(${item.id})" data-id="${item.id}" ></button>
+                           
                                 <button class="action-btn like-btn" onclick="likeListing(${item.id})" data-id="${item.id}">
                                     <i class="fas fa-thumbs-up"></i> أعجبني (${item.likes || 0})
                                 </button>
+                              
+                  <button class="ddd" onclick="showCommentForm(${item.id})" ></button>
                                 <button class="action-btn comment-btn" onclick="showCommentForm(${item.id})">
                                     <i class="fas fa-comment"></i> تعليق
                                 </button>
