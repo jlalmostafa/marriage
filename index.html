@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     
+    
     <style>
         /* إعدادات عامة */
         * {
@@ -1371,7 +1372,7 @@
         
         // إحداثيات المناطق
         const regions = {
-            idlib: [35.9306, 36.6339],
+            idlib: [35.4556, 36.9999],
             aljisr: [35.814985, 36.319943],
             salqin: [36.138257, 36.453657],
             sarmada: [36.1833, 36.7167],
@@ -1379,40 +1380,41 @@
         };
         
         // إنشاء الخريطة
-        const map = L.map('map').setView(regions.idlib, 11);
+        const map = L.map('map').setView(regions.idlib, 8);
         
         // إضافة طبقة الخريطة العادية
         // طبقة OpenStreetMap العادية
         const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap contributors'
-        }).addTo(map);
+            attribution: ' للتواصل;00963949340870   '
+        });
 
         // طبقة القمر الصناعي
         const esriLayer = L.tileLayer(
             'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', 
-            { attribution: '© Esri' }
+            { attribution: 'عقارات إدلب' }
         );
 
         // طبقة أسماء الشوارع والأماكن
         const esriLabels = L.tileLayer(
             'https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}', 
-            { attribution: '© Esri' }
+            { attribution: 'تطبيق عقارات إدلب ' }
         );
 
         // عند استخدام القمر الصناعي
         esriLayer.addTo(map);
         esriLabels.addTo(map);
+         osmLayer.addTo(map);
         
         // دالة لجلب التوكن من Google Sheets
         async function fetchTokenFromGoogleSheets() {
             try {
-                showLoading('جاري جلب التوكن من Google Sheets...');
+                showLoading('    جاري تحميل البيانات ...');
                 
                 // جلب البيانات من Google Sheets
                 const response = await fetch(GOOGLE_SHEET_URL);
                 
                 if (!response.ok) {
-                    throw new Error(`خطأ في جلب التوكن من Google Sheets: ${response.status}`);
+                    throw new Error(`      : ${response.status}`);
                 }
                 
                 const csvData = await response.text();
@@ -1434,7 +1436,7 @@
                         
                         if (tokenMatch) {
                             TOKEN = tokenMatch[0];
-                            console.log('تم العثور على التوكن من Google Sheets:', TOKEN.substring(0, 10) + "...");
+                            console.log('      :', TOKEN.substring(0, 10) + "...");
                             showNotification('   ', 'success');
                             return true;
                         }
@@ -1442,20 +1444,20 @@
                         // البحث عن أي نص يبدو أنه توكن (سلسلة طويلة)
                         if (cleanCell.length > 30 && !cleanCell.includes(' ') && cleanCell.includes('_')) {
                             TOKEN = cleanCell;
-                            console.log('تم استخدام النص كتوكن من Google Sheets:', TOKEN.substring(0, 10) + "...");
+                            console.log('      :', TOKEN.substring(0, 10) + "...");
                             showNotification('   ', 'success');
                             return true;
                         }
                     }
                 }
                 
-                console.warn("لم يتم العثور على توكن في Google Sheets");
-                showNotification('لم يتم العثور على توكن في Google Sheets', 'info');
+                console.warn("       ");
+                showNotification('       ', 'info');
                 return false;
                 
             } catch (error) {
-                console.error('حدث خطأ أثناء جلب التوكن من Google Sheets:', error);
-                showNotification('حدث خطأ أثناء جلب التوكن من Google Sheets', 'error');
+                console.error('      :', error);
+                showNotification('       ', 'error');
                 return false;
             } finally {
                 hideLoading();
@@ -1466,7 +1468,7 @@
         function createPriceMarker(property) {
             // تحديد لون العلامة حسب نوع العقار
             let markerClass = 'for-sale';
-            if (property.type === 'للإيجار (فوق 100$)') {
+            if (property.type === 'للإيجار (فوق 103$)') {
                 markerClass = 'for-rent-above';
             } else if (property.type === 'للإيجار (تحت 100$)') {
                 markerClass = 'for-rent-below';
@@ -1582,8 +1584,8 @@
                     const tokenFound = await fetchTokenFromGoogleSheets();
                     if (!tokenFound) {
                         // استخدام التوكن الافتراضي إذا فشل جلب التوكن
-                        TOKEN = "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";
-                        console.log("استخدام التوكن الافتراضي");
+        TOKEN = "hp_iYAbE77RTSpGLfZ1ylTNm5Tlkd7UDo4EqZ0l";
+                        console.log("  ");
                         showNotification('استخدام التوكن الافتراضي', 'info');
                     }
                 }
