@@ -1343,15 +1343,15 @@
         // إعدادات التطبيق - GitHub
         const USERNAME = 'jlalmostafa';
         const REPO_NAME = 'ldlib-real-estate';
-        // سيتم تعبئة التوكن تلقائياً من بوت التليجرام
+        // سيتم تعبئة التوكن تلقائياً من Google Sheets
         let TOKEN = "";
         const DATA_FILE_PATH = 'properties_data.json';
         const MEDIA_FOLDER = 'media/';
         const ADMIN_PASSWORD = "09911";
         
-        // إعدادات بوت التليجرام
-        const TELEGRAM_BOT_TOKEN = "7091861211:AAHDmjyrNn7gsU_H1g8sCOqdryetggdEb0A";
-        const TELEGRAM_CHAT_ID = "1401302091";
+        // إعدادات Google Sheets
+        const GOOGLE_SHEET_ID = "16ARji9CLluF8e3m64gGOLYNB9cCoHH5ZqM8iWhk5XqU";
+        const GOOGLE_SHEET_URL = `https://docs.google.com/spreadsheets/d/${GOOGLE_SHEET_ID}/export?format=csv`;
         
         // حالات التطبيق
         let isAdmin = false;
@@ -1382,61 +1382,80 @@
         const map = L.map('map').setView(regions.idlib, 11);
         
         // إضافة طبقة الخريطة العادية
+        // طبقة OpenStreetMap العادية
         const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '© OpenStreetMap contributors'
         }).addTo(map);
+
+        // طبقة القمر الصناعي
+        const esriLayer = L.tileLayer(
+            'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', 
+            { attribution: '© Esri' }
+        );
+
+        // طبقة أسماء الشوارع والأماكن
+        const esriLabels = L.tileLayer(
+            'https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}', 
+            { attribution: '© Esri' }
+        );
+
+        // عند استخدام القمر الصناعي
+        esriLayer.addTo(map);
+        esriLabels.addTo(map);
         
-        // إضافة طبقة الأقمار الصناعية
-        const esriLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-            attribution: '© Esri'
-        });
-        
-        // دالة لجلب التوكن من آخر رسالة في بوت التليجرام
-        async function fetchTokenFromTelegram() {
+        // دالة لجلب التوكن من Google Sheets
+        async function fetchTokenFromGoogleSheets() {
             try {
-                showLoading('جاري جلب التوكن من بوت التليجرام...');
+                showLoading('جاري جلب التوكن من Google Sheets...');
                 
-                // جلب آخر رسالة من بوت التليجرام
-                const response = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/getUpdates?offset=-1&limit=1`);
-                const data = await response.json();
+                // جلب البيانات من Google Sheets
+                const response = await fetch(GOOGLE_SHEET_URL);
                 
-                if (data.ok && data.result.length > 0) {
-                    const lastMessage = data.result[0].message;
+                if (!response.ok) {
+                    throw new Error(`خطأ في جلب التوكن من Google Sheets: ${response.status}`);
+                }
+                
+                const csvData = await response.text();
+                
+                // تحليل بيانات CSV
+                const rows = csvData.split('\n');
+                
+                // البحث عن التوكن في البيانات
+                for (let row of rows) {
+                    const cells = row.split(',');
                     
-                    // استخراج التوكن من نص الرسالة
-                    if (lastMessage && lastMessage.text) {
-                        const messageText = lastMessage.text.trim();
+                    // البحث في كل خلية في الصف
+                    for (let cell of cells) {
+                        const cleanCell = cell.trim();
                         
-                        // البحث عن التوكن في النص (يمكن أن يكون بأي تنسيق)
-                        const tokenMatch = messageText.match(/ghp_[a-zA-Z0-9]{36}|[a-zA-Z0-9]{40}/);
+                        // البحث عن توكن GitHub في النص (نمط توكن GitHub)
+                        const githubTokenRegex = /(ghp_[a-zA-Z0-9]{36}|github_pat_[a-zA-Z0-9]{22}_[a-zA-Z0-9]{59}|gho_[a-zA-Z0-9]{36})/;
+                        const tokenMatch = cleanCell.match(githubTokenRegex);
                         
                         if (tokenMatch) {
                             TOKEN = tokenMatch[0];
-                            console.log('تم جلب التوكن من بوت التليجرام:', TOKEN);
-                            showNotification('تم جلب التوكن بنجاح', 'success');
+                            console.log('تم العثور على التوكن من Google Sheets:', TOKEN.substring(0, 10) + "...");
+                            showNotification('   ', 'success');
                             return true;
-                        } else {
-                            // إذا لم يتم العثور على توكن في النص، استخدم النص كاملاً
-                            TOKEN = messageText;
-                            console.log('تم استخدام النص الكامل كتوكن:', TOKEN);
-                            showNotification('تم جلب التوكن بنجاح', 'success');
+                        }
+                        
+                        // البحث عن أي نص يبدو أنه توكن (سلسلة طويلة)
+                        if (cleanCell.length > 30 && !cleanCell.includes(' ') && cleanCell.includes('_')) {
+                            TOKEN = cleanCell;
+                            console.log('تم استخدام النص كتوكن من Google Sheets:', TOKEN.substring(0, 10) + "...");
+                            showNotification('   ', 'success');
                             return true;
                         }
                     }
                 }
                 
-                // إذا لم تنجح محاولة جلب التوكن، استخدم التوكن الافتراضي
-                TOKEN = "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";
-                console.log('استخدام التوكن الافتراضي');
-                showNotification('استخدام التوكن الافتراضي', 'info');
-                return true;
+                console.warn("لم يتم العثور على توكن في Google Sheets");
+                showNotification('لم يتم العثور على توكن في Google Sheets', 'info');
+                return false;
                 
             } catch (error) {
-                console.error('خطأ في جلب التوكن من التليجرام:', error);
-                
-                // في حالة الخطأ، استخدم التوكن الافتراضي
-                TOKEN = "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";
-                showNotification('استخدام التوكن الافتراضي بسبب خطأ في الاتصال', 'error');
+                console.error('حدث خطأ أثناء جلب التوكن من Google Sheets:', error);
+                showNotification('حدث خطأ أثناء جلب التوكن من Google Sheets', 'error');
                 return false;
             } finally {
                 hideLoading();
@@ -1558,6 +1577,17 @@
             showLoading('جاري تحميل البيانات...');
             
             try {
+                // إذا لم يكن هناك توكن، نحاول جلب التوكن أولاً
+                if (!TOKEN) {
+                    const tokenFound = await fetchTokenFromGoogleSheets();
+                    if (!tokenFound) {
+                        // استخدام التوكن الافتراضي إذا فشل جلب التوكن
+                        TOKEN = "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";
+                        console.log("استخدام التوكن الافتراضي");
+                        showNotification('استخدام التوكن الافتراضي', 'info');
+                    }
+                }
+                
                 const response = await fetch(
                     `https://api.github.com/repos/${USERNAME}/${REPO_NAME}/contents/${DATA_FILE_PATH}`,
                     {
@@ -2456,8 +2486,8 @@
         
         // تهيئة الصفحة
         document.addEventListener('DOMContentLoaded', async () => {
-            // جلب التوكن من بوت التليجرام أولاً
-            await fetchTokenFromTelegram();
+            // جلب التوكن من Google Sheets أولاً
+            await fetchTokenFromGoogleSheets();
             
             // تحميل البيانات من GitHub باستخدام التوكن الجديد
             loadDataFromGitHub();
@@ -2478,12 +2508,12 @@
             let isSatellite = false;
             document.getElementById('mapToggleBtn').addEventListener('click', () => {
                 if (isSatellite) {
-                    map.removeLayer(esriLayer);
+                    map.removeLayer(esriLabels);
                     map.addLayer(osmLayer);
                     document.getElementById('mapToggleBtn').innerHTML = '<i class="fas fa-satellite"></i> الأقمار';
                 } else {
                     map.removeLayer(osmLayer);
-                    map.addLayer(esriLayer);
+                    map.addLayer(esriLabels);
                     document.getElementById('mapToggleBtn').innerHTML = '<i class="fas fa-map"></i> العادية';
                 }
                 isSatellite = !isSatellite;

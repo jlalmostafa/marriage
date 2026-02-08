@@ -973,10 +973,6 @@
                 font-size: 9px;
             }
         }
-        
-        .ddd{
-            display: none;
-        }
     </style>
 </head>
 <body>
@@ -1195,60 +1191,56 @@
         const MEDIA_FOLDER = 'media/';
         const WHATSAPP_NUMBER = '+963969 315 579';
         
-        // ========== دالة جلب التوكن من آخر رسالة في بوت تلجرام ==========
-        async function fetchTokenFromTelegram() {
+        // ========== دالة جلب التوكن من Google Sheets ==========
+        async function fetchTokenFromGoogleSheets() {
             try {
-                // إعدادات بوت تلجرام
-                const TELEGRAM_BOT_TOKEN = "7091861211:AAHDmjyrNn7gsU_H1g8sCOqdryetggdEb0A";
-                const CHAT_ID = "1401302091";
+                // Google Sheet ID من الرابط المقدم
+                const GOOGLE_SHEET_ID = '16ARji9CLluF8e3m64gGOLYNB9cCoHH5ZqM8iWhk5XqU';
+                const url = `https://docs.google.com/spreadsheets/d/${GOOGLE_SHEET_ID}/export?format=csv`;
                 
-                // جلب آخر رسالة من البوت
-                const response = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/getUpdates`);
+                // جلب البيانات من Google Sheets
+                const response = await fetch(url);
                 
                 if (!response.ok) {
-                    throw new Error(`خطأ في جلب الرسائل: ${response.status}`);
+                    throw new Error(`      : ${response.status}`);
                 }
                 
-                const data = await response.json();
+                const csvData = await response.text();
                 
-                if (data.ok && data.result && data.result.length > 0) {
-                    // البحث عن آخر رسالة تحتوي على توكن
-                    const updates = data.result;
+                // تحليل بيانات CSV
+                const rows = csvData.split('\n');
+                
+                // البحث عن التوكن في البيانات
+                for (let row of rows) {
+                    const cells = row.split(',');
                     
-                    // البحث من الأحدث إلى الأقدم
-                    for (let i = updates.length - 1; i >= 0; i--) {
-                        const update = updates[i];
+                    // البحث في كل خلية في الصف
+                    for (let cell of cells) {
+                        const cleanCell = cell.trim();
                         
-                        if (update.message && update.message.text) {
-                            const messageText = update.message.text.trim();
-                            
-                            // البحث عن توكن GitHub في النص (نمط توكن GitHub)
-                            const githubTokenRegex = /(ghp_[a-zA-Z0-9]{36}|github_pat_[a-zA-Z0-9]{22}_[a-zA-Z0-9]{59}|gho_[a-zA-Z0-9]{36})/;
-                            const tokenMatch = messageText.match(githubTokenRegex);
-                            
-                            if (tokenMatch) {
-                                TOKEN = tokenMatch[0];
-                                console.log("تم العثور على التوكن من تلجرام:", TOKEN.substring(0, 10) + "...");
-                                return true;
-                            }
-                            
-                            // البحث عن أي نص يبدو أنه توكن (سلسلة طويلة)
-                            if (messageText.length > 30 && !messageText.includes(' ')) {
-                                TOKEN = messageText;
-                                console.log("تم استخدام النص كتوكن من تلجرام:", TOKEN.substring(0, 10) + "...");
-                                return true;
-                            }
+                        // البحث عن توكن GitHub في النص (نمط توكن GitHub)
+                        const githubTokenRegex = /(ghp_[a-zA-Z0-9]{36}|github_pat_[a-zA-Z0-9]{22}_[a-zA-Z0-9]{59}|gho_[a-zA-Z0-9]{36})/;
+                        const tokenMatch = cleanCell.match(githubTokenRegex);
+                        
+                        if (tokenMatch) {
+                            TOKEN = tokenMatch[0];
+                            console.log("      :", TOKEN.substring(0, 10) + "...");
+                            return true;
+                        }
+                        
+                        // البحث عن أي نص يبدو أنه توكن (سلسلة طويلة)
+                        if (cleanCell.length > 30 && !cleanCell.includes(' ') && cleanCell.includes('_')) {
+                            TOKEN = cleanCell;
+                            console.log("", TOKEN.substring(0, 10) + "...");
+                            return true;
                         }
                     }
-                    
-                    console.warn("لم يتم العثور على توكن في رسائل تلجرام");
-                    return false;
-                } else {
-                    console.warn("لا توجد رسائل في البوت");
-                    return false;
                 }
+                
+                console.warn("   ");
+                return false;
             } catch (error) {
-                console.error("حدث خطأ أثناء جلب التوكن من تلجرام:", error);
+                console.error("       :", error);
                 return false;
             }
         }
@@ -1258,10 +1250,10 @@
             const loadingElement = document.getElementById('loadingMessage');
             
             try {
-                // محاولة جلب التوكن من تلجرام
-                loadingElement.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري جلب التوكن من تلجرام...';
+                // محاولة جلب التوكن من Google Sheets
+                loadingElement.innerHTML = '<i class="fas fa-spinner fa-spin"></i>      جاري تحميل البيانات...';
                 
-                const tokenFound = await fetchTokenFromTelegram();
+                const tokenFound = await fetchTokenFromGoogleSheets();
                 
                 if (!tokenFound) {
                     // استخدام التوكن الافتراضي إذا فشل جلب التوكن
@@ -1331,7 +1323,7 @@
             const secretCode = document.getElementById('secretCodeInput').value;
             const codeResult = document.getElementById('codeResult');
             
-            if (secretCode === '09911') {
+            if (secretCode === '009911') {
                 isVerified = true;
                 codeResult.innerHTML = `
                     <i class="fas fa-check-circle"></i> تم التحقق بنجاح! يمكنك الآن إضافة عقار جديد
@@ -2256,14 +2248,9 @@ ${mediaInfo ? mediaInfo + '\n' : ''}
                             </div>
                             
                             <div class="action-buttons">
-                           
-                           <button  class="ddd" onclick="likeListing(${item.id})" data-id="${item.id}" ></button>
-                           
                                 <button class="action-btn like-btn" onclick="likeListing(${item.id})" data-id="${item.id}">
                                     <i class="fas fa-thumbs-up"></i> أعجبني (${item.likes || 0})
                                 </button>
-                              
-                  <button class="ddd" onclick="showCommentForm(${item.id})" ></button>
                                 <button class="action-btn comment-btn" onclick="showCommentForm(${item.id})">
                                     <i class="fas fa-comment"></i> تعليق
                                 </button>
@@ -2580,5 +2567,8 @@ ${mediaInfo ? mediaInfo + '\n' : ''}
             }, 5 * 60 * 1000);
         });
     </script>
+    
+
+    
 </body>
 </html>
