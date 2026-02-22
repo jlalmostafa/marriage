@@ -307,6 +307,8 @@
             color: #1c1e21;
             line-height: 1.4;
             flex: 1;
+            /* الحفاظ على المسافات والأسطر في الوصف */
+            white-space: pre-wrap;
         }
         
         .price-tag {
@@ -1003,7 +1005,7 @@
         <!-- رسالة نتيجة التحقق -->
         <div class="result-message" id="codeResult"></div>
         
-        <!-- نموذج إضافة العقار -->
+        <!-- نموذج إضافة العقار (تم إضافة حقلي المساحة والطوابق) -->
         <div class="add-form-container" id="addFormContainer">
             <div class="form-header">
                 <h3 class="form-title">إضافة عقار جديد</h3>
@@ -1061,6 +1063,18 @@
                         <small style="color: #666; font-size: 12px; margin-top: 5px; display: block;">الحد الأقصى لحجم الفيديو: 20MB</small>
                     </div>
                     
+                    <!-- ✅ حقل المساحة (جديد) -->
+                    <div class="form-group">
+                        <label class="form-label" for="area1">المساحة (م²)</label>
+                        <input type="number" class="form-input" id="area1" required placeholder="مثال: 120">
+                    </div>
+                    
+                    <!-- ✅ حقل عدد الطوابق (جديد) -->
+                    <div class="form-group">
+                        <label class="form-label" for="floors1">عدد الطوابق</label>
+                        <input type="number" class="form-input" id="floors1" required placeholder="مثال: 2" min="1" max="20">
+                    </div>
+                    
                     <div class="form-group">
                         <label class="form-label" for="price1">السعر ($)</label>
                         <input type="number" class="form-input" id="price1" required placeholder="السعر بالدولار">
@@ -1075,11 +1089,11 @@
                         <label class="form-label" for="region1">المنطقة</label>
                         <select class="form-select" id="region1" required>
                             <option value="">اختر المنطقة</option>
-                            <option value="a">إدلب</option>
-                            <option value="b">سلقين</option>
-                            <option value="c">جسر الشغور</option>
-                            <option value="d">أريحا</option>
-                            <option value="e">سرمدا</option>
+                            <option value="idlib">إدلب</option>
+                            <option value="salqin">سلقين</option>
+                            <option value="aljisr">جسر الشغور</option>
+                            <option value="ariha">أريحا</option>
+                            <option value="sarmada">سرمدا</option>
                         </select>
                     </div>
                     
@@ -1087,11 +1101,11 @@
                         <label class="form-label">الحالة</label>
                         <div class="radio-group">
                             <label class="radio-option">
-                                <input type="radio" class="radio-input" name="ready1" value="T" required>
+                                <input type="radio" class="radio-input" name="ready1" value="true" required>
                                 <span>جاهز</span>
                             </label>
                             <label class="radio-option">
-                                <input type="radio" class="radio-input" name="ready1" value="F" required>
+                                <input type="radio" class="radio-input" name="ready1" value="false" required>
                                 <span>غير جاهز</span>
                             </label>
                         </div>
@@ -1111,7 +1125,7 @@
             <div id="formResult"></div>
         </div>
         
-        <!-- الفلاتر -->
+        <!-- الفلاتر (تم إضافة فلتر المساحة والطوابق) -->
         <div class="filters-container">
             <div class="filter-group">
                 <span class="filter-label">السعر:</span>
@@ -1125,23 +1139,46 @@
             </div>
             
             <div class="filter-group">
+                <span class="filter-label">المساحة:</span>
+                <select class="filter-select" id="areaFilter">
+                    <option value="all">الكل</option>
+                    <option value="100-150">100 - 150 م²</option>
+                    <option value="150+">150 م² فما فوق</option>
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <span class="filter-label">الطوابق:</span>
+                <select class="filter-select" id="floorsFilter">
+                    <option value="all">الكل</option>
+                    <option value="1">1 طابق</option>
+                    <option value="2">2 طوابق</option>
+                    <option value="3">3 طوابق</option>
+                    <option value="4">4 طوابق</option>
+                    <option value="5">5 طوابق</option>
+                    <option value="6">6 طوابق</option>
+                    <option value="7">7 طوابق</option>
+                </select>
+            </div>
+            
+            <div class="filter-group">
                 <span class="filter-label">الحالة:</span>
                 <select class="filter-select" id="readyFilter">
                     <option value="all">الكل</option>
-                    <option value="T">جاهز</option>
-                    <option value="F">تحت الإنشاء</option>
+                    <option value="true">جاهز</option>
+                    <option value="false">تحت الإنشاء</option>
                 </select>
             </div>
             
             <div class="filter-group">
                 <span class="filter-label">المنطقة:</span>
-                <select class="filter-select" id="areaFilter">
+                <select class="filter-select" id="regionFilter">
                     <option value="all">الكل</option>
-                    <option value="a">إدلب</option>
-                    <option value="b">سلقين</option>
-                    <option value="c">جسر الشغور</option>
-                    <option value="d">أريحا</option>
-                    <option value="e">سرمدا</option>
+                    <option value="idlib">إدلب</option>
+                    <option value="salqin">سلقين</option>
+                    <option value="aljisr">جسر الشغور</option>
+                    <option value="ariha">أريحا</option>
+                    <option value="sarmada">سرمدا</option>
                 </select>
             </div>
         </div>
@@ -1189,58 +1226,59 @@
         let TOKEN = "";
         const DATA_FILE_PATH = 'properties_data.json';
         const MEDIA_FOLDER = 'media/';
-        const WHATSAPP_NUMBER = '+963969 315 579';
+        const WHATSAPP_NUMBER = '+963969315579'; // تم تعديل الرقم
+        
+        // متغيرات الوسائط
+        let uploadedImage = null;
+        let uploadedVideo = null;
+        let imageFile = null;
+        let videoFile = null;
+        
+        // متغيرات لتحسين الأداء
+        let videoElements = [];
+        let imageObservers = [];
+        let scrollHandler = null;
         
         // ========== دالة جلب التوكن من Google Sheets ==========
         async function fetchTokenFromGoogleSheets() {
             try {
-                // Google Sheet ID من الرابط المقدم
                 const GOOGLE_SHEET_ID = '16ARji9CLluF8e3m64gGOLYNB9cCoHH5ZqM8iWhk5XqU';
                 const url = `https://docs.google.com/spreadsheets/d/${GOOGLE_SHEET_ID}/export?format=csv`;
                 
-                // جلب البيانات من Google Sheets
                 const response = await fetch(url);
                 
                 if (!response.ok) {
-                    throw new Error(`      : ${response.status}`);
+                    throw new Error(`خطأ في جلب التوكن: ${response.status}`);
                 }
                 
                 const csvData = await response.text();
-                
-                // تحليل بيانات CSV
                 const rows = csvData.split('\n');
                 
-                // البحث عن التوكن في البيانات
                 for (let row of rows) {
                     const cells = row.split(',');
-                    
-                    // البحث في كل خلية في الصف
                     for (let cell of cells) {
                         const cleanCell = cell.trim();
-                        
-                        // البحث عن توكن GitHub في النص (نمط توكن GitHub)
                         const githubTokenRegex = /(ghp_[a-zA-Z0-9]{36}|github_pat_[a-zA-Z0-9]{22}_[a-zA-Z0-9]{59}|gho_[a-zA-Z0-9]{36})/;
                         const tokenMatch = cleanCell.match(githubTokenRegex);
                         
                         if (tokenMatch) {
                             TOKEN = tokenMatch[0];
-                            console.log("      :", TOKEN.substring(0, 10) + "...");
+                            console.log("تم العثور على التوكن:", TOKEN.substring(0, 10) + "...");
                             return true;
                         }
                         
-                        // البحث عن أي نص يبدو أنه توكن (سلسلة طويلة)
                         if (cleanCell.length > 30 && !cleanCell.includes(' ') && cleanCell.includes('_')) {
                             TOKEN = cleanCell;
-                            console.log("", TOKEN.substring(0, 10) + "...");
+                            console.log("تم العثور على نص يشبه التوكن:", TOKEN.substring(0, 10) + "...");
                             return true;
                         }
                     }
                 }
                 
-                console.warn("   ");
+                console.warn("لم يتم العثور على توكن");
                 return false;
             } catch (error) {
-                console.error("       :", error);
+                console.error("خطأ في جلب التوكن:", error);
                 return false;
             }
         }
@@ -1250,8 +1288,7 @@
             const loadingElement = document.getElementById('loadingMessage');
             
             try {
-                // محاولة جلب التوكن من Google Sheets
-                loadingElement.innerHTML = '<i class="fas fa-spinner fa-spin"></i>      جاري تحميل البيانات...';
+                loadingElement.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري تحميل البيانات...';
                 
                 const tokenFound = await fetchTokenFromGoogleSheets();
                 
@@ -1261,7 +1298,6 @@
                     console.log("استخدام التوكن الافتراضي");
                 }
                 
-                // متابعة تحميل البيانات بعد الحصول على التوكن
                 await fetchGitHubData();
                 
             } catch (error) {
@@ -1276,23 +1312,10 @@
                         </button>
                     </div>
                 `;
-                
-                // استخدام التوكن الافتراضي في حالة الخطأ
                 TOKEN = "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";
                 await fetchGitHubData();
             }
         }
-        
-        // متغيرات الوسائط
-        let uploadedImage = null;
-        let uploadedVideo = null;
-        let imageFile = null;
-        let videoFile = null;
-        
-        // متغيرات لتحسين الأداء
-        let videoElements = [];
-        let imageObservers = [];
-        let scrollHandler = null;
         
         // ========== دالة تنسيق التاريخ ==========
         function formatDate(dateString) {
@@ -1303,14 +1326,7 @@
                 if (isNaN(date.getTime())) {
                     return dateString;
                 }
-                
-                // تنسيق التاريخ باللغة العربية
-                const options = { 
-                    year: 'numeric', 
-                    month: 'long', 
-                    day: 'numeric' 
-                };
-                
+                const options = { year: 'numeric', month: 'long', day: 'numeric' };
                 return date.toLocaleDateString('ar-EG', options);
             } catch (error) {
                 console.error('Error formatting date:', error);
@@ -1331,19 +1347,12 @@
                 codeResult.className = 'result-message success-message';
                 codeResult.style.display = 'block';
                 
-                // إخفاء قسم التحقق
                 document.getElementById('verifySection').classList.remove('active');
-                
-                // إظهار نموذج الإضافة
                 document.getElementById('addFormContainer').classList.add('active');
-                
-                // إظهار أزرار الحذف في جميع البطاقات
                 showDeleteButtons();
                 
-                // مسح حقل الإدخال
                 document.getElementById('secretCodeInput').value = '';
                 
-                // إخفاء الرسالة بعد 5 ثوانٍ
                 setTimeout(() => {
                     codeResult.style.display = 'none';
                 }, 5000);
@@ -1356,13 +1365,11 @@
                 codeResult.className = 'result-message error-message';
                 codeResult.style.display = 'block';
                 
-                // تأثير اهتزاز
                 document.getElementById('secretCodeInput').style.animation = 'none';
                 setTimeout(() => {
                     document.getElementById('secretCodeInput').style.animation = 'shake 0.5s';
                 }, 10);
                 
-                // إخفاء الرسالة بعد 3 ثوانٍ
                 setTimeout(() => {
                     codeResult.style.display = 'none';
                 }, 3000);
@@ -1399,7 +1406,6 @@
                 return;
             }
             
-            // حفظ النص الأصلي للزر
             const deleteBtn = document.querySelector(`.delete-btn[data-id="${listingId}"]`);
             let originalText = '';
             if (deleteBtn) {
@@ -1409,30 +1415,20 @@
             }
             
             try {
-                // البحث عن العقار باستخدام الـ id
                 const listingIndex = allListings.findIndex(item => item.id === listingId);
                 if (listingIndex === -1) return;
                 
-                // حذف العقار من المصفوفة
                 allListings.splice(listingIndex, 1);
-                
-                // حفظ التغييرات على GitHub
                 await saveToGitHub(allListings);
                 
-                // تحديث العداد
                 document.getElementById('propertyCount').textContent = `${allListings.length}`;
-                
-                // إعادة تطبيق الفلاتر لتحديث العرض
                 applyFilters();
-                
-                // إشعار نجاح
                 showNotification('تم حذف العقار بنجاح', 'success');
                 
             } catch (error) {
                 console.error("Error:", error);
                 showNotification('حدث خطأ أثناء حذف العقار', 'error');
             } finally {
-                // إعادة النص الأصلي للزر
                 if (deleteBtn) {
                     deleteBtn.innerHTML = originalText;
                     deleteBtn.disabled = false;
@@ -1445,7 +1441,6 @@
             let originalText = '';
             const likeButton = document.querySelector(`.like-btn[data-id="${listingId}"]`);
             
-            // حفظ النص الأصلي للزر
             if (likeButton) {
                 originalText = likeButton.innerHTML;
                 likeButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
@@ -1453,23 +1448,18 @@
             }
             
             try {
-                // البحث عن العقار باستخدام الـ id
                 const listingIndex = allListings.findIndex(item => item.id === listingId);
                 if (listingIndex === -1) return;
                 
-                // تحديث البيانات محلياً
                 if (!allListings[listingIndex].likes) {
                     allListings[listingIndex].likes = 0;
                 }
                 allListings[listingIndex].likes++;
                 
-                // حفظ على GitHub (في الخلفية دون انتظار)
                 saveToGitHub(allListings).then(() => {
-                    // تحديث الواجهة بعد الحفظ
                     updateLikeButton(listingId, allListings[listingIndex].likes);
                 }).catch(error => {
                     console.error("Error saving like:", error);
-                    // التراجع عن الإعجاب في حالة الخطأ
                     allListings[listingIndex].likes--;
                     updateLikeButton(listingId, allListings[listingIndex].likes);
                     showNotification('حدث خطأ أثناء تسجيل الإعجاب', 'error');
@@ -1478,7 +1468,6 @@
             } catch (error) {
                 console.error("Error:", error);
                 showNotification('حدث خطأ أثناء تسجيل الإعجاب', 'error');
-                // إعادة النص الأصلي في حالة الخطأ
                 if (likeButton) {
                     likeButton.innerHTML = originalText;
                     likeButton.disabled = false;
@@ -1492,8 +1481,6 @@
             if (likeButton) {
                 likeButton.innerHTML = `<i class="fas fa-thumbs-up"></i> أعجبني (${likesCount})`;
                 likeButton.disabled = false;
-                
-                // تأثير بسيط
                 likeButton.classList.add('liked');
                 setTimeout(() => {
                     likeButton.classList.remove('liked');
@@ -1511,13 +1498,11 @@
         
         // ========== إشعارات ==========
         function showNotification(message, type = 'info') {
-            // إزالة الإشعار السابق إذا كان موجودًا
             const oldNotification = document.getElementById('customNotification');
             if (oldNotification) {
                 oldNotification.remove();
             }
             
-            // إنشاء عنصر الإشعار
             const notification = document.createElement('div');
             notification.id = 'customNotification';
             notification.style.cssText = `
@@ -1537,7 +1522,6 @@
                 animation: slideDown 0.3s ease;
             `;
             
-            // تخصيص اللون حسب النوع
             if (type === 'success') {
                 notification.style.backgroundColor = '#e7f6ea';
                 notification.style.color = '#0a7c2f';
@@ -1555,10 +1539,8 @@
                 notification.innerHTML = `<i class="fas fa-info-circle"></i> ${message}`;
             }
             
-            // إضافة الإشعار إلى الصفحة
             document.body.appendChild(notification);
             
-            // إزالة الإشعار بعد 3 ثوانٍ
             setTimeout(() => {
                 if (notification.parentNode) {
                     notification.style.animation = 'slideUp 0.3s ease';
@@ -1592,41 +1574,19 @@
         `;
         document.head.appendChild(animationStyles);
         
-        // ========== بقية الدوال ==========
-        
-        // دالة لتشفير النص العربي
-        function encodeArabicText(text) {
-            try {
-                return unescape(encodeURIComponent(text));
-            } catch (e) {
-                console.error('Error encoding text:', e);
-                return text;
-            }
-        }
-        
-        // دالة لفك تشفير النص العربي
-        function decodeArabicText(text) {
-            try {
-                return decodeURIComponent(escape(text));
-            } catch (e) {
-                console.error('Error decoding text:', e);
-                return text;
-            }
-        }
-        
-        // تحويل رمز المنطقة إلى اسم
+        // ========== تحويل رمز المنطقة إلى اسم ==========
         function getAreaName(areaCode) {
             const areas = {
-                'a': 'إدلب',
-                'b': 'سلقين',
-                'c': 'جسر الشغور',
-                'd': 'أريحا',
-                'e': 'سرمدا'
+                'idlib': 'إدلب',
+                'salqin': 'سلقين',
+                'aljisr': 'جسر الشغور',
+                'ariha': 'أريحا',
+                'sarmada': 'سرمدا'
             };
             return areas[areaCode] || areaCode;
         }
         
-        // تحويل روابط اليوتيوب
+        // ========== تحويل روابط اليوتيوب ==========
         function parseVideoUrl(videoUrl) {
             if (!videoUrl) return "";
             
@@ -1656,7 +1616,7 @@
             }
         }
         
-        // استخراج صورة مصغرة من رابط يوتيوب
+        // ========== استخراج صورة مصغرة من رابط يوتيوب ==========
         function getYoutubeThumbnail(videoUrl) {
             try {
                 let videoId = '';
@@ -1681,19 +1641,17 @@
             }
         }
         
-        // دالات رفع الملفات
+        // ========== دالات رفع الملفات ==========
         function changeMediaInput() {
             const mediaType = document.getElementById('mediaType').value;
             const youtubeGroup = document.getElementById('youtubeInputGroup');
             const imageGroup = document.getElementById('imageInputGroup');
             const videoGroup = document.getElementById('videoInputGroup');
             
-            // إخفاء جميع المجموعات أولاً
             youtubeGroup.style.display = 'none';
             imageGroup.style.display = 'none';
             videoGroup.style.display = 'none';
             
-            // إظهار المجموعة المختارة
             if (mediaType === 'youtube') {
                 youtubeGroup.style.display = 'block';
             } else if (mediaType === 'image') {
@@ -1702,7 +1660,6 @@
                 videoGroup.style.display = 'block';
             }
             
-            // تنظيف المعاينات السابقة
             removeImage();
             removeVideo();
             document.getElementById('youtubeUrl').value = '';
@@ -1711,7 +1668,6 @@
         function previewImage(event) {
             const file = event.target.files[0];
             if (file) {
-                // التحقق من حجم الملف (5MB كحد أقصى)
                 if (file.size > 5 * 1024 * 1024) {
                     alert('حجم الصورة كبير جداً. الحد الأقصى هو 5MB');
                     event.target.value = '';
@@ -1734,7 +1690,6 @@
         function previewVideo(event) {
             const file = event.target.files[0];
             if (file) {
-                // التحقق من حجم الملف (20MB كحد أقصى)
                 if (file.size > 20 * 1024 * 1024) {
                     alert('حجم الفيديو كبير جداً. الحد الأقصى هو 20MB');
                     event.target.value = '';
@@ -1783,7 +1738,7 @@
             videoFile = null;
         }
         
-        // رفع ملف إلى GitHub
+        // ========== رفع ملف إلى GitHub ==========
         async function uploadToGitHub(file, fileName) {
             try {
                 const reader = new FileReader();
@@ -1791,7 +1746,6 @@
                 return new Promise((resolve, reject) => {
                     reader.onload = async function(e) {
                         try {
-                            // تحويل الملف إلى base64
                             const content = e.target.result.split(',')[1];
                             
                             const response = await fetch(
@@ -1818,7 +1772,6 @@
                             }
                             
                             const data = await response.json();
-                            // إرجاع رابط الملف
                             const downloadUrl = data.content.download_url;
                             resolve(downloadUrl);
                         } catch (error) {
@@ -1834,7 +1787,7 @@
             }
         }
         
-        // جلب البيانات من GitHub
+        // ========== جلب البيانات من GitHub ==========
         async function fetchGitHubData() {
             try {
                 showNotification('جاري تحميل البيانات...', 'info');
@@ -1850,10 +1803,8 @@
                 );
                 
                 if (!response.ok) {
-                    // إذا كان الملف غير موجود، نبدأ بمصفوفة فارغة
                     if (response.status === 404) {
                         allListings = [];
-                        // إنشاء الملف إذا لم يكن موجوداً
                         await saveToGitHub(allListings);
                         showNotification('تم إنشاء ملف البيانات الجديد', 'success');
                     } else {
@@ -1863,10 +1814,7 @@
                     const data = await response.json();
                     const base64Content = data.content;
                     
-                    // فك تشفير Base64
                     const binaryString = atob(base64Content);
-                    
-                    // تحويل إلى UTF-8
                     const bytes = new Uint8Array(binaryString.length);
                     for (let i = 0; i < binaryString.length; i++) {
                         bytes[i] = binaryString.charCodeAt(i);
@@ -1876,10 +1824,17 @@
                     const content = decoder.decode(bytes);
                     
                     allListings = JSON.parse(content);
+                    
+                    // ✅ إضافة قيم افتراضية للمساحة والطوابق للعقارات القديمة (إذا لم تكن موجودة)
+                    allListings = allListings.map(p => ({
+                        ...p,
+                        area: p.area || null,
+                        floors: p.floors || null
+                    }));
+                    
                     showNotification(`تم تحميل ${allListings.length} عقار`, 'success');
                 }
                 
-                // تحديث العداد
                 document.getElementById('propertyCount').textContent = `${allListings.length}`;
                 document.getElementById('loadingMessage').style.display = 'none';
                 
@@ -1901,10 +1856,9 @@
             }
         }
         
-        // حفظ البيانات في GitHub
+        // ========== حفظ البيانات في GitHub ==========
         async function saveToGitHub(data) {
             try {
-                // التحقق من وجود الملف أولاً
                 const getResponse = await fetch(
                     `https://api.github.com/repos/${USERNAME}/${REPO_NAME}/contents/${DATA_FILE_PATH}`,
                     {
@@ -1921,10 +1875,8 @@
                     sha = fileData.sha;
                 }
                 
-                // تحويل البيانات إلى JSON مع تشفير UTF-8
                 const content = JSON.stringify(data, null, 2);
                 
-                // تشفير المحتوى إلى Base64 بشكل صحيح
                 const encoder = new TextEncoder();
                 const encodedContent = encoder.encode(content);
                 let binaryString = '';
@@ -1964,13 +1916,11 @@
             }
         }
         
-        // تحسينات الأداء - Lazy loading للصور
+        // ========== تحسينات الأداء - Lazy loading للصور ==========
         function initializeLazyLoading() {
-            // إلغاء أي مراقبين سابقين
             imageObservers.forEach(observer => observer.disconnect());
             imageObservers = [];
             
-            // إنشاء Intersection Observer للصور
             const imageObserver = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
@@ -1985,7 +1935,6 @@
                 threshold: 0.1
             });
             
-            // مراقبة جميع الصور
             document.querySelectorAll('img[data-src]').forEach(img => {
                 imageObserver.observe(img);
             });
@@ -1993,24 +1942,20 @@
             imageObservers.push(imageObserver);
         }
         
-        // إدارة الفيديوهات - إيقاف التشغيل عند التمرير
+        // ========== إدارة الفيديوهات - إيقاف التشغيل عند التمرير ==========
         function initializeVideoManagement() {
-            // إزالة معالج التمرير السابق إذا كان موجوداً
             if (scrollHandler) {
                 window.removeEventListener('scroll', scrollHandler);
             }
             
-            // جمع جميع عناصر الفيديو
             videoElements = document.querySelectorAll('video');
             
-            // معالج التمرير للتحكم في الفيديوهات
             scrollHandler = function() {
                 videoElements.forEach(video => {
                     const rect = video.getBoundingClientRect();
                     const videoHeight = video.offsetHeight;
                     const windowHeight = window.innerHeight;
                     
-                    // إذا كان الفيديو خارج الشاشة بأكثر من نصف ارتفاعه، أوقفه
                     if (rect.bottom < -videoHeight/2 || rect.top > windowHeight + videoHeight/2) {
                         if (!video.paused) {
                             video.pause();
@@ -2019,49 +1964,69 @@
                 });
             };
             
-            // إضافة مستمع التمرير
             window.addEventListener('scroll', scrollHandler, { passive: true });
         }
         
-        // تهيئة جميع تحسينات الأداء
+        // ========== تهيئة جميع تحسينات الأداء ==========
         function initializePerformanceOptimizations() {
-            // إعطاء الوقت للعناصر لتحميل أولاً
             setTimeout(() => {
                 initializeLazyLoading();
                 initializeVideoManagement();
             }, 100);
         }
         
-        // تطبيق الفلاتر
+        // ========== تطبيق الفلاتر (تم تحديثها لتشمل المساحة والطوابق) ==========
         function applyFilters() {
             const priceFilter = document.getElementById("priceFilter").value;
-            const readyFilter = document.getElementById("readyFilter").value;
             const areaFilter = document.getElementById("areaFilter").value;
+            const floorsFilter = document.getElementById("floorsFilter").value;
+            const readyFilter = document.getElementById("readyFilter").value;
+            const regionFilter = document.getElementById("regionFilter").value;
             
             const filteredListings = allListings.filter(item => {
+                // فلتر السعر
                 let priceMatch = false;
                 if (priceFilter === "all") priceMatch = true;
                 else if (priceFilter === "under-20000" && item.price < 20000) priceMatch = true;
                 else if (priceFilter === "20000-30000" && item.price >= 20000 && item.price <= 30000) priceMatch = true;
-                else if (priceFilter === "30000-40000" && item.price >= 30000 && item.price <= 40000) priceMatch = true;
+                else if (priceFilter === "30000-40000" && item.price > 30000 && item.price <= 40000) priceMatch = true;
                 else if (priceFilter === "over-40000" && item.price > 40000) priceMatch = true;
                 
-                const readyMatch = readyFilter === "all" || item.ready === readyFilter;
-                const areaMatch = areaFilter === "all" || item.region === areaFilter;
+                // فلتر المساحة
+                let areaMatch = true;
+                if (areaFilter !== 'all') {
+                    if (areaFilter === '100-150') {
+                        areaMatch = item.area && item.area >= 100 && item.area <= 150;
+                    } else if (areaFilter === '150+') {
+                        areaMatch = item.area && item.area > 150;
+                    }
+                }
                 
-                return priceMatch && readyMatch && areaMatch;
+                // فلتر عدد الطوابق
+                let floorsMatch = true;
+                if (floorsFilter !== 'all') {
+                    const floorValue = parseInt(floorsFilter);
+                    floorsMatch = item.floors && item.floors === floorValue;
+                }
+                
+                // فلتر الحالة
+                const readyMatch = readyFilter === "all" || item.ready === (readyFilter === "true");
+                
+                // فلتر المنطقة
+                const regionMatch = regionFilter === "all" || item.region === regionFilter;
+                
+                return priceMatch && areaMatch && floorsMatch && readyMatch && regionMatch;
             });
             
             displayListings(filteredListings);
         }
         
-        // إنشاء رابط واتساب مع الوصف
-        function createWhatsAppLink(description, price, area, status, mediaUrl, mediaType) {
+        // ========== إنشاء رابط واتساب مع الوصف (تم إضافة المساحة والطوابق) ==========
+        function createWhatsAppLink(description, price, area, floors, region, ready, mediaUrl, mediaType) {
             const phoneNumber = WHATSAPP_NUMBER.replace(/\D/g, '');
             
-            // تحضير الرسالة
-            const statusText = status === "T" ? "جاهز" : "تحت الإنشاء";
-            const areaName = getAreaName(area);
+            const statusText = ready === true ? "جاهز" : "تحت الإنشاء";
+            const areaName = getAreaName(region);
             
             let mediaInfo = '';
             if (mediaUrl) {
@@ -2074,24 +2039,26 @@
                 }
             }
             
+            const areaText = area ? `- المساحة: ${area} م²` : '';
+            const floorsText = floors ? `- عدد الطوابق: ${floors}` : '';
+            
             const message = `مرحباً، أنا مهتم بالعقار التالي:
 
 ${description}
 
 - السعر: ${price.toLocaleString()} $
+${areaText}
+${floorsText}
 - المنطقة: ${areaName}
 - الحالة: ${statusText}
 ${mediaInfo ? mediaInfo + '\n' : ''}
 أود الاستفسار عن المزيد من التفاصيل.`;
 
-            // ترميز الرسالة
             const encodedMessage = encodeURIComponent(message);
-            
-            // إنشاء رابط الواتساب
             return `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
         }
         
-        // تحميل فيديو يوتيوب عند الطلب فقط
+        // ========== تحميل فيديو يوتيوب عند الطلب فقط ==========
         function loadYoutubeVideo(videoId, placeholderId) {
             const placeholder = document.getElementById(placeholderId);
             if (!placeholder) return;
@@ -2106,7 +2073,7 @@ ${mediaInfo ? mediaInfo + '\n' : ''}
             `;
         }
         
-        // تحميل فيديو محلي عند الطلب فقط
+        // ========== تحميل فيديو محلي عند الطلب فقط ==========
         function loadLocalVideo(videoUrl, placeholderId) {
             const placeholder = document.getElementById(placeholderId);
             if (!placeholder) return;
@@ -2118,13 +2085,12 @@ ${mediaInfo ? mediaInfo + '\n' : ''}
                 </video>
             `;
             
-            // إضافة الفيديو الجديد إلى القائمة للمراقبة
             setTimeout(() => {
                 videoElements = document.querySelectorAll('video');
             }, 100);
         }
         
-        // عرض العقارات مع تحسينات الأداء
+        // ========== عرض العقارات مع تحسينات الأداء (تم إضافة المساحة والطوابق في البطاقة) ==========
         function displayListings(data) {
             const listingsContainer = document.getElementById('listingsContainer');
             
@@ -2145,10 +2111,12 @@ ${mediaInfo ? mediaInfo + '\n' : ''}
                 const youtubePlaceholderId = `youtube-placeholder-${item.id}`;
                 const videoPlaceholderId = `video-placeholder-${item.id}`;
                 
-                // إنشاء رابط واتساب لهذا العقار
+                // إنشاء رابط واتساب مع المساحة والطوابق
                 const whatsappLink = createWhatsAppLink(
                     item.description,
                     item.price,
+                    item.area,
+                    item.floors,
                     item.region,
                     item.ready,
                     item.mediaUrl,
@@ -2214,8 +2182,11 @@ ${mediaInfo ? mediaInfo + '\n' : ''}
                     `;
                 }
                 
-                // تنسيق تاريخ النشر
                 const publishDate = item.publishDate ? formatDate(item.publishDate) : 'غير محدد';
+                
+                // عرض المساحة والطوابق إذا كانت موجودة
+                const areaHtml = item.area ? `<div class="detail-item"><i class="fas fa-vector-square detail-icon"></i><span>${item.area} م²</span></div>` : '';
+                const floorsHtml = item.floors ? `<div class="detail-item"><i class="fas fa-layer-group detail-icon"></i><span>${item.floors} طوابق</span></div>` : '';
                 
                 listingsHTML += `
                     <div class="listing-card" id="listing-${item.id}">
@@ -2232,13 +2203,15 @@ ${mediaInfo ? mediaInfo + '\n' : ''}
                                     <i class="fas fa-map-marker-alt detail-icon"></i>
                                     <span>${getAreaName(item.region)}</span>
                                 </div>
+                                ${areaHtml}
+                                ${floorsHtml}
                                 <div class="detail-item">
                                     <i class="far fa-calendar-alt detail-icon"></i>
                                     <span>${publishDate}</span>
                                 </div>
                                 <div class="detail-item">
-                                    <span class="status-badge ${item.ready === "T" ? 'status-ready' : 'status-not-ready'}">
-                                        ${item.ready === "T" ? 'جاهز' : 'تحت الإنشاء'}
+                                    <span class="status-badge ${item.ready ? 'status-ready' : 'status-not-ready'}">
+                                        ${item.ready ? 'جاهز' : 'تحت الإنشاء'}
                                     </span>
                                 </div>
                                 <div class="detail-item">
@@ -2289,16 +2262,14 @@ ${mediaInfo ? mediaInfo + '\n' : ''}
             
             listingsContainer.innerHTML = listingsHTML;
             
-            // إظهار أزرار الحذف إذا كان المستخدم قد تحقق
             if (isVerified) {
                 showDeleteButtons();
             }
             
-            // تهيئة تحسينات الأداء بعد إضافة المحتوى الجديد
             initializePerformanceOptimizations();
         }
         
-        // إظهار/إخفاء التعليقات
+        // ========== إظهار/إخفاء التعليقات ==========
         function toggleComments(listingId) {
             const commentsDiv = document.getElementById(`comments-${listingId}`);
             if (commentsDiv) {
@@ -2306,47 +2277,40 @@ ${mediaInfo ? mediaInfo + '\n' : ''}
             }
         }
         
-        // إظهار نموذج التعليق
+        // ========== إظهار نموذج التعليق ==========
         function showCommentForm(listingId) {
             const commentForm = document.getElementById(`commentForm-${listingId}`);
             if (commentForm) {
                 commentForm.style.display = commentForm.style.display === 'none' ? 'block' : 'none';
             }
             
-            // عرض قسم التعليقات
             const commentsDiv = document.getElementById(`comments-${listingId}`);
             if (commentsDiv) {
                 commentsDiv.classList.add('expanded');
             }
         }
         
-        // إرسال تعليق جديد
+        // ========== إرسال تعليق جديد ==========
         async function submitComment(listingId) {
             const commentText = document.getElementById(`commentText-${listingId}`).value.trim();
             
             if (!commentText) return;
             
             try {
-                // البحث عن العقار باستخدام الـ id
                 const listingIndex = allListings.findIndex(item => item.id === listingId);
                 if (listingIndex === -1) return;
                 
-                // تحديث البيانات محلياً
                 if (!allListings[listingIndex].comments) {
                     allListings[listingIndex].comments = [];
                 }
                 allListings[listingIndex].comments.push(commentText);
                 
-                // حفظ على GitHub
                 await saveToGitHub(allListings);
                 
-                // تحديث الواجهة
                 applyFilters();
                 
-                // مسح الحقل
                 document.getElementById(`commentText-${listingId}`).value = '';
                 
-                // إشعار
                 showNotification('تم إضافة التعليق بنجاح', 'success');
             } catch (error) {
                 console.error("Error:", error);
@@ -2354,14 +2318,13 @@ ${mediaInfo ? mediaInfo + '\n' : ''}
             }
         }
         
-        // معالجة إرسال النموذج - تم التصحيح هنا
+        // ========== معالجة إرسال النموذج (تم إضافة المساحة والطوابق) ==========
         async function handleFormSubmit(e) {
             e.preventDefault();
             
             const submitBtn = document.querySelector('#dataForm .submit-btn');
             let originalText = '';
             
-            // حفظ النص الأصلي للزر
             if (submitBtn) {
                 originalText = submitBtn.innerHTML;
                 submitBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> جاري الإضافة...`;
@@ -2372,7 +2335,6 @@ ${mediaInfo ? mediaInfo + '\n' : ''}
                 const mediaType = document.getElementById('mediaType').value;
                 let mediaUrl = '';
                 
-                // التحقق من الوسائط
                 if (mediaType === 'youtube') {
                     mediaUrl = document.getElementById('youtubeUrl').value.trim();
                     if (!mediaUrl) {
@@ -2406,7 +2368,6 @@ ${mediaInfo ? mediaInfo + '\n' : ''}
                     }
                 }
                 
-                // إذا كان الملف صورة أو فيديو، رفعه إلى GitHub
                 if (mediaType === 'image' && imageFile) {
                     const fileName = `image_${Date.now()}_${imageFile.name}`;
                     mediaUrl = await uploadToGitHub(imageFile, fileName);
@@ -2416,19 +2377,21 @@ ${mediaInfo ? mediaInfo + '\n' : ''}
                 }
                 
                 const formData = {
-                    id: Date.now(), // إنشاء معرف فريد
+                    id: Date.now(),
                     description: document.getElementById('description1').value.trim(),
                     price: parseInt(document.getElementById('price1').value.trim()),
+                    area: parseInt(document.getElementById('area1').value.trim()),      // ✅ المساحة
+                    floors: parseInt(document.getElementById('floors1').value.trim()), // ✅ عدد الطوابق
                     region: document.getElementById('region1').value,
-                    ready: document.querySelector('input[name="ready1"]:checked').value,
+                    ready: document.querySelector('input[name="ready1"]:checked').value === 'true',
                     likes: 0,
                     comments: [],
                     mediaUrl: mediaUrl,
                     mediaType: mediaType,
-                    publishDate: new Date().toISOString().split('T')[0] // تاريخ اليوم
+                    publishDate: new Date().toISOString().split('T')[0]
                 };
                 
-                if (!formData.description || !formData.price || !formData.region || !formData.ready) {
+                if (!formData.description || !formData.price || !formData.area || !formData.floors || !formData.region) {
                     document.getElementById('formResult').innerHTML = `
                         <div class="error-display">
                             <i class="fas fa-exclamation-circle"></i>
@@ -2438,10 +2401,7 @@ ${mediaInfo ? mediaInfo + '\n' : ''}
                     return;
                 }
                 
-                // إضافة العقار الجديد
                 allListings.unshift(formData);
-                
-                // حفظ على GitHub
                 await saveToGitHub(allListings);
                 
                 document.getElementById('formResult').innerHTML = `
@@ -2451,26 +2411,21 @@ ${mediaInfo ? mediaInfo + '\n' : ''}
                     </div>
                 `;
                 
-                // تحديث العداد
                 document.getElementById('propertyCount').textContent = `${allListings.length}`;
                 
-                // إعادة تعيين النموذج
                 document.getElementById('dataForm').reset();
                 removeImage();
                 removeVideo();
                 
-                // إخفاء مجموعات الوسائط
                 document.getElementById('youtubeInputGroup').style.display = 'none';
                 document.getElementById('imageInputGroup').style.display = 'none';
                 document.getElementById('videoInputGroup').style.display = 'none';
                 document.getElementById('mediaType').selectedIndex = 0;
                 
-                // إخفاء النموذج بعد 2 ثانية
                 setTimeout(() => {
                     document.getElementById('addFormContainer').classList.remove('active');
                     document.getElementById('formResult').innerHTML = '';
                     
-                    // تحديث البيانات
                     applyFilters();
                 }, 2000);
                 
@@ -2486,7 +2441,6 @@ ${mediaInfo ? mediaInfo + '\n' : ''}
                 `;
                 showNotification('حدث خطأ أثناء إضافة العقار', 'error');
             } finally {
-                // إعادة النص الأصلي للزر
                 if (submitBtn) {
                     submitBtn.innerHTML = originalText;
                     submitBtn.disabled = false;
@@ -2494,12 +2448,14 @@ ${mediaInfo ? mediaInfo + '\n' : ''}
             }
         }
         
-        // تهيئة الصفحة عند التحميل
+        // ========== تهيئة الصفحة عند التحميل ==========
         document.addEventListener('DOMContentLoaded', function() {
-            // إضافة مستمعات الأحداث للفلاتر
-            document.querySelectorAll('#priceFilter, #readyFilter, #areaFilter').forEach(filter => {
-                filter.addEventListener('change', applyFilters);
-            });
+            // مستمعات الأحداث للفلاتر
+            document.getElementById('priceFilter').addEventListener('change', applyFilters);
+            document.getElementById('areaFilter').addEventListener('change', applyFilters);
+            document.getElementById('floorsFilter').addEventListener('change', applyFilters);
+            document.getElementById('readyFilter').addEventListener('change', applyFilters);
+            document.getElementById('regionFilter').addEventListener('change', applyFilters);
             
             // زر التحقق
             document.getElementById('verifyBtn').addEventListener('click', checkSecretCode);
@@ -2567,8 +2523,5 @@ ${mediaInfo ? mediaInfo + '\n' : ''}
             }, 5 * 60 * 1000);
         });
     </script>
-    
-
-    
 </body>
 </html>
