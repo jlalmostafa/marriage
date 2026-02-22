@@ -370,6 +370,15 @@
             margin: 5px 0;
         }
         
+        /* ✅ كلاس جديد للحفاظ على تنسيق الوصف في البوب أب */
+        .popup-description {
+            white-space: pre-wrap;
+            font-size: 12px;
+            color: #65676b;
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+        
         .popup-actions {
             display: flex;
             gap: 5px;
@@ -711,7 +720,9 @@
             padding: 15px;
         }
         
+        /* ✅ كلاس للحفاظ على تنسيق الوصف في نافذة التفاصيل */
         .property-description {
+            white-space: pre-wrap;
             line-height: 1.5;
             margin-bottom: 15px;
             color: #1c1e21;
@@ -1125,6 +1136,25 @@
             <option value="3">3 غرف</option>
             <option value="4+">4 غرف فما فوق</option>
         </select>
+
+        <!-- فلتر المساحة الجديد -->
+        <select class="filter-select" id="areaFilter">
+            <option value="all">جميع المساحات</option>
+            <option value="100-150">100 - 150 م²</option>
+            <option value="150+">150 م² فما فوق</option>
+        </select>
+
+        <!-- فلتر عدد الطوابق الجديد -->
+        <select class="filter-select" id="floorsFilter">
+            <option value="all">جميع الطوابق</option>
+            <option value="1">1 طابق</option>
+            <option value="2">2 طوابق</option>
+            <option value="3">3 طوابق</option>
+            <option value="4">4 طوابق</option>
+            <option value="5">5 طوابق</option>
+            <option value="6">6 طوابق</option>
+            <option value="7">7 طوابق</option>
+        </select>
         
         <select class="filter-select" id="regionSelect">
             <option value="all">جميع المناطق</option>
@@ -1217,6 +1247,19 @@
                     <label for="propertyPrice">سعر العقار ($):</label>
                     <input type="number" id="propertyPrice" placeholder="مثال: 12000" required>
                 </div>
+
+                <!-- حقل المساحة (جديد) -->
+                <div class="form-group">
+                    <label for="propertyArea">المساحة (م²):</label>
+                    <input type="number" id="propertyArea" placeholder="مثال: 120" required>
+                </div>
+
+                <!-- حقل عدد الطوابق (جديد) -->
+                <div class="form-group">
+                    <label for="propertyFloors">عدد الطوابق:</label>
+                    <input type="number" id="propertyFloors" placeholder="مثال: 2" min="1" max="20" required>
+                </div>
+
                 <div class="form-group">
                     <label for="propertyType">نوع العقار:</label>
                     <select id="propertyType" required>
@@ -1548,6 +1591,10 @@
             
             let message = `🏠 *${property.title}*\n\n`;
             message += `💰 *السعر:* ${property.price}$\n`;
+            // إضافة المساحة إذا كانت موجودة
+            if (property.area) message += `📐 *المساحة:* ${property.area} م²\n`;
+            // إضافة عدد الطوابق إذا كان موجوداً
+            if (property.floors) message += `🏢 *عدد الطوابق:* ${property.floors}\n`;
             message += `📌 *النوع:* ${property.type}\n`;
             message += `🚪 *عدد الغرف:* ${property.rooms}\n`;
             message += `✅ *الحالة:* ${readyStatus}\n`;
@@ -1584,7 +1631,7 @@
                     const tokenFound = await fetchTokenFromGoogleSheets();
                     if (!tokenFound) {
                         // استخدام التوكن الافتراضي إذا فشل جلب التوكن
-        TOKEN = "hp_iYAbE77RTSpGLfZ1ylTNm5Tlkd7UDo4EqZ0l";
+                        TOKEN = "hp_iYAbE77RTSpGLfZ1ylTNm5Tlkd7UDo4EqZ0l";
                         console.log("  ");
                         showNotification('استخدام التوكن الافتراضي', 'info');
                     }
@@ -1625,6 +1672,14 @@
                     const content = decoder.decode(bytes);
                     
                     properties = JSON.parse(content);
+                    
+                    // إضافة قيم افتراضية للمساحة والطوابق للعقارات القديمة (إذا لم تكن موجودة)
+                    properties = properties.map(p => ({
+                        ...p,
+                        area: p.area || null,   // إذا لم تكن المساحة موجودة، نضع null
+                        floors: p.floors || null // إذا لم تكن الطوابق موجودة، نضع null
+                    }));
+                    
                     console.log(`تم تحميل ${properties.length} عقار من GitHub`);
                 }
                 
@@ -1769,7 +1824,9 @@
                     region: "idlib",
                     mediaUrl: "",
                     mediaType: "",
-                    createdDate: new Date().toISOString()
+                    createdDate: new Date().toISOString(),
+                    area: 120,        // إضافة مساحة تجريبية
+                    floors: 2         // إضافة طوابق تجريبية
                 },
                 {
                     id: 2,
@@ -1784,7 +1841,9 @@
                     region: "aljisr",
                     mediaUrl: "",
                     mediaType: "",
-                    createdDate: new Date().toISOString()
+                    createdDate: new Date().toISOString(),
+                    area: 200,        // مساحة
+                    floors: 1         // طوابق
                 }
             ];
             updateMapMarkers();
@@ -1807,6 +1866,14 @@
                         حذف
                     </button>` : '';
                 
+                // إنشاء محتوى إضافي للمساحة والطوابق إذا كانت موجودة
+                const areaHtml = property.area ? `<div>📐 المساحة: ${property.area} م²</div>` : '';
+                const floorsHtml = property.floors ? `<div>🏢 الطوابق: ${property.floors}</div>` : '';
+                
+                // ✅ إضافة الوصف مع الحفاظ على الأسطر (إذا كان موجوداً)
+                const descriptionHtml = property.description ? 
+                    `<div class="popup-description">${property.description.replace(/\n/g, '<br>')}</div>` : '';
+                
                 // إنشاء محتوى النافذة المنبثقة
                 const popupContent = `
                     <div class="property-popup">
@@ -1822,7 +1889,10 @@
                         <div style="font-size: 12px; color: #65676b; margin-bottom: 10px;">
                             ${property.type} • ${property.rooms} غرف
                             ${property.ready ? ' • مكتمل التجهيز' : ''}
+                            ${areaHtml}
+                            ${floorsHtml}
                         </div>
+                        ${descriptionHtml}
                         <div class="popup-actions">
                             <button class="popup-btn details" onclick="showPropertyDetails(${property.id})">
                                 <i class="fas fa-info-circle"></i>
@@ -1875,6 +1945,23 @@
                 } else {
                     filtered = filtered.filter(p => p.rooms == roomFilter);
                 }
+            }
+            
+            // فلترة حسب المساحة
+            const areaFilter = document.getElementById('areaFilter').value;
+            if (areaFilter !== 'all') {
+                if (areaFilter === '100-150') {
+                    filtered = filtered.filter(p => p.area && p.area >= 100 && p.area <= 150);
+                } else if (areaFilter === '150+') {
+                    filtered = filtered.filter(p => p.area && p.area > 150);
+                }
+            }
+            
+            // فلترة حسب عدد الطوابق
+            const floorsFilter = document.getElementById('floorsFilter').value;
+            if (floorsFilter !== 'all') {
+                const floorValue = parseInt(floorsFilter);
+                filtered = filtered.filter(p => p.floors && p.floors === floorValue);
             }
             
             updateMapMarkers(filtered);
@@ -2007,6 +2094,13 @@
                 ariha: 'اريحا'
             };
             
+            // إضافة المساحة والطوابق إلى التفاصيل
+            const areaHtml = property.area ? 
+                `<div class="detail-item"><span class="detail-label">المساحة</span><span class="detail-value">${property.area} م²</span></div>` : '';
+            const floorsHtml = property.floors ? 
+                `<div class="detail-item"><span class="detail-label">عدد الطوابق</span><span class="detail-value">${property.floors}</span></div>` : '';
+            
+            // ✅ عرض الوصف مع الحفاظ على الأسطر (استخدمنا خاصية white-space في CSS)
             document.getElementById('propertyDetailsContent').innerHTML = `
                 <button class="modal-close-btn" onclick="closePropertyDetails()">×</button>
                 ${mediaHtml}
@@ -2018,6 +2112,8 @@
                         <span class="detail-label">السعر</span>
                         <span class="detail-value">${property.price}$</span>
                     </div>
+                    ${areaHtml}
+                    ${floorsHtml}
                     <div class="detail-item">
                         <span class="detail-label">النوع</span>
                         <span class="detail-value">${property.type}</span>
@@ -2261,6 +2357,8 @@
             const propertyData = {
                 title: document.getElementById('propertyTitle').value,
                 price: parseInt(document.getElementById('propertyPrice').value),
+                area: parseInt(document.getElementById('propertyArea').value),    // المساحة
+                floors: parseInt(document.getElementById('propertyFloors').value), // عدد الطوابق
                 type: document.getElementById('propertyType').value,
                 rooms: parseInt(document.getElementById('propertyRooms').value),
                 ready: document.getElementById('propertyReady').value === 'true',
@@ -2274,7 +2372,7 @@
             };
             
             // التحقق من البيانات
-            if (!propertyData.title || !propertyData.price || !propertyData.phone) {
+            if (!propertyData.title || !propertyData.price || !propertyData.area || !propertyData.floors || !propertyData.phone) {
                 showNotification('الرجاء ملء جميع الحقول الإلزامية', 'error');
                 return;
             }
@@ -2501,6 +2599,9 @@
             document.getElementById('regionSelect').addEventListener('change', filterProperties);
             document.getElementById('priceFilter').addEventListener('change', filterProperties);
             document.getElementById('roomFilter').addEventListener('change', filterProperties);
+            // إضافة مستمعين للفلاتر الجديدة
+            document.getElementById('areaFilter').addEventListener('change', filterProperties);
+            document.getElementById('floorsFilter').addEventListener('change', filterProperties);
             
             // أزرار الفلترة
             document.getElementById('filterReadyBtn').addEventListener('click', filterReadyProperties);
