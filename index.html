@@ -679,19 +679,19 @@
             backdrop-filter: blur(5px);
         }
         
-        .property-card {
-            display: flex;
-            flex-direction: column;
-            max-height: 90vh;
-            background: white;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-            width: 90%;
-            margin: auto;
-            animation: cardSlideIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            border: 1px solid rgba(0, 0, 0, 0.1);
-        }
+     .property-card {
+    display: flex;
+    flex-direction: column;
+    max-height: 90vh;
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    width: 90%;
+    margin: auto;
+    animation: cardSlideIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
         
         .property-header {
             padding: 15px;
@@ -729,12 +729,11 @@
             font-size: 13px;
         }
         
-        .property-content {
-            flex: 1;
-            overflow-y: auto;
-            padding: 15px;
-        }
-        
+     .property-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 15px;
+}
         .property-description {
             white-space: pre-wrap;
             line-height: 1.5;
@@ -770,6 +769,7 @@
             max-height: 300px;
             object-fit: cover;
             border-radius: 8px;
+            cursor: pointer;
         }
         
         /* أنماط السلايدر */
@@ -1067,14 +1067,13 @@
             .modal-close-btn { top: 10px; left: 10px; width: 35px; height: 35px; font-size: 20px; }
         }
         
-        .property-actions {
-            flex-shrink: 0;
-            display: flex;
-            gap: 5px;
-            padding: 10px 15px;
-            border-top: 1px solid #dddfe2;
-        }
-        
+     .property-actions {
+    flex-shrink: 0;
+    display: flex;
+    gap: 5px;
+    padding: 10px 15px;
+    border-top: 1px solid #dddfe2;
+}
         /* نافذة تأكيد الحذف */
         .confirm-delete-modal {
             display: none;
@@ -2021,56 +2020,49 @@
             map.on('click', mapClickHandler);
         }
         
-        // دالة معاينة الصور المتعددة
+        // دالة معاينة الصور المتعددة (معدلة للإضافة التراكمية)
         function previewMultipleImages(input) {
-            const preview = document.getElementById('imagesPreview');
-            preview.innerHTML = '';
-            selectedImages = [];
-            
             if (input.files) {
-                const filesArray = Array.from(input.files);
-                // حد أقصى 10 صور
-                if (filesArray.length > 10) {
-                    showNotification('يمكنك اختيار 10 صور كحد أقصى', 'error');
-                    input.value = '';
-                    return;
-                }
+                const newFiles = Array.from(input.files);
                 
-                filesArray.forEach((file, index) => {
-                    if (!file.type.match('image.*')) return;
-                    
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        const previewItem = document.createElement('div');
-                        previewItem.className = 'image-preview-item';
-                        previewItem.innerHTML = `
-                            <img src="${e.target.result}" alt="صورة ${index+1}">
-                            <span class="remove-image" onclick="removeImage(${index})">&times;</span>
-                        `;
-                        preview.appendChild(previewItem);
+                // إضافة الملفات الجديدة إلى selectedImages
+                newFiles.forEach(file => {
+                    // تجنب إضافة نفس الملف مرتين (اختياري: يمكن حذف هذا الشرط إذا أردت السماح بالتكرار)
+                    const exists = selectedImages.some(existingFile => 
+                        existingFile.name === file.name && existingFile.size === file.size
+                    );
+                    if (!exists) {
                         selectedImages.push(file);
-                    };
-                    reader.readAsDataURL(file);
+                    }
                 });
+                
+                // إعادة بناء المعاينة بالكامل من selectedImages
+                renderImagePreviews();
+                
+                // مسح قيمة input لتمكين إعادة اختيار نفس الملف لاحقاً إذا لزم الأمر
+                input.value = '';
             }
         }
         
-        // دالة إزالة صورة من القائمة
+        // دالة إزالة صورة من القائمة (محدثة)
         function removeImage(index) {
             selectedImages.splice(index, 1);
-            // إعادة بناء المعاينة
-            const input = document.getElementById('propertyImages');
-            input.value = ''; // مسح القيمة لإعادة الاختيار
+            renderImagePreviews();
+        }
+        
+        // دالة مساعدة لعرض المعاينة بناءً على selectedImages
+        function renderImagePreviews() {
             const preview = document.getElementById('imagesPreview');
             preview.innerHTML = '';
-            selectedImages.forEach((file, i) => {
+            
+            selectedImages.forEach((file, index) => {
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     const previewItem = document.createElement('div');
                     previewItem.className = 'image-preview-item';
                     previewItem.innerHTML = `
-                        <img src="${e.target.result}" alt="صورة ${i+1}">
-                        <span class="remove-image" onclick="removeImage(${i})">&times;</span>
+                        <img src="${e.target.result}" alt="صورة ${index+1}">
+                        <span class="remove-image" onclick="removeImage(${index})">&times;</span>
                     `;
                     preview.appendChild(previewItem);
                 };
