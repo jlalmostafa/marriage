@@ -304,11 +304,36 @@
             #map { height: calc(100vh - 180px); width: calc(100% - 20px); margin: 10px; }
         }
         
-        /* Popup للعقارات */
+        /* Popup للعقارات - تعديل لجعل المحتوى قابلاً للسحب مع منع تحريك الخريطة */
         .leaflet-popup-content-wrapper {
             border-radius: 10px !important;
             box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15) !important;
             border: 1px solid #dddfe2;
+            pointer-events: auto; /* للسماح بالتفاعل مع المحتوى */
+        }
+        
+        .leaflet-popup-content {
+            max-height: 300px;      /* تحديد أقصى ارتفاع */
+            overflow-y: auto;       /* تفعيل التمرير العمودي */
+            pointer-events: auto;   /* منع تسليم التمرير إلى الخريطة */
+            margin: 10px;           /* الحفاظ على الهوامش الافتراضية */
+            padding-left: 5px;      /* تعويض مساحة شريط التمرير */
+        }
+        
+        /* تخصيص شريط التمرير للبوب أب */
+        .leaflet-popup-content::-webkit-scrollbar {
+            width: 6px;
+        }
+        .leaflet-popup-content::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+        .leaflet-popup-content::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 3px;
+        }
+        .leaflet-popup-content::-webkit-scrollbar-thumb:hover {
+            background: #555;
         }
         
         .property-popup {
@@ -1153,9 +1178,15 @@
     <!-- شريط الخيارات -->
     <div class="top-options-bar">
         <button class="option-btn active" id="showAllBtn"><i class="fas fa-map"></i> الكل</button>
-        <button class="option-btn" id="filterReadyBtn"><i class="fas fa-check-circle"></i> مكتملة</button>
         
-        <select class="filter-select" id="priceFilter" style="display: none;">
+        <!-- فلتر حالة التجهيز الجديد (اختياري) -->
+        <select class="filter-select" id="readyFilter">
+            <option value="all">جميع العقارات(جاهزة/غير جاهزة) </option>
+            <option value="true">مكتملة التجهيز</option>
+            <option value="false">غير مكتملة التجهيز</option>
+        </select>
+        
+        <select class="filter-select" id="priceFilter">
             <option value="all">جميع الأسعار</option>
             <option value="under-20000">تحت 20,000$</option>
             <option value="20000-30000">20,000$ - 30,000$</option>
@@ -1817,13 +1848,17 @@
                 filtered = filtered.filter(p => p.floors && p.floors === floorValue);
             }
             
+            // فلتر حالة التجهيز الجديد
+            const readyFilter = document.getElementById('readyFilter').value;
+            if (readyFilter !== 'all') {
+                const isReady = readyFilter === 'true';
+                filtered = filtered.filter(p => p.ready === isReady);
+            }
+            
             updateMapMarkers(filtered);
         }
         
-        function filterReadyProperties() {
-            const filtered = properties.filter(p => p.ready);
-            updateMapMarkers(filtered);
-        }
+        // تم إزالة دالة filterReadyProperties لأننا نستخدم الفلتر المنسدل
         
         function showAllProperties() {
             updateMapMarkers(properties);
@@ -2235,8 +2270,10 @@
             document.getElementById('roomFilter').addEventListener('change', filterProperties);
             document.getElementById('categoryFilter').addEventListener('change', filterProperties);
             document.getElementById('floorsFilter').addEventListener('change', filterProperties);
+            document.getElementById('readyFilter').addEventListener('change', filterProperties); // مستمع جديد
             
-            document.getElementById('filterReadyBtn').addEventListener('click', filterReadyProperties);
+            // تم إزالة حدث الفلتر القديم (filterReadyBtn) لأنه لم يعد موجوداً
+            
             document.getElementById('showAllBtn').addEventListener('click', showAllProperties);
             
             let isSatellite = false;
