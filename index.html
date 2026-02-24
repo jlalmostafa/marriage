@@ -704,19 +704,19 @@
             backdrop-filter: blur(5px);
         }
         
-     .property-card {
-    display: flex;
-    flex-direction: column;
-    max-height: 90vh;
-    background: white;
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-    width: 90%;
-    margin: auto;
-    animation: cardSlideIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    border: 1px solid rgba(0, 0, 0, 0.1);
-}
+        .property-card {
+            display: flex;
+            flex-direction: column;
+            max-height: 90vh;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            margin: auto;
+            animation: cardSlideIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
         
         .property-header {
             padding: 15px;
@@ -754,11 +754,12 @@
             font-size: 13px;
         }
         
-     .property-content {
-    flex: 1;
-    overflow-y: auto;
-    padding: 15px;
-}
+        .property-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+        }
+        
         .property-description {
             white-space: pre-wrap;
             line-height: 1.5;
@@ -1092,13 +1093,14 @@
             .modal-close-btn { top: 10px; left: 10px; width: 35px; height: 35px; font-size: 20px; }
         }
         
-     .property-actions {
-    flex-shrink: 0;
-    display: flex;
-    gap: 5px;
-    padding: 10px 15px;
-    border-top: 1px solid #dddfe2;
-}
+        .property-actions {
+            flex-shrink: 0;
+            display: flex;
+            gap: 5px;
+            padding: 10px 15px;
+            border-top: 1px solid #dddfe2;
+        }
+        
         /* نافذة تأكيد الحذف */
         .confirm-delete-modal {
             display: none;
@@ -1175,23 +1177,25 @@
         </div>
     </header>
     
-    <!-- شريط الخيارات -->
+    <!-- شريط الخيارات (تم تحديث فلتر السعر) -->
     <div class="top-options-bar">
         <button class="option-btn active" id="showAllBtn"><i class="fas fa-map"></i> الكل</button>
         
-        <!-- فلتر حالة التجهيز الجديد (اختياري) -->
         <select class="filter-select" id="readyFilter">
             <option value="all">جميع العقارات(جاهزة/غير جاهزة) </option>
             <option value="true">مكتملة التجهيز</option>
             <option value="false">غير مكتملة التجهيز</option>
         </select>
         
+        <!-- فلتر السعر المعدل -->
         <select class="filter-select" id="priceFilter">
             <option value="all">جميع الأسعار</option>
             <option value="under-20000">تحت 20,000$</option>
             <option value="20000-30000">20,000$ - 30,000$</option>
             <option value="30000-40000">30,000$ - 40,000$</option>
-            <option value="over-40000">40,000$ فما فوق</option>
+            <option value="40000-80000">40,000$ - 80,000$</option>
+            <option value="80000-100000">80,000$ - 100,000$</option>
+            <option value="over-100000">فوق 100,000$</option>
         </select>
         
         <select class="filter-select" id="roomFilter">
@@ -1202,7 +1206,6 @@
             <option value="4+">4 غرف فما فوق</option>
         </select>
 
-        <!-- فلتر نوع العقار -->
         <select class="filter-select" id="categoryFilter">
             <option value="all">جميع العقارات</option>
             <option value="شقة">🏢 شقة</option>
@@ -1210,7 +1213,6 @@
             <option value="محل تجاري">🏪 محل تجاري</option>
         </select>
 
-        <!-- فلتر عدد الطوابق -->
         <select class="filter-select" id="floorsFilter">
             <option value="all">جميع الطوابق</option>
             <option value="1">1 طابق</option>
@@ -1222,7 +1224,7 @@
             <option value="7">7 طوابق</option>
         </select>
         
-        <select class="filter-select" id="regionSelect">
+        <select class="filter-select" id="regionSelect" style="display: none;">
             <option value="all">جميع المناطق</option>
             <option value="idlib">إدلب</option>
             <option value="aljisr">الجسر</option>
@@ -1268,7 +1270,7 @@
         </div>
     </div>
     
-    <!-- نافذة إضافة عقار جديد (معدلة لعدة صور) -->
+    <!-- نافذة إضافة عقار جديد (كما هي) -->
     <div class="add-property-modal" id="addPropertyModal">
         <div class="add-property-content">
             <button class="modal-close-btn" onclick="closeAddPropertyModal()">×</button>
@@ -1283,7 +1285,6 @@
                     <input type="number" id="propertyPrice" placeholder="مثال: 12000" required>
                 </div>
 
-                <!-- حقل نوع العقار -->
                 <div class="form-group">
                     <label for="propertyCategory">نوع العقار:</label>
                     <select id="propertyCategory" required>
@@ -1293,7 +1294,6 @@
                     </select>
                 </div>
 
-                <!-- حقل عدد الطوابق -->
                 <div class="form-group">
                     <label for="propertyFloors">عدد الطوابق:</label>
                     <input type="number" id="propertyFloors" placeholder="مثال: 2" min="1" max="20" required>
@@ -1446,7 +1446,7 @@
         let currentMediaType = 'youtube';
         let uploadedImage = null;
         let uploadedVideo = null;
-        let selectedImages = []; // لتخزين الصور المختارة
+        let selectedImages = [];
         let activeVideoPlayer = null;
         let isYouTubePlayer = false;
         let currentPropertyId = null;
@@ -1492,8 +1492,8 @@
                         const tokenMatch = cleanCell.match(githubTokenRegex);
                         if (tokenMatch) {
                             TOKEN = tokenMatch[0];
-                            console.log('تم العثور على التوكن:', TOKEN.substring(0, 10) + "...");
-                            showNotification('تم العثور على التوكن', 'success');
+                            console.log(' تم العثور عل عقار  :', TOKEN.substring(0, 10) + "...");
+                            showNotification('تم العثور على عقار  ', 'success');
                             return true;
                         }
                         if (cleanCell.length > 30 && !cleanCell.includes(' ') && cleanCell.includes('_')) {
@@ -1563,7 +1563,7 @@
             return null;
         }
         
-        // دالة لإنشاء رسالة واتساب (تم إضافة نوع العقار)
+        // دالة لإنشاء رسالة واتساب
         function createWhatsAppMessage(property) {
             const regionNames = {
                 idlib: 'إدلب',
@@ -1624,12 +1624,11 @@
                     const decoder = new TextDecoder('utf-8');
                     const content = decoder.decode(bytes);
                     properties = JSON.parse(content);
-                    // إضافة قيم افتراضية للعقارات القديمة
                     properties = properties.map(p => ({
                         ...p,
                         category: p.category || null,
                         floors: p.floors || null,
-                        images: p.images || null // إضافة مصفوفة الصور مع الاحتفاظ بالقديم
+                        images: p.images || null
                     }));
                     console.log(`تم تحميل ${properties.length} عقار من GitHub`);
                 }
@@ -1814,7 +1813,7 @@
             });
         }
         
-        // فلترة العقارات
+        // فلترة العقارات (تم تحديث قسم السعر)
         function filterProperties() {
             let filtered = [...properties];
             
@@ -1826,7 +1825,9 @@
                 if (priceFilter === 'under-20000') filtered = filtered.filter(p => p.price < 20000);
                 else if (priceFilter === '20000-30000') filtered = filtered.filter(p => p.price >= 20000 && p.price <= 30000);
                 else if (priceFilter === '30000-40000') filtered = filtered.filter(p => p.price > 30000 && p.price <= 40000);
-                else if (priceFilter === 'over-40000') filtered = filtered.filter(p => p.price > 40000);
+                else if (priceFilter === '40000-80000') filtered = filtered.filter(p => p.price > 40000 && p.price <= 80000);
+                else if (priceFilter === '80000-100000') filtered = filtered.filter(p => p.price > 80000 && p.price <= 100000);
+                else if (priceFilter === 'over-100000') filtered = filtered.filter(p => p.price > 100000);
             }
             
             const roomFilter = document.getElementById('roomFilter').value;
@@ -1835,20 +1836,17 @@
                 else filtered = filtered.filter(p => p.rooms == roomFilter);
             }
             
-            // فلتر نوع العقار
             const categoryFilter = document.getElementById('categoryFilter').value;
             if (categoryFilter !== 'all') {
                 filtered = filtered.filter(p => p.category === categoryFilter);
             }
             
-            // فلتر عدد الطوابق
             const floorsFilter = document.getElementById('floorsFilter').value;
             if (floorsFilter !== 'all') {
                 const floorValue = parseInt(floorsFilter);
                 filtered = filtered.filter(p => p.floors && p.floors === floorValue);
             }
             
-            // فلتر حالة التجهيز الجديد
             const readyFilter = document.getElementById('readyFilter').value;
             if (readyFilter !== 'all') {
                 const isReady = readyFilter === 'true';
@@ -1857,8 +1855,6 @@
             
             updateMapMarkers(filtered);
         }
-        
-        // تم إزالة دالة filterReadyProperties لأننا نستخدم الفلتر المنسدل
         
         function showAllProperties() {
             updateMapMarkers(properties);
@@ -1877,7 +1873,7 @@
             updateMapMarkers(filtered);
         }
         
-        // عرض تفاصيل العقار (مع دعم الصور المتعددة)
+        // عرض تفاصيل العقار
         function showPropertyDetails(propertyId) {
             currentPropertyId = propertyId;
             const property = properties.find(p => p.id === propertyId);
@@ -1890,9 +1886,7 @@
             let mediaHtml = '';
             let mediaType = property.mediaType || '';
             
-            // التحقق من وجود صور متعددة
             if (property.images && property.images.length > 0) {
-                // استخدام Swiper لعرض الصور المتعددة
                 mediaHtml = `
                     <div class="swiper">
                         <div class="swiper-wrapper">
@@ -1908,7 +1902,6 @@
                     </div>
                 `;
                 isYouTubePlayer = false;
-                // تهيئة Swiper بعد إضافته للـ DOM
                 setTimeout(() => {
                     new Swiper('.swiper', {
                         navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' },
@@ -1918,7 +1911,6 @@
                 }, 100);
             }
             else if (property.mediaUrl && mediaType) {
-                // التعامل مع الوسائط القديمة (فيديو واحد أو يوتيوب)
                 if (mediaType === 'youtube') {
                     const videoId = extractYouTubeVideoId(property.mediaUrl);
                     if (videoId) {
@@ -1983,14 +1975,13 @@
             const lightboxImg = document.getElementById('lightboxImage');
             lightboxImg.src = images[index];
             document.getElementById('lightboxModal').style.display = 'flex';
-            document.body.style.overflow = 'hidden'; // منع التمرير خلف النافذة
+            document.body.style.overflow = 'hidden';
         }
         
         function closeLightbox(event) {
-            // إذا تم النقر على الخلفية أو زر الإغلاق
             if (event && event.target.id !== 'lightboxModal' && event.target.className !== 'lightbox-close') return;
             document.getElementById('lightboxModal').style.display = 'none';
-            document.body.style.overflow = 'auto'; // إعادة التمرير
+            document.body.style.overflow = 'auto';
         }
         
         function changeLightboxImage(direction) {
@@ -2055,14 +2046,11 @@
             map.on('click', mapClickHandler);
         }
         
-        // دالة معاينة الصور المتعددة (معدلة للإضافة التراكمية)
+        // دوال معاينة الصور
         function previewMultipleImages(input) {
             if (input.files) {
                 const newFiles = Array.from(input.files);
-                
-                // إضافة الملفات الجديدة إلى selectedImages
                 newFiles.forEach(file => {
-                    // تجنب إضافة نفس الملف مرتين (اختياري: يمكن حذف هذا الشرط إذا أردت السماح بالتكرار)
                     const exists = selectedImages.some(existingFile => 
                         existingFile.name === file.name && existingFile.size === file.size
                     );
@@ -2070,22 +2058,16 @@
                         selectedImages.push(file);
                     }
                 });
-                
-                // إعادة بناء المعاينة بالكامل من selectedImages
                 renderImagePreviews();
-                
-                // مسح قيمة input لتمكين إعادة اختيار نفس الملف لاحقاً إذا لزم الأمر
                 input.value = '';
             }
         }
         
-        // دالة إزالة صورة من القائمة (محدثة)
         function removeImage(index) {
             selectedImages.splice(index, 1);
             renderImagePreviews();
         }
         
-        // دالة مساعدة لعرض المعاينة بناءً على selectedImages
         function renderImagePreviews() {
             const preview = document.getElementById('imagesPreview');
             preview.innerHTML = '';
@@ -2105,7 +2087,7 @@
             });
         }
         
-        // دالة حفظ العقار الجديد (معدلة)
+        // دالة حفظ العقار الجديد
         async function saveNewProperty() {
             if (!isAdmin) { showNotification('يجب تسجيل الدخول كمسؤول أولاً', 'error'); return; }
             if (!selectedLocation) { showNotification('الرجاء تحديد موقع العقار أولاً', 'error'); return; }
@@ -2135,18 +2117,15 @@
             
             showLoading('جاري حفظ العقار...');
             try {
-                // رفع الصور المتعددة أولاً
                 if (selectedImages.length > 0) {
                     for (let i = 0; i < selectedImages.length; i++) {
                         const fileName = `image_${Date.now()}_${i}_${selectedImages[i].name}`;
                         const url = await uploadFileToGitHub(selectedImages[i], fileName);
                         propertyData.images.push(url);
                     }
-                    // تعيين mediaUrl لأول صورة للتوافق مع العقارات القديمة
                     propertyData.mediaUrl = propertyData.images[0];
                     propertyData.mediaType = 'image';
                 } else {
-                    // رفع الوسائط الأخرى (يوتيوب أو فيديو)
                     if (currentMediaType === 'youtube') {
                         propertyData.mediaUrl = document.getElementById('propertyVideo').value.trim();
                         propertyData.mediaType = 'youtube';
@@ -2270,9 +2249,7 @@
             document.getElementById('roomFilter').addEventListener('change', filterProperties);
             document.getElementById('categoryFilter').addEventListener('change', filterProperties);
             document.getElementById('floorsFilter').addEventListener('change', filterProperties);
-            document.getElementById('readyFilter').addEventListener('change', filterProperties); // مستمع جديد
-            
-            // تم إزالة حدث الفلتر القديم (filterReadyBtn) لأنه لم يعد موجوداً
+            document.getElementById('readyFilter').addEventListener('change', filterProperties);
             
             document.getElementById('showAllBtn').addEventListener('click', showAllProperties);
             
@@ -2318,7 +2295,6 @@
             
             document.getElementById('propertyImages').addEventListener('change', function() { previewMultipleImages(this); });
             document.getElementById('propertyVideoFile').addEventListener('change', function() { 
-                // معاينة الفيديو (كما كانت سابقاً)
                 const file = this.files[0];
                 if (file) {
                     const reader = new FileReader();
@@ -2363,7 +2339,7 @@
                     closeAddPropertyModal();
                     document.getElementById('adminPasswordModal').style.display = 'none';
                     document.getElementById('confirmDeleteModal').style.display = 'none';
-                    closeLightbox(); // إغلاق نافذة عرض الصور أيضاً
+                    closeLightbox();
                 }
             });
         });
