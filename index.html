@@ -99,21 +99,17 @@
         }
         
         /* شريط الخيارات العلوي - أفقي مع تمرير */
-        .top-options-bar {
-            background: white;
-            margin: 10px 20px;
-            border-radius: 10px;
-            padding: 10px 15px;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            overflow-x: auto;
-            white-space: nowrap;
-            -webkit-overflow-scrolling: touch;
-            scrollbar-width: thin;
-            scrollbar-color: #1877f2 #e4e6eb;
-        }
+           .top-options-bar {
+       background: white;
+       margin: 10px 20px;
+       border-radius: 10px;
+       padding: 15px;
+       box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+       display: flex;
+       gap: 10px;
+       flex-wrap: wrap;
+       align-items: center;
+   }
         
         .top-options-bar::-webkit-scrollbar {
             height: 5px;
@@ -1192,6 +1188,70 @@
         }
         
         .popup-btn.delete:hover { background: #c0392b; }
+
+        /* نافذة تواصل معنا */
+        .contact-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1004;
+            justify-content: center;
+            align-items: center;
+            animation: modalFadeIn 0.3s ease-out;
+            backdrop-filter: blur(5px);
+        }
+        .contact-content {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+        .contact-content h3 {
+            color: #1877f2;
+            margin-bottom: 20px;
+        }
+        .contact-whatsapp-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            background: #25D366;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-size: 18px;
+            font-weight: bold;
+            transition: all 0.3s;
+            border: none;
+            width: 100%;
+            cursor: pointer;
+        }
+        .contact-whatsapp-btn:hover {
+            background: #128C7E;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(37, 211, 102, 0.4);
+        }
+        .contact-whatsapp-btn i {
+            font-size: 24px;
+        }
+        .contact-close-btn {
+            margin-top: 15px;
+            background: #f0f2f5;
+            color: #65676b;
+            padding: 10px 20px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
@@ -1275,6 +1335,8 @@
     
     <div class="aaa">
         للتواصل عبر الأرقام التالية: <a href="https://wa.me/+963949340870" target="_blank">00963949340870</a> | © 2023
+    
+    
     </div>
     
     <!-- الشريط السفلي -->
@@ -1282,6 +1344,7 @@
         <a href="https://ldlib-real-estate.netlify.app/" class="nav-item active"><div class="nav-icon"><i class="fas fa-map-marked-alt"></i></div><div class="nav-text">الخريطة</div></a>
         <a href="https://ldlib-real-estate.netlify.app/iidd.html" class="nav-item"><div class="nav-icon"><i class="fas fa-video"></i></div><div class="nav-text">الفيديو</div></a>
         <a href="#" class="nav-item" id="adminAccessBtn"><div class="nav-icon"><i class="fas fa-user"></i></div><div class="nav-text">حسابي</div></a>
+        <a href="#" class="nav-item" id="contactUsBtn"><div class="nav-icon"><i class="fas fa-headset"></i></div><div class="nav-text"> إضافة عقار</div></a>
     </nav>
     
     <!-- مؤشر التحميل -->
@@ -1449,6 +1512,23 @@
         </div>
     </div>
 
+    <!-- نافذة تواصل معنا -->
+    <div class="contact-modal" id="contactModal">
+        <div class="contact-content">
+            <h3>  تواصل معنا لاضافة عقار عبر الأرقام التالية  </h3>
+            <a href="https://wa.me/+963949340870" target="_blank" class="contact-whatsapp-btn">
+                <i class="fab fa-whatsapp"></i> واتساب: 00963949340870
+            </a>
+            <br>
+               <a href="https://wa.me/+963969315579" target="_blank" class="contact-whatsapp-btn">
+       <i class="fab fa-whatsapp"></i> واتساب: 00963969315579
+   </a>
+   
+   
+            <button class="contact-close-btn" onclick="closeContactModal()">إغلاق</button>
+        </div>
+    </div>
+
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script src="https://www.youtube.com/iframe_api"></script>
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
@@ -1547,18 +1627,18 @@
                         }
                         if (cleanCell.length > 30 && !cleanCell.includes(' ') && cleanCell.includes('_')) {
                             TOKEN = cleanCell;
-                            console.log('تم العثور على نص  :', TOKEN.substring(0, 10) + "...");
-                            showNotification('تم العثور على ', 'success');
+                            console.log('تم العثور على نص يشبه التوكن:', TOKEN.substring(0, 10) + "...");
+                            showNotification('تم العثور على التوكن', 'success');
                             return true;
                         }
                     }
                 }
-                console.warn("لم يتم العثور على ");
-                showNotification('لم يتم العثور على ، استخدام الافتراضي', 'info');
+                console.warn("لم يتم العثور على توكن");
+                showNotification('لم يتم العثور على توكن، استخدام الافتراضي', 'info');
                 return false;
             } catch (error) {
-                console.error('خطأ في جلب :', error);
-                showNotification('خطأ في جلب ', 'error');
+                console.error('خطأ في جلب التوكن:', error);
+                showNotification('خطأ في جلب التوكن', 'error');
                 return false;
             } finally {
                 hideLoading();
@@ -2210,7 +2290,8 @@
             }
             document.getElementById('addPropertyModal').style.display = 'none';
             document.getElementById('propertyForm').reset();
-            document.getElementById('propertyPhone').value = '+963949340870';
+            // تحميل الرقم المحفوظ عند الإغلاق
+            loadPhoneFromStorage();
             currentMediaType = 'youtube';
             selectedImages = [];
             uploadedVideo = null;
@@ -2289,10 +2370,40 @@
             }, 3000);
         }
         
+        // دوال حفظ واسترجاع رقم الهاتف من localStorage
+        function savePhoneToStorage() {
+            const phone = document.getElementById('propertyPhone').value;
+            localStorage.setItem('defaultPhone', phone);
+        }
+        
+        function loadPhoneFromStorage() {
+            const savedPhone = localStorage.getItem('defaultPhone');
+            if (savedPhone) {
+                document.getElementById('propertyPhone').value = savedPhone;
+            } else {
+                document.getElementById('propertyPhone').value = '+963949340870'; // القيمة الافتراضية
+            }
+        }
+        
+        // دالة إظهار نافذة تواصل معنا
+        function showContactModal() {
+            document.getElementById('contactModal').style.display = 'flex';
+        }
+        
+        function closeContactModal() {
+            document.getElementById('contactModal').style.display = 'none';
+        }
+        
         // تهيئة الصفحة
         document.addEventListener('DOMContentLoaded', async () => {
             await fetchTokenFromGoogleSheets();
             loadDataFromGitHub();
+            
+            // تحميل الرقم المحفوظ عند تحميل الصفحة
+            loadPhoneFromStorage();
+            
+            // حفظ الرقم عند تغييره
+            document.getElementById('propertyPhone').addEventListener('input', savePhoneToStorage);
             
             document.getElementById('searchBox').addEventListener('input', searchProperties);
             document.getElementById('regionSelect').addEventListener('change', filterProperties);
@@ -2370,6 +2481,12 @@
                 currentPropertyId = null;
             });
             
+            // إضافة مستمع لزر تواصل معنا
+            document.getElementById('contactUsBtn').addEventListener('click', (e) => {
+                e.preventDefault();
+                showContactModal();
+            });
+            
             window.addEventListener('click', (e) => {
                 if (e.target.id === 'adminPasswordModal') {
                     document.getElementById('adminPasswordModal').style.display = 'none';
@@ -2382,6 +2499,7 @@
                     document.getElementById('confirmDeleteModal').style.display = 'none';
                     currentPropertyId = null;
                 }
+                if (e.target.id === 'contactModal') closeContactModal();
             });
             
             document.addEventListener('keydown', function(e) {
@@ -2391,6 +2509,7 @@
                     document.getElementById('adminPasswordModal').style.display = 'none';
                     document.getElementById('confirmDeleteModal').style.display = 'none';
                     closeLightbox();
+                    closeContactModal();
                 }
             });
         });
