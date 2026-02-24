@@ -7,966 +7,232 @@
     
     <!-- الروابط الخارجية -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- إضافة Swiper للصور المتعددة -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
     
     <style>
-        /* إعادة تعيين وتحسين عام */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        body {
-            background-color: #f0f2f5;
-            color: #1c1e21;
-            line-height: 1.34;
-            min-height: 100vh;
-            padding-bottom: 70px;
-        }
-        
-        /* ========== شريط التنقل العلوي ========== */
-        .top-header {
-            position: sticky;
-            top: 0;
-            right: 0;
-            width: 100%;
-            height: 56px;
-            background-color: #ffffff;
-            border-bottom: 1px solid #dddfe2;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 16px;
-            z-index: 1000;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        }
-        
-        .logo-container {
-            display: flex;
-            align-items: center;
-        }
-        
-        .logo {
-            font-size: 28px;
-            color: #1877f2;
-            margin-left: 8px;
-        }
-        
-        .site-title {
-            font-size: 20px;
-            font-weight: 700;
-            color: #1877f2;
-        }
-        
-        .add-property-btn {
-            background-color: #1877f2;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 6px;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            transition: background-color 0.2s;
-        }
-        
-        .add-property-btn:hover {
-            background-color: #166fe5;
-        }
-        
-        /* ========== المحتوى الرئيسي ========== */
-        .main-content {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 16px;
-        }
-        
-        /* قسم التحقق العلوي */
-        .verify-section {
-            background-color: #ffffff;
-            padding: 16px;
-            border-radius: 8px;
-            margin-bottom: 16px;
-            border: 1px solid #dddfe2;
-            display: none; /* مخفي افتراضيًا */
-        }
-        
-        .verify-section.active {
-            display: flex;
-        }
-        
-        .verify-input {
-            flex: 1;
-            padding: 10px 12px;
-            border: 1px solid #dddfe2;
-            border-radius: 6px;
-            font-size: 14px;
-            color: #1c1e21;
-        }
-        
-        .verify-input:focus {
-            outline: none;
-            border-color: #1877f2;
-        }
-        
-        .verify-btn {
-            background-color: #1877f2;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 6px;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        
-        .verify-btn:hover {
-            background-color: #166fe5;
-        }
-        
-        /* الفلاتر */
-        .filters-container {
-            background-color: #ffffff;
-            border-radius: 8px;
-            padding: 12px 16px;
-            margin-bottom: 16px;
-            border: 1px solid #dddfe2;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            align-items: center;
-        }
-        
-        .filter-group {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .filter-label {
-            font-size: 14px;
-            color: #65676b;
-            font-weight: 500;
-        }
-        
-        .filter-select {
-            padding: 8px 12px;
-            border: 1px solid #dddfe2;
-            border-radius: 6px;
-            background-color: #f0f2f5;
-            font-size: 14px;
-            color: #1c1e21;
-            min-width: 120px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        
-        .filter-select:focus {
-            outline: none;
-            border-color: #1877f2;
-            background-color: #ffffff;
-        }
-        
-        /* بطاقات العقارات */
-        .listings-container {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-        
-        .listing-card {
-            background-color: #ffffff;
-            border-radius: 8px;
-            border: 1px solid #dddfe2;
-            overflow: hidden;
-            position: relative;
-        }
-        
-        /* حاوية الوسائط */
-        .media-container {
-            position: relative;
-            width: 100%;
-            height: 250px;
-            overflow: hidden;
-            background-color: #000;
-        }
-        
-        .media-container img {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-        
-        .media-container img.loaded {
-            opacity: 1;
-        }
-        
-        .media-container video {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        
-        /* حاوية يوتيوب */
-        .youtube-container {
-            position: relative;
-            width: 100%;
-            height: 250px;
-            overflow: hidden;
-            background-color: #000;
-        }
-        
-        .youtube-container iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-        
-        .media-placeholder {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: #000;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-        }
-        
-        .play-video-btn {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background-color: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(10px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 24px;
-            margin-bottom: 12px;
-            transition: transform 0.2s, background-color 0.2s;
-        }
-        
-        .play-video-btn:hover {
-            transform: scale(1.05);
-            background-color: rgba(255, 255, 255, 0.3);
-        }
-        
-        .video-placeholder-text {
-            color: white;
-            font-size: 14px;
-            font-weight: 500;
-        }
-        
-        .youtube-thumbnail {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            opacity: 0.7;
-        }
-        
-        .listing-content {
-            padding: 16px;
-        }
-        
-        .listing-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 12px;
-        }
-        
-        .listing-title {
-            font-size: 16px;
-            font-weight: 600;
-            color: #1c1e21;
-            line-height: 1.4;
-            flex: 1;
-            white-space: pre-wrap; /* الحفاظ على الأسطر */
-        }
-        
-        .price-tag {
-            background-color: #e7f3ff;
-            color: #1877f2;
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-size: 15px;
-            font-weight: 600;
-            margin-right: 12px;
-        }
-        
-        .listing-details {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            margin-bottom: 16px;
-        }
-        
-        .detail-item {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 14px;
-            color: #65676b;
-        }
-        
-        .detail-icon {
-            color: #1877f2;
-            font-size: 14px;
-        }
-        
-        .status-badge {
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 500;
-        }
-        
-        .status-ready {
-            background-color: #e7f6ea;
-            color: #0a7c2f;
-        }
-        
-        .status-not-ready {
-            background-color: #fef2e8;
-            color: #c55400;
-        }
-        
-        /* أزرار التفاعل */
-        .action-buttons {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 12px;
-            padding-bottom: 12px;
-            border-bottom: 1px solid #dddfe2;
-        }
-        
-        .action-btn {
-            flex: 1;
-            padding: 8px 12px;
-            border: none;
-            border-radius: 6px;
-            font-size: 13px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-        }
-        
-        .action-btn i {
-            font-size: 14px;
-        }
-        
-        .like-btn {
-            background-color: #f0f2f5;
-            color: #65676b;
-        }
-        
-        .like-btn:hover {
-            background-color: #e4e6eb;
-        }
-        
-        .like-btn.liked {
-            background-color: #e7f3ff;
-            color: #1877f2;
-        }
-        
-        .comment-btn {
-            background-color: #f0f2f5;
-            color: #65676b;
-        }
-        
-        .comment-btn:hover {
-            background-color: #e4e6eb;
-        }
-        
-        .view-comments-btn {
-            background-color: #f0f2f5;
-            color: #65676b;
-        }
-        
-        .view-comments-btn:hover {
-            background-color: #e4e6eb;
-        }
-        
-        .delete-btn {
-            background-color: #fef2f2;
-            color: #dc2626;
-            display: none; /* مخفي افتراضيًا */
-        }
-        
-        .delete-btn:hover {
-            background-color: #fee2e2;
-        }
-        
-        .delete-btn.visible {
-            display: flex;
-        }
-        
-        .whatsapp-btn {
-            background-color: #25D366;
-            color: white;
-            text-decoration: none;
-            padding: 10px 16px;
-            border-radius: 6px;
-            font-size: 14px;
-            font-weight: 600;
-            text-align: center;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            transition: background-color 0.2s;
-            cursor: pointer;
-        }
-        
-        .whatsapp-btn:hover {
-            background-color: #1da851;
-        }
-        
-        /* التعليقات */
-        .comments-section {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease;
-            margin-top: 12px;
-        }
-        
-        .comments-section.expanded {
-            max-height: 300px;
-        }
-        
-        .comments-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 12px;
-            padding-bottom: 8px;
-            border-bottom: 1px solid #dddfe2;
-        }
-        
-        .comments-title {
-            font-size: 15px;
-            font-weight: 600;
-            color: #1c1e21;
-        }
-        
-        .comments-list {
-            max-height: 200px;
-            overflow-y: auto;
-            margin-bottom: 12px;
-        }
-        
-        .comment-item {
-            background-color: #f0f2f5;
-            padding: 10px 12px;
-            margin-bottom: 8px;
-            border-radius: 8px;
-            font-size: 14px;
-            line-height: 1.4;
-            color: #1c1e21;
-        }
-        
-        .comment-form {
-            margin-top: 12px;
-        }
-        
-        .comment-textarea {
-            width: 100%;
-            padding: 10px 12px;
-            border: 1px solid #dddfe2;
-            border-radius: 6px;
-            background-color: #f0f2f5;
-            font-size: 14px;
-            color: #1c1e21;
-            resize: vertical;
-            min-height: 80px;
-            margin-bottom: 8px;
-        }
-        
-        .comment-textarea:focus {
-            outline: none;
-            border-color: #1877f2;
-            background-color: #ffffff;
-        }
-        
-        .submit-comment-btn {
-            background-color: #1877f2;
-            color: white;
-            border: none;
-            padding: 8px 20px;
-            border-radius: 6px;
-            font-size: 13px;
-            font-weight: 500;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        
-        .submit-comment-btn:hover {
-            background-color: #166fe5;
-        }
-        
-        /* نموذج الإضافة */
-        .add-form-container {
-            background-color: #ffffff;
-            border-radius: 8px;
-            padding: 16px;
-            margin-bottom: 16px;
-            border: 1px solid #dddfe2;
-            display: none;
-        }
-        
-        .add-form-container.active {
-            display: block;
-        }
-        
-        .form-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 16px;
-            padding-bottom: 12px;
-            border-bottom: 1px solid #dddfe2;
-        }
-        
-        .form-title {
-            font-size: 18px;
-            font-weight: 600;
-            color: #1c1e21;
-        }
-        
-        .close-form-btn {
-            margin-right: auto;
-            background: none;
-            border: none;
-            font-size: 20px;
-            color: #65676b;
-            cursor: pointer;
-            padding: 4px;
-            border-radius: 50%;
-            width: 32px;
-            height: 32px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .close-form-btn:hover {
-            background-color: #f0f2f5;
-        }
-        
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 12px;
-            margin-bottom: 16px;
-        }
-        
-        .form-group {
-            margin-bottom: 12px;
-        }
-        
-        .form-label {
-            display: block;
-            margin-bottom: 6px;
-            font-size: 14px;
-            color: #65676b;
-            font-weight: 500;
-        }
-        
-        .form-input, .form-select {
-            width: 100%;
-            padding: 10px 12px;
-            border: 1px solid #dddfe2;
-            border-radius: 6px;
-            background-color: #f0f2f5;
-            font-size: 14px;
-            color: #1c1e21;
-            transition: all 0.2s;
-        }
-        
-        .form-input:focus, .form-select:focus {
-            outline: none;
-            border-color: #1877f2;
-            background-color: #ffffff;
-        }
-        
-        .radio-group {
-            display: flex;
-            gap: 16px;
-            margin-top: 8px;
-        }
-        
-        .radio-option {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            cursor: pointer;
-        }
-        
-        .radio-input {
-            width: 16px;
-            height: 16px;
-            accent-color: #1877f2;
-        }
-        
-        .form-actions {
-            display: flex;
-            gap: 12px;
-            justify-content: flex-end;
-            margin-top: 16px;
-            padding-top: 16px;
-            border-top: 1px solid #dddfe2;
-        }
-        
-        .submit-btn {
-            background-color: #1877f2;
-            color: white;
-            border: none;
-            padding: 10px 24px;
-            border-radius: 6px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-        
-        .submit-btn:hover {
-            background-color: #166fe5;
-        }
-        
-        .cancel-btn {
-            background-color: #e4e6eb;
-            color: #1c1e21;
-            border: none;
-            padding: 10px 24px;
-            border-radius: 6px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-        
-        .cancel-btn:hover {
-            background-color: #d8dadf;
-        }
-        
-        /* رسالة نتيجة التحقق */
-        .result-message {
-            padding: 10px 12px;
-            border-radius: 6px;
-            font-size: 14px;
-            font-weight: 500;
-            margin-top: 8px;
-            display: none;
-        }
-        
-        .success-message {
-            background-color: #e7f6ea;
-            color: #0a7c2f;
-            border: 1px solid #a8e6b9;
-        }
-        
-        .error-message {
-            background-color: #fde8e8;
-            color: #c53030;
-            border: 1px solid #fecaca;
-        }
-        
-        /* رسائل الحالة */
-        .no-results {
-            text-align: center;
-            padding: 40px 20px;
-            background-color: #ffffff;
-            border-radius: 8px;
-            border: 1px solid #dddfe2;
-        }
-        
-        .no-results i {
-            font-size: 48px;
-            color: #bec3c9;
-            margin-bottom: 16px;
-        }
-        
-        .no-results h3 {
-            font-size: 18px;
-            color: #1c1e21;
-            margin-bottom: 8px;
-        }
-        
-        .no-results p {
-            font-size: 14px;
-            color: #65676b;
-        }
-        
-        .loading {
-            text-align: center;
-            padding: 40px 20px;
-            color: #65676b;
-            font-size: 14px;
-        }
-        
-        .error-display {
-            background-color: #fde8e8;
-            color: #c53030;
-            padding: 16px;
-            border-radius: 8px;
-            border: 1px solid #fecaca;
-            margin-bottom: 16px;
-        }
-        
-        .success-display {
-            background-color: #e7f6ea;
-            color: #0a7c2f;
-            padding: 16px;
-            border-radius: 8px;
-            border: 1px solid #a8e6b9;
-            margin-bottom: 16px;
-        }
-        
-        /* تحسينات الوسائط */
-        .media-upload-container {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-        
-        .media-upload-btn {
-            background-color: #f0f2f5;
-            border: 2px dashed #dddfe2;
-            border-radius: 8px;
-            padding: 20px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        
-        .media-upload-btn:hover {
-            background-color: #e4e6eb;
-            border-color: #1877f2;
-        }
-        
-        .media-upload-btn i {
-            font-size: 24px;
-            color: #65676b;
-            margin-bottom: 8px;
-        }
-        
-        .media-preview {
-            display: none;
-            max-width: 100%;
-            margin-top: 10px;
-            border-radius: 8px;
-            overflow: hidden;
-        }
-        
-        .media-preview img,
-        .media-preview video {
-            max-width: 100%;
-            max-height: 200px;
-            object-fit: contain;
-        }
-        
-        .remove-media-btn {
-            background-color: #ef4444;
-            color: white;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-size: 12px;
-            cursor: pointer;
-            margin-top: 8px;
-        }
-        
-        .remove-media-btn:hover {
-            background-color: #dc2626;
-        }
-        
-        /* ========== شريط التنقل السفلي ========== */
-        .bottom-nav-bar {
-            position: fixed;
-            bottom: 0;
-            right: 0;
-            width: 100%;
-            height: 60px;
-            background-color: #ffffff;
-            backdrop-filter: blur(20px);
-            border-top: 1px solid #dddfe2;
-            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            z-index: 1000;
-        }
-        
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-decoration: none;
-            color: #65676b;
-            transition: all 0.3s ease;
-            position: relative;
-            padding: 8px;
-            border-radius: 8px;
-            flex: 1;
-            max-width: 100px;
-            height: 100%;
-        }
-        
-        .nav-item:hover {
-            color: #1877f2;
-        }
-        
-        .nav-item.active {
-            color: #1877f2;
-        }
-        
-        .nav-icon {
-            font-size: 20px;
-            margin-bottom: 4px;
-        }
-        
-        .nav-text {
-            font-size: 10px;
-            font-weight: 500;
-        }
-        
-        .notification-badge {
-            position: absolute;
-            top: 0;
-            left: 50%;
-            background-color: #e41e3f;
-            color: white;
-            font-size: 10px;
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-        }
-        
-        /* تحسينات للتمرير */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-        
-        ::-webkit-scrollbar-track {
-            background: #f0f2f5;
-            border-radius: 4px;
-        }
-        
-        ::-webkit-scrollbar-thumb {
-            background: #bec3c9;
-            border-radius: 4px;
-        }
-        
-        ::-webkit-scrollbar-thumb:hover {
-            background: #a8adb3;
-        }
-        
-        /* التصميم المتجاوب */
+        /* جميع الأنماط كما هي مع إضافة أنماط نافذة تواصل معنا */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #f0f2f5; color: #1c1e21; line-height: 1.34; min-height: 100vh; padding-bottom: 70px; }
+        .top-header { position: sticky; top: 0; right: 0; width: 100%; height: 56px; background-color: #ffffff; border-bottom: 1px solid #dddfe2; display: flex; align-items: center; justify-content: space-between; padding: 0 16px; z-index: 1000; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); }
+        .logo-container { display: flex; align-items: center; }
+        .logo { font-size: 28px; color: #1877f2; margin-left: 8px; }
+        .site-title { font-size: 20px; font-weight: 700; color: #1877f2; }
+        .add-property-btn { background-color: #1877f2; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-size: 14px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: background-color 0.2s; }
+        .add-property-btn:hover { background-color: #166fe5; }
+        .main-content { max-width: 800px; margin: 0 auto; padding: 16px; }
+        .verify-section { background-color: #ffffff; padding: 16px; border-radius: 8px; margin-bottom: 16px; border: 1px solid #dddfe2; display: none; }
+        .verify-section.active { display: flex; }
+        .verify-input { flex: 1; padding: 10px 12px; border: 1px solid #dddfe2; border-radius: 6px; font-size: 14px; color: #1c1e21; }
+        .verify-input:focus { outline: none; border-color: #1877f2; }
+        .verify-btn { background-color: #1877f2; color: white; border: none; padding: 10px 20px; border-radius: 6px; font-size: 14px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+        .verify-btn:hover { background-color: #166fe5; }
+        .filters-container { background-color: #ffffff; border-radius: 8px; padding: 12px 16px; margin-bottom: 16px; border: 1px solid #dddfe2; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+        .filter-group { display: flex; align-items: center; gap: 8px; }
+        .filter-label { font-size: 14px; color: #65676b; font-weight: 500; }
+        .filter-select { padding: 8px 12px; border: 1px solid #dddfe2; border-radius: 6px; background-color: #f0f2f5; font-size: 14px; color: #1c1e21; min-width: 120px; cursor: pointer; transition: all 0.2s; }
+        .filter-select:focus { outline: none; border-color: #1877f2; background-color: #ffffff; }
+        .listings-container { display: flex; flex-direction: column; gap: 16px; }
+        .listing-card { background-color: #ffffff; border-radius: 8px; border: 1px solid #dddfe2; overflow: hidden; position: relative; }
+        .media-container { position: relative; width: 100%; height: 250px; overflow: hidden; background-color: #000; }
+        .swiper { width: 100%; height: 250px; margin-left: auto; margin-right: auto; }
+        .swiper-slide { text-align: center; font-size: 18px; background: #000; display: flex; justify-content: center; align-items: center; cursor: pointer; }
+        .swiper-slide img { display: block; width: 100%; height: 100%; object-fit: cover; }
+        .swiper-button-prev, .swiper-button-next { color: white; background-color: rgba(0, 0, 0, 0.5); width: 40px; height: 40px; border-radius: 50%; }
+        .swiper-button-prev:after, .swiper-button-next:after { font-size: 18px; }
+        .swiper-pagination-bullet { background: white; opacity: 0.7; }
+        .swiper-pagination-bullet-active { background: #1877f2; }
+        .media-container img { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.3s; }
+        .media-container img.loaded { opacity: 1; }
+        .media-container video { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; height: 100%; object-fit: cover; }
+        .youtube-container { position: relative; width: 100%; height: 250px; overflow: hidden; background-color: #000; }
+        .youtube-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+        .media-placeholder { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; }
+        .play-video-btn { width: 60px; height: 60px; border-radius: 50%; background-color: rgba(255, 255, 255, 0.2); backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; margin-bottom: 12px; transition: transform 0.2s, background-color 0.2s; }
+        .play-video-btn:hover { transform: scale(1.05); background-color: rgba(255, 255, 255, 0.3); }
+        .video-placeholder-text { color: white; font-size: 14px; font-weight: 500; }
+        .youtube-thumbnail { width: 100%; height: 100%; object-fit: cover; opacity: 0.7; }
+        .listing-content { padding: 16px; }
+        .listing-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+        .listing-title { font-size: 16px; font-weight: 600; color: #1c1e21; line-height: 1.4; flex: 1; white-space: pre-wrap; }
+        .price-tag { background-color: #e7f3ff; color: #1877f2; padding: 6px 12px; border-radius: 6px; font-size: 15px; font-weight: 600; margin-right: 12px; }
+        .listing-details { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 16px; }
+        .detail-item { display: flex; align-items: center; gap: 6px; font-size: 14px; color: #65676b; }
+        .detail-icon { color: #1877f2; font-size: 14px; }
+        .status-badge { padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 500; }
+        .status-ready { background-color: #e7f6ea; color: #0a7c2f; }
+        .status-not-ready { background-color: #fef2e8; color: #c55400; }
+        .action-buttons { display: flex; gap: 8px; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid #dddfe2; }
+        .action-btn { flex: 1; padding: 8px 12px; border: none; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 6px; }
+        .action-btn i { font-size: 14px; }
+        .like-btn { background-color: #f0f2f5; color: #65676b; }
+        .like-btn:hover { background-color: #e4e6eb; }
+        .like-btn.liked { background-color: #e7f3ff; color: #1877f2; }
+        .comment-btn { background-color: #f0f2f5; color: #65676b; }
+        .comment-btn:hover { background-color: #e4e6eb; }
+        .view-comments-btn { background-color: #f0f2f5; color: #65676b; }
+        .view-comments-btn:hover { background-color: #e4e6eb; }
+        .delete-btn { background-color: #fef2f2; color: #dc2626; display: none; }
+        .delete-btn:hover { background-color: #fee2e2; }
+        .delete-btn.visible { display: flex; }
+        .whatsapp-btn { background-color: #25D366; color: white; text-decoration: none; padding: 10px 16px; border-radius: 6px; font-size: 14px; font-weight: 600; text-align: center; display: flex; align-items: center; justify-content: center; gap: 8px; transition: background-color 0.2s; cursor: pointer; }
+        .whatsapp-btn:hover { background-color: #1da851; }
+        .comments-section { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; margin-top: 12px; }
+        .comments-section.expanded { max-height: 300px; }
+        .comments-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #dddfe2; }
+        .comments-title { font-size: 15px; font-weight: 600; color: #1c1e21; }
+        .comments-list { max-height: 200px; overflow-y: auto; margin-bottom: 12px; }
+        .comment-item { background-color: #f0f2f5; padding: 10px 12px; margin-bottom: 8px; border-radius: 8px; font-size: 14px; line-height: 1.4; color: #1c1e21; }
+        .comment-form { margin-top: 12px; }
+        .comment-textarea { width: 100%; padding: 10px 12px; border: 1px solid #dddfe2; border-radius: 6px; background-color: #f0f2f5; font-size: 14px; color: #1c1e21; resize: vertical; min-height: 80px; margin-bottom: 8px; }
+        .comment-textarea:focus { outline: none; border-color: #1877f2; background-color: #ffffff; }
+        .submit-comment-btn { background-color: #1877f2; color: white; border: none; padding: 8px 20px; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+        .submit-comment-btn:hover { background-color: #166fe5; }
+        .add-form-container { background-color: #ffffff; border-radius: 8px; padding: 16px; margin-bottom: 16px; border: 1px solid #dddfe2; display: none; }
+        .add-form-container.active { display: block; }
+        .form-header { display: flex; align-items: center; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid #dddfe2; }
+        .form-title { font-size: 18px; font-weight: 600; color: #1c1e21; }
+        .close-form-btn { margin-right: auto; background: none; border: none; font-size: 20px; color: #65676b; cursor: pointer; padding: 4px; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; }
+        .close-form-btn:hover { background-color: #f0f2f5; }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 16px; }
+        .form-group { margin-bottom: 12px; }
+        .form-label { display: block; margin-bottom: 6px; font-size: 14px; color: #65676b; font-weight: 500; }
+        .form-input, .form-select { width: 100%; padding: 10px 12px; border: 1px solid #dddfe2; border-radius: 6px; background-color: #f0f2f5; font-size: 14px; color: #1c1e21; transition: all 0.2s; }
+        .form-input:focus, .form-select:focus { outline: none; border-color: #1877f2; background-color: #ffffff; }
+        .radio-group { display: flex; gap: 16px; margin-top: 8px; }
+        .radio-option { display: flex; align-items: center; gap: 6px; cursor: pointer; }
+        .radio-input { width: 16px; height: 16px; accent-color: #1877f2; }
+        .form-actions { display: flex; gap: 12px; justify-content: flex-end; margin-top: 16px; padding-top: 16px; border-top: 1px solid #dddfe2; }
+        .submit-btn { background-color: #1877f2; color: white; border: none; padding: 10px 24px; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; transition: background-color 0.2s; }
+        .submit-btn:hover { background-color: #166fe5; }
+        .cancel-btn { background-color: #e4e6eb; color: #1c1e21; border: none; padding: 10px 24px; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; transition: background-color 0.2s; }
+        .cancel-btn:hover { background-color: #d8dadf; }
+        .result-message { padding: 10px 12px; border-radius: 6px; font-size: 14px; font-weight: 500; margin-top: 8px; display: none; }
+        .success-message { background-color: #e7f6ea; color: #0a7c2f; border: 1px solid #a8e6b9; }
+        .error-message { background-color: #fde8e8; color: #c53030; border: 1px solid #fecaca; }
+        .no-results { text-align: center; padding: 40px 20px; background-color: #ffffff; border-radius: 8px; border: 1px solid #dddfe2; }
+        .no-results i { font-size: 48px; color: #bec3c9; margin-bottom: 16px; }
+        .no-results h3 { font-size: 18px; color: #1c1e21; margin-bottom: 8px; }
+        .no-results p { font-size: 14px; color: #65676b; }
+        .loading { text-align: center; padding: 40px 20px; color: #65676b; font-size: 14px; }
+        .error-display { background-color: #fde8e8; color: #c53030; padding: 16px; border-radius: 8px; border: 1px solid #fecaca; margin-bottom: 16px; }
+        .success-display { background-color: #e7f6ea; color: #0a7c2f; padding: 16px; border-radius: 8px; border: 1px solid #a8e6b9; margin-bottom: 16px; }
+        .lightbox-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); z-index: 2000; justify-content: center; align-items: center; flex-direction: column; }
+        .lightbox-content { position: relative; max-width: 90%; max-height: 90%; }
+        .lightbox-image { max-width: 100%; max-height: 90vh; object-fit: contain; border-radius: 5px; }
+        .lightbox-close { position: absolute; top: 20px; right: 30px; color: white; font-size: 40px; cursor: pointer; z-index: 2001; }
+        .lightbox-prev, .lightbox-next { position: absolute; top: 50%; transform: translateY(-50%); color: white; font-size: 50px; cursor: pointer; padding: 20px; user-select: none; z-index: 2001; }
+        .lightbox-prev { left: 20px; }
+        .lightbox-next { right: 20px; }
+        .lightbox-prev:hover, .lightbox-next:hover { color: #1877f2; }
+        .media-upload-container { display: flex; flex-direction: column; gap: 12px; }
+        .media-upload-btn { background-color: #f0f2f5; border: 2px dashed #dddfe2; border-radius: 8px; padding: 20px; text-align: center; cursor: pointer; transition: all 0.2s; }
+        .media-upload-btn:hover { background-color: #e4e6eb; border-color: #1877f2; }
+        .media-upload-btn i { font-size: 24px; color: #65676b; margin-bottom: 8px; }
+        .media-preview { display: none; max-width: 100%; margin-top: 10px; border-radius: 8px; overflow: hidden; }
+        .media-preview img, .media-preview video { max-width: 100%; max-height: 200px; object-fit: contain; }
+        .remove-media-btn { background-color: #ef4444; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 12px; cursor: pointer; margin-top: 8px; }
+        .remove-media-btn:hover { background-color: #dc2626; }
+        .multiple-images-preview { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+        .image-preview-item { width: 80px; height: 80px; border-radius: 5px; overflow: hidden; border: 2px solid #ddd; position: relative; }
+        .image-preview-item img { width: 100%; height: 100%; object-fit: cover; }
+        .image-preview-item .remove-image { position: absolute; top: 2px; right: 2px; background: rgba(255, 0, 0, 0.7); color: white; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 12px; }
+        .bottom-nav-bar { position: fixed; bottom: 0; right: 0; width: 100%; height: 60px; background-color: #ffffff; backdrop-filter: blur(20px); border-top: 1px solid #dddfe2; box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1); display: flex; justify-content: space-around; align-items: center; z-index: 1000; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; text-decoration: none; color: #65676b; transition: all 0.3s ease; position: relative; padding: 8px; border-radius: 8px; flex: 1; max-width: 100px; height: 100%; }
+        .nav-item:hover { color: #1877f2; }
+        .nav-item.active { color: #1877f2; }
+        .nav-icon { font-size: 20px; margin-bottom: 4px; }
+        .nav-text { font-size: 10px; font-weight: 500; }
+        .notification-badge { position: absolute; top: 0; left: 50%; background-color: #e41e3f; color: white; font-size: 10px; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #f0f2f5; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb { background: #bec3c9; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #a8adb3; }
         @media (max-width: 768px) {
-            .main-content {
-                padding: 12px;
-            }
-            
-            .media-container, 
-            .youtube-container {
-                height: 200px;
-            }
-            
-            .form-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .action-buttons {
-                flex-wrap: wrap;
-            }
-            
-            .action-btn {
-                min-width: calc(33.333% - 8px);
-            }
-            
-            .filters-container {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            
-            .filter-group {
-                width: 100%;
-                justify-content: space-between;
-            }
-            
-            .filter-select {
-                flex: 1;
-                min-width: auto;
-            }
+            .main-content { padding: 12px; }
+            .media-container, .youtube-container, .swiper { height: 200px; }
+            .form-grid { grid-template-columns: 1fr; }
+            .action-buttons { flex-wrap: wrap; }
+            .action-btn { min-width: calc(33.333% - 8px); }
+            .filters-container { flex-direction: column; align-items: stretch; }
+            .filter-group { width: 100%; justify-content: space-between; }
+            .filter-select { flex: 1; min-width: auto; }
         }
-        
         @media (max-width: 480px) {
-            .media-container, 
-            .youtube-container {
-                height: 180px;
-            }
-            
-            .top-header {
-                padding: 0 12px;
-            }
-            
-            .site-title {
-                font-size: 18px;
-            }
-            
-            .logo {
-                font-size: 24px;
-            }
-            
-            .action-btn {
-                min-width: calc(50% - 4px);
-                font-size: 12px;
-                padding: 6px 8px;
-            }
-            
-            .bottom-nav-bar {
-                height: 65px;
-            }
-            
-            .nav-text {
-                font-size: 9px;
-            }
+            .media-container, .youtube-container, .swiper { height: 180px; }
+            .top-header { padding: 0 12px; }
+            .site-title { font-size: 18px; }
+            .logo { font-size: 24px; }
+            .action-btn { min-width: calc(50% - 4px); font-size: 12px; padding: 6px 8px; }
+            .bottom-nav-bar { height: 65px; }
+            .nav-text { font-size: 9px; }
+        }
+        /* أنماط نافذة تواصل معنا */
+        .contact-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1004;
+            justify-content: center;
+            align-items: center;
+            animation: modalFadeIn 0.3s ease-out;
+            backdrop-filter: blur(5px);
+        }
+        .contact-content {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+        .contact-content h3 {
+            color: #1877f2;
+            margin-bottom: 20px;
+        }
+        .contact-whatsapp-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            background: #25D366;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-size: 18px;
+            font-weight: bold;
+            transition: all 0.3s;
+            border: none;
+            width: 100%;
+            cursor: pointer;
+        }
+        .contact-whatsapp-btn:hover {
+            background: #128C7E;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(37, 211, 102, 0.4);
+        }
+        .contact-whatsapp-btn i {
+            font-size: 24px;
+        }
+        .contact-close-btn {
+            margin-top: 15px;
+            background: #f0f2f5;
+            color: #65676b;
+            padding: 10px 20px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: translateY(30px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
         }
     </style>
 </head>
@@ -980,9 +246,7 @@
             <div class="site-title">عروض العقارات</div>
         </div>
         
-        <button class="add-property-btn" id="openVerifyBtn">
-            <i class="fas fa-plus"></i> إضافة عقار
-        </button>
+      
     </header>
     
     <!-- المحتوى الرئيسي -->
@@ -998,7 +262,7 @@
         <!-- رسالة نتيجة التحقق -->
         <div class="result-message" id="codeResult"></div>
         
-        <!-- نموذج إضافة العقار (تم إضافة حقل نوع العقار) -->
+        <!-- نموذج إضافة العقار (مع دعم الصور المتعددة) -->
         <div class="add-form-container" id="addFormContainer">
             <div class="form-header">
                 <h3 class="form-title">إضافة عقار جديد</h3>
@@ -1014,7 +278,7 @@
                         <select class="form-select" id="mediaType" required onchange="changeMediaInput()">
                             <option value="">اختر نوع الوسائط</option>
                             <option value="youtube">رابط يوتيوب</option>
-                            <option value="image">صورة</option>
+                            <option value="images">صور متعددة</option>
                             <option value="video">فيديو</option>
                         </select>
                     </div>
@@ -1025,18 +289,15 @@
                         <small style="color: #666; font-size: 12px; margin-top: 5px; display: block;">قم بنسخ رابط الفيديو من يوتيوب ولصقه هنا</small>
                     </div>
                     
-                    <div class="form-group" id="imageInputGroup" style="display: none;">
-                        <label class="form-label">رفع صورة</label>
-                        <div class="media-upload-btn" id="imageUploadBtn">
-                            <i class="fas fa-image"></i>
-                            <p>انقر لرفع صورة</p>
-                            <input type="file" id="imageFile" accept="image/*" style="display: none;" onchange="previewImage(event)">
+                    <div class="form-group" id="imagesInputGroup" style="display: none;">
+                        <label class="form-label">رفع صور متعددة</label>
+                        <div class="media-upload-btn" id="imagesUploadBtn">
+                            <i class="fas fa-images"></i>
+                            <p>انقر لرفع صور (يمكن اختيار عدة صور)</p>
+                            <input type="file" id="imageFiles" accept="image/*" multiple style="display: none;" onchange="previewMultipleImages(event)">
                         </div>
-                        <div class="media-preview" id="imagePreview">
-                            <img id="previewImg" src="" alt="معاينة الصورة">
-                            <button type="button" class="remove-media-btn" onclick="removeImage()">إزالة الصورة</button>
-                        </div>
-                        <small style="color: #666; font-size: 12px; margin-top: 5px; display: block;">الحد الأقصى لحجم الصورة: 5MB</small>
+                        <div class="multiple-images-preview" id="imagesPreview"></div>
+                        <small style="color: #666; font-size: 12px; margin-top: 5px; display: block;">يمكنك اختيار عدة صور. الحد الأقصى 10 صور.</small>
                     </div>
                     
                     <div class="form-group" id="videoInputGroup" style="display: none;">
@@ -1056,7 +317,7 @@
                         <small style="color: #666; font-size: 12px; margin-top: 5px; display: block;">الحد الأقصى لحجم الفيديو: 20MB</small>
                     </div>
                     
-                    <!-- ✅ حقل نوع العقار (جديد) بدلاً من المساحة -->
+                    <!-- حقل نوع العقار -->
                     <div class="form-group">
                         <label class="form-label" for="category1">نوع العقار</label>
                         <select class="form-select" id="category1" required>
@@ -1067,7 +328,7 @@
                         </select>
                     </div>
                     
-                    <!-- ✅ حقل عدد الطوابق -->
+                    <!-- حقل عدد الطوابق -->
                     <div class="form-group">
                         <label class="form-label" for="floors1">عدد الطوابق</label>
                         <input type="number" class="form-input" id="floors1" required placeholder="مثال: 2" min="1" max="20">
@@ -1123,23 +384,24 @@
             <div id="formResult"></div>
         </div>
         
-        <!-- الفلاتر (تم إضافة فلتر النوع) -->
+        <!-- الفلاتر (مع تحديث السعر) -->
         <div class="filters-container">
             <div class="filter-group">
                 <span class="filter-label">السعر:</span>
                 <select class="filter-select" id="priceFilter">
                     <option value="all">الكل</option>
-                    <option value="under-20000">تحت 20000$</option>
-                    <option value="20000-30000">بين 20000$-30000$</option>
-                    <option value="30000-40000">بين 30000$-40000$</option>
-                    <option value="over-40000">فوق 40000$</option>
+                    <option value="under-20000">تحت 20,000$</option>
+                    <option value="20000-30000">20,000$ - 30,000$</option>
+                    <option value="30000-40000">30,000$ - 40,000$</option>
+                    <option value="40000-80000">40,000$ - 80,000$</option>
+                    <option value="80000-100000">80,000$ - 100,000$</option>
+                    <option value="over-100000">فوق 100,000$</option>
                 </select>
             </div>
             
-            <!-- ✅ فلتر نوع العقار -->
+            <!-- فلتر نوع العقار -->
             <div class="filter-group">
-                <span class="filter-label">  
-                نوع العقار:</span>
+                <span class="filter-label">نوع العقار:</span>
                 <select class="filter-select" id="categoryFilter">
                     <option value="all">الكل</option>
                     <option value="شقة">🏢 شقة</option>
@@ -1148,7 +410,7 @@
                 </select>
             </div>
             
-            <!-- ✅ فلتر عدد الطوابق -->
+            <!-- فلتر عدد الطوابق -->
             <div class="filter-group">
                 <span class="filter-label">الطوابق:</span>
                 <select class="filter-select" id="floorsFilter">
@@ -1200,19 +462,51 @@
             <div class="nav-text">الخريطة</div>
         </a>
         
-        <a href="#" class="nav-item active" id="navHome">
-            <div class="nav-icon"><i class="fas fa-home"></i></div>
-            <div class="nav-text">العروض</div>
-        </a>
-        
+      
+      
         <a href="https://ldlib-real-estate.netlify.app/iidd.html" class="nav-item" id="navVideo">
             <div class="nav-icon"><i class="fas fa-video"></i>
                 <span class="notification-badge" id="propertyCount">0</span>
             </div>
             <div class="nav-text">الفيديو</div>
         </a>
+  <a href="#" class="nav-item" id="openVerifyBtn"><div class="nav-icon"><i class="fas fa-user"></i></div><div class="nav-text">حسابي</div></a>
+        
+        
+        <!-- زر تواصل معنا الجديد -->
+        <a href="#" class="nav-item" id="contactUsBtn">
+            <div class="nav-icon"><i class="fas fa-headset"></i></div>
+            <div class="nav-text">تواصل معنا</div>
+        </a>
     </nav>
 
+    <!-- نافذة عرض الصور المكبرة -->
+    <div class="lightbox-modal" id="lightboxModal" onclick="closeLightbox(event)">
+        <span class="lightbox-close" onclick="closeLightbox()">&times;</span>
+        <span class="lightbox-prev" onclick="changeLightboxImage(-1)">&#10094;</span>
+        <span class="lightbox-next" onclick="changeLightboxImage(1)">&#10095;</span>
+        <div class="lightbox-content">
+            <img class="lightbox-image" id="lightboxImage" src="" alt="صورة مكبرة">
+        </div>
+    </div>
+
+    <!-- نافذة تواصل معنا -->
+    <div class="contact-modal" id="contactModal">
+      <div class="contact-content">
+          <h3> تواصل معنا لاضافة عقار عبر الأرقام التالية </h3>
+          <a href="https://wa.me/+963949340870" target="_blank" class="contact-whatsapp-btn">
+              <i class="fab fa-whatsapp"></i> واتساب: 00963949340870
+          </a>
+          <br>
+          <a href="https://wa.me/+963969315579" target="_blank" class="contact-whatsapp-btn">
+              <i class="fab fa-whatsapp"></i> واتساب: 00963969315579
+          </a>
+          
+          
+          <button class="contact-close-btn" onclick="closeContactModal()">إغلاق</button>
+      </div>
+  </div>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
         // البيانات والمتغيرات العامة
         let allListings = [];
@@ -1225,10 +519,13 @@
         const WHATSAPP_NUMBER = '+963969315579'; // قم بتعديل الرقم حسب الحاجة
         
         // متغيرات الوسائط
-        let uploadedImage = null;
+        let uploadedImages = [];
         let uploadedVideo = null;
-        let imageFile = null;
         let videoFile = null;
+        
+        // متغيرات لعرض الصور المكبرة
+        let lightboxImages = [];
+        let currentLightboxIndex = 0;
         
         // متغيرات لتحسين الأداء
         let videoElements = [];
@@ -1280,7 +577,7 @@
                 loadingElement.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري تحميل البيانات...';
                 const tokenFound = await fetchTokenFromGoogleSheets();
                 if (!tokenFound) {
-                    TOKEN = "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"; // التوكن الافتراضي
+                    TOKEN = "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";
                     console.log("استخدام التوكن الافتراضي");
                 }
                 await fetchGitHubData();
@@ -1301,7 +598,6 @@
             }
         }
         
-        // ========== دالة تنسيق التاريخ ==========
         function formatDate(dateString) {
             if (!dateString) return 'غير محدد';
             try {
@@ -1315,7 +611,6 @@
             }
         }
         
-        // ========== دالة التحقق من كلمة المرور ==========
         function checkSecretCode() {
             const secretCode = document.getElementById('secretCodeInput').value;
             const codeResult = document.getElementById('codeResult');
@@ -1344,7 +639,6 @@
             }
         }
         
-        // ========== إظهار أزرار الحذف ==========
         function showDeleteButtons() {
             document.querySelectorAll('.delete-btn').forEach(btn => btn.classList.add('visible'));
         }
@@ -1353,7 +647,6 @@
             document.querySelectorAll('.delete-btn').forEach(btn => btn.classList.remove('visible'));
         }
         
-        // ========== دالة حذف العقار ==========
         async function deleteListing(listingId) {
             if (!isVerified) {
                 alert('يجب التحقق أولاً باستخدام كلمة المرور');
@@ -1388,7 +681,6 @@
             }
         }
         
-        // ========== دالة الإعجاب ==========
         async function likeListing(listingId) {
             let originalText = '';
             const likeButton = document.querySelector(`.like-btn[data-id="${listingId}"]`);
@@ -1523,42 +815,68 @@
             }
         }
         
-        // دالات رفع الملفات
         function changeMediaInput() {
             const mediaType = document.getElementById('mediaType').value;
             const youtubeGroup = document.getElementById('youtubeInputGroup');
-            const imageGroup = document.getElementById('imageInputGroup');
+            const imagesGroup = document.getElementById('imagesInputGroup');
             const videoGroup = document.getElementById('videoInputGroup');
             youtubeGroup.style.display = 'none';
-            imageGroup.style.display = 'none';
+            imagesGroup.style.display = 'none';
             videoGroup.style.display = 'none';
             if (mediaType === 'youtube') youtubeGroup.style.display = 'block';
-            else if (mediaType === 'image') imageGroup.style.display = 'block';
+            else if (mediaType === 'images') imagesGroup.style.display = 'block';
             else if (mediaType === 'video') videoGroup.style.display = 'block';
-            removeImage();
+            removeImages();
             removeVideo();
             document.getElementById('youtubeUrl').value = '';
         }
         
-        function previewImage(event) {
-            const file = event.target.files[0];
-            if (file) {
+        function previewMultipleImages(event) {
+            const files = Array.from(event.target.files);
+            if (files.length + uploadedImages.length > 10) {
+                alert('يمكنك رفع 10 صور كحد أقصى');
+                return;
+            }
+            
+            files.forEach(file => {
                 if (file.size > 5 * 1024 * 1024) {
-                    alert('حجم الصورة كبير جداً. الحد الأقصى هو 5MB');
-                    event.target.value = '';
+                    alert('حجم الصورة كبير جداً. الحد الأقصى هو 5MB لكل صورة');
                     return;
                 }
-                imageFile = file;
+                uploadedImages.push(file);
+            });
+            
+            renderImagePreviews();
+            document.getElementById('imageFiles').value = '';
+        }
+        
+        function renderImagePreviews() {
+            const preview = document.getElementById('imagesPreview');
+            preview.innerHTML = '';
+            
+            uploadedImages.forEach((file, index) => {
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    const preview = document.getElementById('imagePreview');
-                    const img = document.getElementById('previewImg');
-                    img.src = e.target.result;
-                    preview.style.display = 'block';
-                    uploadedImage = e.target.result;
+                    const previewItem = document.createElement('div');
+                    previewItem.className = 'image-preview-item';
+                    previewItem.innerHTML = `
+                        <img src="${e.target.result}" alt="صورة ${index+1}">
+                        <span class="remove-image" onclick="removeImage(${index})">&times;</span>
+                    `;
+                    preview.appendChild(previewItem);
                 };
                 reader.readAsDataURL(file);
-            }
+            });
+        }
+        
+        function removeImage(index) {
+            uploadedImages.splice(index, 1);
+            renderImagePreviews();
+        }
+        
+        function removeImages() {
+            uploadedImages = [];
+            renderImagePreviews();
         }
         
         function previewVideo(event) {
@@ -1579,17 +897,6 @@
                 preview.style.display = 'block';
                 uploadedVideo = url;
             }
-        }
-        
-        function removeImage() {
-            const preview = document.getElementById('imagePreview');
-            const img = document.getElementById('previewImg');
-            const fileInput = document.getElementById('imageFile');
-            img.src = '';
-            preview.style.display = 'none';
-            fileInput.value = '';
-            uploadedImage = null;
-            imageFile = null;
         }
         
         function removeVideo() {
@@ -1647,7 +954,6 @@
             }
         }
         
-        // جلب البيانات من GitHub
         async function fetchGitHubData() {
             try {
                 showNotification('جاري تحميل البيانات...', 'info');
@@ -1669,11 +975,11 @@
                     const decoder = new TextDecoder('utf-8');
                     const content = decoder.decode(bytes);
                     allListings = JSON.parse(content);
-                    // إضافة قيم افتراضية للعقارات القديمة
                     allListings = allListings.map(p => ({
                         ...p,
                         category: p.category || null,
-                        floors: p.floors || null
+                        floors: p.floors || null,
+                        images: p.images || null
                     }));
                     showNotification(`تم تحميل ${allListings.length} عقار`, 'success');
                 }
@@ -1739,7 +1045,6 @@
             }
         }
         
-        // تحسينات الأداء
         function initializeLazyLoading() {
             imageObservers.forEach(observer => observer.disconnect());
             imageObservers = [];
@@ -1747,9 +1052,11 @@
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
                         const img = entry.target;
-                        img.src = img.dataset.src;
-                        img.classList.add('loaded');
-                        imageObserver.unobserve(img);
+                        if (img.dataset.src) {
+                            img.src = img.dataset.src;
+                            img.classList.add('loaded');
+                            imageObserver.unobserve(img);
+                        }
                     }
                 });
             }, { rootMargin: '50px 0px', threshold: 0.1 });
@@ -1780,7 +1087,7 @@
             }, 100);
         }
         
-        // تطبيق الفلاتر (تم إضافة فلتر النوع)
+        // تطبيق الفلاتر مع تحديث السعر
         function applyFilters() {
             const priceFilter = document.getElementById("priceFilter").value;
             const categoryFilter = document.getElementById("categoryFilter").value;
@@ -1789,31 +1096,27 @@
             const regionFilter = document.getElementById("regionFilter").value;
             
             const filteredListings = allListings.filter(item => {
-                // فلتر السعر
                 let priceMatch = false;
                 if (priceFilter === "all") priceMatch = true;
                 else if (priceFilter === "under-20000" && item.price < 20000) priceMatch = true;
                 else if (priceFilter === "20000-30000" && item.price >= 20000 && item.price <= 30000) priceMatch = true;
                 else if (priceFilter === "30000-40000" && item.price > 30000 && item.price <= 40000) priceMatch = true;
-                else if (priceFilter === "over-40000" && item.price > 40000) priceMatch = true;
+                else if (priceFilter === "40000-80000" && item.price > 40000 && item.price <= 80000) priceMatch = true;
+                else if (priceFilter === "80000-100000" && item.price > 80000 && item.price <= 100000) priceMatch = true;
+                else if (priceFilter === "over-100000" && item.price > 100000) priceMatch = true;
                 
-                // فلتر النوع
                 let categoryMatch = true;
                 if (categoryFilter !== 'all') {
                     categoryMatch = item.category === categoryFilter;
                 }
                 
-                // فلتر عدد الطوابق
                 let floorsMatch = true;
                 if (floorsFilter !== 'all') {
                     const floorValue = parseInt(floorsFilter);
                     floorsMatch = item.floors && item.floors === floorValue;
                 }
                 
-                // فلتر الحالة
                 const readyMatch = readyFilter === "all" || item.ready === (readyFilter === "true");
-                
-                // فلتر المنطقة
                 const regionMatch = regionFilter === "all" || item.region === regionFilter;
                 
                 return priceMatch && categoryMatch && floorsMatch && readyMatch && regionMatch;
@@ -1822,8 +1125,8 @@
             displayListings(filteredListings);
         }
         
-        // إنشاء رابط واتساب مع البيانات (تم إضافة النوع)
-        function createWhatsAppLink(description, price, category, floors, region, ready, mediaUrl, mediaType) {
+        // إنشاء رابط واتساب مع البيانات
+        function createWhatsAppLink(description, price, category, floors, region, ready, mediaUrl, mediaType, images) {
             const phoneNumber = WHATSAPP_NUMBER.replace(/\D/g, '');
             const statusText = ready === true ? "جاهز" : "تحت الإنشاء";
             const areaName = getAreaName(region);
@@ -1831,7 +1134,10 @@
             let mediaInfo = '';
             if (mediaUrl) {
                 if (mediaType === 'youtube') mediaInfo = `- رابط الفيديو: ${mediaUrl}`;
-                else if (mediaType === 'image') mediaInfo = `- رابط الصورة: ${mediaUrl}`;
+                else if (mediaType === 'images' && images && images.length > 0) {
+                    mediaInfo = `- روابط الصور:\n`;
+                    images.forEach((url, i) => { mediaInfo += `صورة ${i+1}: ${url}\n`; });
+                } else if (mediaType === 'image') mediaInfo = `- رابط الصورة: ${mediaUrl}`;
                 else if (mediaType === 'video') mediaInfo = `- رابط الفيديو: ${mediaUrl}`;
             }
             
@@ -1866,7 +1172,47 @@ ${mediaInfo ? mediaInfo + '\n' : ''}
             setTimeout(() => { videoElements = document.querySelectorAll('video'); }, 100);
         }
         
-        // عرض العقارات (تم إضافة أيقونة النوع)
+        // دوال عرض الصور المكبرة
+        function openLightbox(images, index) {
+            lightboxImages = images;
+            currentLightboxIndex = index;
+            const lightboxImg = document.getElementById('lightboxImage');
+            lightboxImg.src = images[index];
+            document.getElementById('lightboxModal').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+        
+        // دالة جديدة تستخدم معرف العقار
+        function openLightboxById(propertyId, index) {
+            const property = allListings.find(p => p.id === propertyId);
+            if (property && property.images && property.images.length > 0) {
+                openLightbox(property.images, index);
+            }
+        }
+        
+        function closeLightbox(event) {
+            if (event && event.target.id !== 'lightboxModal' && event.target.className !== 'lightbox-close') return;
+            document.getElementById('lightboxModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+        
+        function changeLightboxImage(direction) {
+            currentLightboxIndex += direction;
+            if (currentLightboxIndex < 0) currentLightboxIndex = lightboxImages.length - 1;
+            if (currentLightboxIndex >= lightboxImages.length) currentLightboxIndex = 0;
+            document.getElementById('lightboxImage').src = lightboxImages[currentLightboxIndex];
+        }
+        
+        // دوال نافذة تواصل معنا
+        function showContactModal() {
+            document.getElementById('contactModal').style.display = 'flex';
+        }
+        
+        function closeContactModal() {
+            document.getElementById('contactModal').style.display = 'none';
+        }
+        
+        // عرض العقارات مع دعم الصور المتعددة
         function displayListings(data) {
             const listingsContainer = document.getElementById('listingsContainer');
             if (data.length === 0) {
@@ -1878,10 +1224,11 @@ ${mediaInfo ? mediaInfo + '\n' : ''}
             data.forEach((item) => {
                 const youtubePlaceholderId = `youtube-placeholder-${item.id}`;
                 const videoPlaceholderId = `video-placeholder-${item.id}`;
+                const swiperId = `swiper-${item.id}`;
                 
                 const whatsappLink = createWhatsAppLink(
                     item.description, item.price, item.category, item.floors, item.region, item.ready,
-                    item.mediaUrl, item.mediaType
+                    item.mediaUrl, item.mediaType, item.images
                 );
                 
                 let commentsHTML = '<p>لا توجد تعليقات</p>';
@@ -1890,7 +1237,23 @@ ${mediaInfo ? mediaInfo + '\n' : ''}
                 }
                 
                 let mediaHTML = '';
-                if (item.mediaUrl) {
+                if (item.images && item.images.length > 0) {
+                    // عرض صور متعددة باستخدام Swiper
+                    mediaHTML = `
+                        <div class="swiper ${swiperId}" id="${swiperId}">
+                            <div class="swiper-wrapper">
+                                ${item.images.map((img, index) => `
+                                    <div class="swiper-slide" onclick="openLightboxById(${item.id}, ${index})">
+                                        <img data-src="${img}" alt="صورة العقار" loading="lazy">
+                                    </div>
+                                `).join('')}
+                            </div>
+                            <div class="swiper-button-prev"></div>
+                            <div class="swiper-button-next"></div>
+                            <div class="swiper-pagination"></div>
+                        </div>
+                    `;
+                } else if (item.mediaUrl) {
                     if (item.mediaType === 'youtube') {
                         const videoId = parseVideoUrl(item.mediaUrl).split('/embed/')[1]?.split('?')[0] || '';
                         const thumbnail = getYoutubeThumbnail(item.mediaUrl);
@@ -1900,7 +1263,7 @@ ${mediaInfo ? mediaInfo + '\n' : ''}
                             mediaHTML = `<div class="media-container" style="display: flex; align-items: center; justify-content: center; background: #f0f2f5;"><i class="fas fa-video" style="font-size: 36px; color: #bec3c9;"></i></div>`;
                         }
                     } else if (item.mediaType === 'image') {
-                        mediaHTML = `<div class="media-container"><img data-src="${item.mediaUrl}" alt="صورة العقار" loading="lazy"></div>`;
+                        mediaHTML = `<div class="media-container" onclick="openLightbox(['${item.mediaUrl}'], 0)"><img data-src="${item.mediaUrl}" alt="صورة العقار" loading="lazy"></div>`;
                     } else if (item.mediaType === 'video') {
                         mediaHTML = `<div class="media-container"><div class="media-placeholder" id="${videoPlaceholderId}" onclick="loadLocalVideo('${item.mediaUrl}', '${videoPlaceholderId}')"><div class="play-video-btn"><i class="fas fa-play"></i></div><div class="video-placeholder-text">انقر للتشغيل</div></div></div>`;
                     }
@@ -1952,6 +1315,29 @@ ${mediaInfo ? mediaInfo + '\n' : ''}
             
             listingsContainer.innerHTML = listingsHTML;
             if (isVerified) showDeleteButtons();
+            
+            // تهيئة Swiper للصور المتعددة
+            setTimeout(() => {
+                data.forEach(item => {
+                    if (item.images && item.images.length > 0) {
+                        const swiperElement = document.getElementById(`swiper-${item.id}`);
+                        if (swiperElement) {
+                            new Swiper(`#swiper-${item.id}`, {
+                                navigation: {
+                                    nextEl: '.swiper-button-next',
+                                    prevEl: '.swiper-button-prev',
+                                },
+                                pagination: {
+                                    el: '.swiper-pagination',
+                                    clickable: true,
+                                },
+                                loop: item.images.length > 1,
+                            });
+                        }
+                    }
+                });
+            }, 100);
+            
             initializePerformanceOptimizations();
         }
         
@@ -1985,7 +1371,7 @@ ${mediaInfo ? mediaInfo + '\n' : ''}
             }
         }
         
-        // معالجة إرسال النموذج (تم استبدال المساحة بالفئة)
+        // معالجة إرسال النموذج
         async function handleFormSubmit(e) {
             e.preventDefault();
             const submitBtn = document.querySelector('#dataForm .submit-btn');
@@ -1998,19 +1384,20 @@ ${mediaInfo ? mediaInfo + '\n' : ''}
             try {
                 const mediaType = document.getElementById('mediaType').value;
                 let mediaUrl = '';
+                let images = [];
                 if (mediaType === 'youtube') {
                     mediaUrl = document.getElementById('youtubeUrl').value.trim();
                     if (!mediaUrl) throw new Error('الرجاء إدخال رابط يوتيوب');
-                } else if (mediaType === 'image') {
-                    if (!imageFile) throw new Error('الرجاء رفع صورة للعقار');
+                } else if (mediaType === 'images') {
+                    if (uploadedImages.length === 0) throw new Error('الرجاء رفع صورة واحدة على الأقل');
+                    for (let i = 0; i < uploadedImages.length; i++) {
+                        const fileName = `image_${Date.now()}_${i}_${uploadedImages[i].name}`;
+                        const url = await uploadToGitHub(uploadedImages[i], fileName);
+                        images.push(url);
+                    }
+                    mediaUrl = images[0];
                 } else if (mediaType === 'video') {
                     if (!videoFile) throw new Error('الرجاء رفع فيديو للعقار');
-                }
-                
-                if (mediaType === 'image' && imageFile) {
-                    const fileName = `image_${Date.now()}_${imageFile.name}`;
-                    mediaUrl = await uploadToGitHub(imageFile, fileName);
-                } else if (mediaType === 'video' && videoFile) {
                     const fileName = `video_${Date.now()}_${videoFile.name}`;
                     mediaUrl = await uploadToGitHub(videoFile, fileName);
                 }
@@ -2026,7 +1413,8 @@ ${mediaInfo ? mediaInfo + '\n' : ''}
                     likes: 0,
                     comments: [],
                     mediaUrl: mediaUrl,
-                    mediaType: mediaType,
+                    mediaType: mediaType === 'images' ? 'image' : mediaType,
+                    images: images.length > 0 ? images : null,
                     publishDate: new Date().toISOString().split('T')[0]
                 };
                 
@@ -2040,10 +1428,10 @@ ${mediaInfo ? mediaInfo + '\n' : ''}
                 document.getElementById('formResult').innerHTML = `<div class="success-display"><i class="fas fa-check-circle"></i> تم إضافة العقار بنجاح</div>`;
                 document.getElementById('propertyCount').textContent = `${allListings.length}`;
                 document.getElementById('dataForm').reset();
-                removeImage();
+                removeImages();
                 removeVideo();
                 document.getElementById('youtubeInputGroup').style.display = 'none';
-                document.getElementById('imageInputGroup').style.display = 'none';
+                document.getElementById('imagesInputGroup').style.display = 'none';
                 document.getElementById('videoInputGroup').style.display = 'none';
                 document.getElementById('mediaType').selectedIndex = 0;
                 
@@ -2068,7 +1456,6 @@ ${mediaInfo ? mediaInfo + '\n' : ''}
         
         // تهيئة الصفحة عند التحميل
         document.addEventListener('DOMContentLoaded', function() {
-            // مستمعات الأحداث للفلاتر
             document.getElementById('priceFilter').addEventListener('change', applyFilters);
             document.getElementById('categoryFilter').addEventListener('change', applyFilters);
             document.getElementById('floorsFilter').addEventListener('change', applyFilters);
@@ -2082,10 +1469,10 @@ ${mediaInfo ? mediaInfo + '\n' : ''}
             document.getElementById('closeFormBtn').addEventListener('click', function() {
                 document.getElementById('addFormContainer').classList.remove('active');
                 document.getElementById('dataForm').reset();
-                removeImage();
+                removeImages();
                 removeVideo();
                 document.getElementById('youtubeInputGroup').style.display = 'none';
-                document.getElementById('imageInputGroup').style.display = 'none';
+                document.getElementById('imagesInputGroup').style.display = 'none';
                 document.getElementById('videoInputGroup').style.display = 'none';
                 document.getElementById('mediaType').selectedIndex = 0;
                 document.getElementById('formResult').innerHTML = '';
@@ -2096,10 +1483,10 @@ ${mediaInfo ? mediaInfo + '\n' : ''}
             document.getElementById('cancelBtn').addEventListener('click', function() {
                 document.getElementById('addFormContainer').classList.remove('active');
                 document.getElementById('dataForm').reset();
-                removeImage();
+                removeImages();
                 removeVideo();
                 document.getElementById('youtubeInputGroup').style.display = 'none';
-                document.getElementById('imageInputGroup').style.display = 'none';
+                document.getElementById('imagesInputGroup').style.display = 'none';
                 document.getElementById('videoInputGroup').style.display = 'none';
                 document.getElementById('mediaType').selectedIndex = 0;
                 document.getElementById('formResult').innerHTML = '';
@@ -2109,8 +1496,22 @@ ${mediaInfo ? mediaInfo + '\n' : ''}
             
             document.getElementById('dataForm').addEventListener('submit', handleFormSubmit);
             
-            document.getElementById('imageUploadBtn').addEventListener('click', () => document.getElementById('imageFile').click());
+            document.getElementById('imagesUploadBtn').addEventListener('click', () => document.getElementById('imageFiles').click());
             document.getElementById('videoUploadBtn').addEventListener('click', () => document.getElementById('videoFile').click());
+            
+            // ربط زر تواصل معنا
+            document.getElementById('contactUsBtn').addEventListener('click', function(e) {
+                e.preventDefault();
+                showContactModal();
+            });
+            
+            // إغلاق نافذة تواصل معنا عند النقر خارج المحتوى
+            window.addEventListener('click', function(e) {
+                const modal = document.getElementById('contactModal');
+                if (e.target === modal) {
+                    closeContactModal();
+                }
+            });
             
             initializeToken();
             
