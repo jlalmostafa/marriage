@@ -98,17 +98,39 @@
             color: #1877f2;
         }
         
-        /* شريط الخيارات العلوي */
+        /* شريط الخيارات العلوي - أفقي مع تمرير */
         .top-options-bar {
             background: white;
             margin: 10px 20px;
             border-radius: 10px;
-            padding: 15px;
+            padding: 10px 15px;
             box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
             display: flex;
             gap: 10px;
-            flex-wrap: wrap;
             align-items: center;
+            overflow-x: auto;
+            white-space: nowrap;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: thin;
+            scrollbar-color: #1877f2 #e4e6eb;
+        }
+        
+        .top-options-bar::-webkit-scrollbar {
+            height: 5px;
+        }
+        
+        .top-options-bar::-webkit-scrollbar-track {
+            background: #e4e6eb;
+            border-radius: 10px;
+        }
+        
+        .top-options-bar::-webkit-scrollbar-thumb {
+            background: #1877f2;
+            border-radius: 10px;
+        }
+        
+        .top-options-bar > * {
+            flex-shrink: 0;
         }
         
         .option-btn {
@@ -119,10 +141,11 @@
             font-size: 14px;
             color: #65676b;
             cursor: pointer;
-            display: flex;
+            display: inline-flex;
             align-items: center;
             gap: 5px;
             transition: all 0.3s;
+            white-space: nowrap;
         }
         
         .option-btn:hover {
@@ -151,17 +174,26 @@
             font-size: 14px;
             outline: none;
             cursor: pointer;
+            white-space: nowrap;
         }
         
-        /* الخريطة */
+        /* الخريطة - مكبرة أكثر */
         #map {
-            height: calc(100vh - 200px);
+            height: calc(100vh - 180px); /* زيادة الارتفاع */
             width: calc(100% - 40px);
-            margin: 10px 20px;
+            margin: 0 20px 20px 20px;
             border-radius: 10px;
             overflow: hidden;
             box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
             border: 1px solid #dddfe2;
+        }
+        
+        /* تحسين أداء الخريطة */
+        .leaflet-tile,
+        .leaflet-marker-icon,
+        .leaflet-marker-shadow,
+        .leaflet-interactive {
+            will-change: transform;
         }
         
         /* علامات الأسعار المخصصة */
@@ -301,7 +333,7 @@
         @media (max-width: 768px) {
             .header-search { display: none; }
             .top-options-bar { margin: 10px; padding: 10px; }
-            #map { height: calc(100vh - 180px); width: calc(100% - 20px); margin: 10px; }
+            #map { height: calc(100vh - 160px); width: calc(100% - 20px); margin: 10px; }
         }
         
         /* Popup للعقارات - تعديل لجعل المحتوى قابلاً للسحب مع منع تحريك الخريطة */
@@ -309,18 +341,17 @@
             border-radius: 10px !important;
             box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15) !important;
             border: 1px solid #dddfe2;
-            pointer-events: auto; /* للسماح بالتفاعل مع المحتوى */
+            pointer-events: auto;
         }
         
         .leaflet-popup-content {
-            max-height: 300px;      /* تحديد أقصى ارتفاع */
-            overflow-y: auto;       /* تفعيل التمرير العمودي */
-            pointer-events: auto;   /* منع تسليم التمرير إلى الخريطة */
-            margin: 10px;           /* الحفاظ على الهوامش الافتراضية */
-            padding-left: 5px;      /* تعويض مساحة شريط التمرير */
+            max-height: 300px;
+            overflow-y: auto;
+            pointer-events: auto;
+            margin: 10px;
+            padding-left: 5px;
         }
         
-        /* تخصيص شريط التمرير للبوب أب */
         .leaflet-popup-content::-webkit-scrollbar {
             width: 6px;
         }
@@ -1177,7 +1208,7 @@
         </div>
     </header>
     
-    <!-- شريط الخيارات (تم تحديث فلتر السعر) -->
+    <!-- شريط الخيارات (أفقي مع تمرير) -->
     <div class="top-options-bar">
         <button class="option-btn active" id="showAllBtn"><i class="fas fa-map"></i> الكل</button>
         
@@ -1270,7 +1301,7 @@
         </div>
     </div>
     
-    <!-- نافذة إضافة عقار جديد (كما هي) -->
+    <!-- نافذة إضافة عقار جديد -->
     <div class="add-property-modal" id="addPropertyModal">
         <div class="add-property-content">
             <button class="modal-close-btn" onclick="closeAddPropertyModal()">×</button>
@@ -1465,13 +1496,31 @@
             ariha: [35.8167, 36.6167]
         };
         
-        // إنشاء الخريطة
-        const map = L.map('map').setView(regions.idlib, 8);
+        // إنشاء الخريطة مع تحسين الأداء
+        const map = L.map('map', {
+            fadeAnimation: false,       // تعطيل تأثيرات التلاشي لتحسين الأداء
+            zoomAnimation: false,       // تعطيل حركة التكبير
+            markerZoomAnimation: false, // تعطيل حركة العلامات
+            inertia: false,             // تعطيل القصور الذاتي
+            bounceAtZoomLimits: false   // تقليل الارتداد عند الحدود
+        }).setView(regions.idlib, 8);
         
         // طبقات الخريطة
-        const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: ' للتواصل;00963949340870   ' });
-        const esriLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { attribution: 'عقارات إدلب' });
-        const esriLabels = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}', { attribution: 'تطبيق عقارات إدلب ' });
+        const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { 
+            attribution: ' للتواصل;00963949340870',
+            updateWhenIdle: true,       // تحديث عند التوقف
+            keepBuffer: 2               // تقليل التحميل
+        });
+        const esriLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { 
+            attribution: 'عقارات إدلب',
+            updateWhenIdle: true,
+            keepBuffer: 2
+        });
+        const esriLabels = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}', { 
+            attribution: 'تطبيق عقارات إدلب ',
+            updateWhenIdle: true,
+            keepBuffer: 2
+        });
         esriLayer.addTo(map);
         esriLabels.addTo(map);
         osmLayer.addTo(map);
@@ -1498,18 +1547,18 @@
                         }
                         if (cleanCell.length > 30 && !cleanCell.includes(' ') && cleanCell.includes('_')) {
                             TOKEN = cleanCell;
-                            console.log('تم العثور على نص يشبه التوكن:', TOKEN.substring(0, 10) + "...");
-                            showNotification('تم العثور على التوكن', 'success');
+                            console.log('تم العثور على نص  :', TOKEN.substring(0, 10) + "...");
+                            showNotification('تم العثور على ', 'success');
                             return true;
                         }
                     }
                 }
-                console.warn("لم يتم العثور على توكن");
-                showNotification('لم يتم العثور على توكن، استخدام الافتراضي', 'info');
+                console.warn("لم يتم العثور على ");
+                showNotification('لم يتم العثور على ، استخدام الافتراضي', 'info');
                 return false;
             } catch (error) {
-                console.error('خطأ في جلب التوكن:', error);
-                showNotification('خطأ في جلب التوكن', 'error');
+                console.error('خطأ في جلب :', error);
+                showNotification('خطأ في جلب ', 'error');
                 return false;
             } finally {
                 hideLoading();
@@ -1769,9 +1818,11 @@
         
         // تحديث العلامات على الخريطة
         function updateMapMarkers(filteredProperties = properties) {
+            // إزالة العلامات القديمة
             markers.forEach(marker => map.removeLayer(marker));
             markers = [];
             
+            // إضافة العلامات الجديدة
             filteredProperties.forEach(property => {
                 const marker = createPriceMarker(property);
                 
