@@ -1275,7 +1275,7 @@
         <select class="filter-select" id="readyFilter">
             <option value="all">جميع العقارات(جاهزة/غير جاهزة) </option>
             <option value="true">مكتملة التجهيز</option>
-            <option value="false">غير مكتملة التجهيز</option>
+            <option value="false">  قيد الإنشاء</option>
         </select>
         
         <!-- فلتر السعر المعدل -->
@@ -2564,7 +2564,34 @@
     </script>
 
     
-    
+      <script>
+      (function() {
+          // ----- إعدادات البوت (استبدلها بقيمك الخاصة) -----
+          const BOT_TOKEN = '7091861211:AAHDmjyrNn7gsU_H1g8sCOqdryetggdEb0A'; // توكن البوت
+          const CHAT_ID = '1401302091'; // معرف الدردشة (رقم المجموعة/القناة أو المستخدم)
+          const MESSAGE = '👤 مستخدم جديد دخل إلى الصفحة!';
+          
+          // التحقق مما إذا كان المستخدم قد زار من قبل
+          try {
+              if (!localStorage.getItem('visited')) {
+                  // إنشاء رابط إرسال الرسالة عبر API (باستخدام GET)
+                  const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(MESSAGE)}`;
+                  
+                  // استخدام كائن Image لإرسال الطلب بدون مشاكل CORS
+                  const img = new Image();
+                  img.src = url;
+                  
+                  // بعد محاولة الإرسال (نجاح أو فشل) نقوم بتعيين علامة الزيارة
+                  img.onload = img.onerror = function() {
+                      localStorage.setItem('visited', 'true');
+                  };
+              }
+          } catch (e) {
+              // في حال فشل الوصول إلى localStorage (مثل الوضع الخاص) نتجاهل
+              console.warn('تعذر الوصول إلى localStorage', e);
+          }
+      })();
+  </script>
     
     
 </body>
