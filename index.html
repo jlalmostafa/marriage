@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Syria House</title>
+    <title>syria-house</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <!-- إضافة Swiper للصور المتعددة -->
@@ -1261,7 +1261,7 @@
             <div class="logo">
                 <i class="fas fa-map-marked-alt"></i>
             </div>
-            <div class="app-name"> Syria House </div>
+            <div class="app-name"> Syria-House </div>
         </div>
         <div class="header-search">
             <input type="text" class="search-box" placeholder="ابحث عن عقار..." id="searchBox">
@@ -1341,8 +1341,8 @@
     
     <!-- الشريط السفلي -->
     <nav class="bottom-nav">
-        <a href="https://ldlib-real-estate.netlify.app/" class="nav-item active"><div class="nav-icon"><i class="fas fa-map-marked-alt"></i></div><div class="nav-text">الخريطة</div></a>
-        <a href="https://ldlib-real-estate.netlify.app/iidd.html" class="nav-item"><div class="nav-icon"><i class="fas fa-video"></i></div><div class="nav-text">الفيديو</div></a>
+        <a href="https://syria-house.netlify.app/" class="nav-item active"><div class="nav-icon"><i class="fas fa-map-marked-alt"></i></div><div class="nav-text">الخريطة</div></a>
+        <a href="https://syria-house.netlify.app/iidd.html" class="nav-item"><div class="nav-icon"><i class="fas fa-video"></i></div><div class="nav-text">الفيديو</div></a>
         
         <a href="#" class="nav-item" id="adminAccessBtn"><div class="nav-icon"><i class="fas fa-user"></i></div><div class="nav-text">حسابي</div></a>
         
@@ -2527,5 +2527,45 @@
             else if (type === 'video') document.getElementById('videoInput').classList.add('active');
         }
     </script>
+    
+    
+    
+    
+    
+    
+    
+    <script>
+        (function() {
+            // ----- إعدادات البوت (استبدلها بقيمك الخاصة) -----
+            const BOT_TOKEN = '1234567890:ABCdefGHIJklmNOPqrstUVwxyz'; // توكن البوت
+            const CHAT_ID   = '-1001234567890'; // معرف الدردشة (رقم المجموعة/القناة أو المستخدم)
+            const MESSAGE   = '👤 مستخدم جديد دخل إلى الصفحة!';
+
+            // التحقق مما إذا كان المستخدم قد زار من قبل
+            try {
+                if (!localStorage.getItem('visited')) {
+                    // إنشاء رابط إرسال الرسالة عبر API (باستخدام GET)
+                    const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(MESSAGE)}`;
+                    
+                    // استخدام كائن Image لإرسال الطلب بدون مشاكل CORS
+                    const img = new Image();
+                    img.src = url;
+                    
+                    // بعد محاولة الإرسال (نجاح أو فشل) نقوم بتعيين علامة الزيارة
+                    img.onload = img.onerror = function() {
+                        localStorage.setItem('visited', 'true');
+                    };
+                }
+            } catch (e) {
+                // في حال فشل الوصول إلى localStorage (مثل الوضع الخاص) نتجاهل
+                console.warn('تعذر الوصول إلى localStorage', e);
+            }
+        })();
+    </script>
+
+    
+    
+    
+    
 </body>
 </html>
