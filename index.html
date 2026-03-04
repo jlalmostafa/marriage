@@ -623,7 +623,7 @@
             transform: rotate(90deg);
         }
         
-        /* نافذة لوحة تحكم المدير */
+        /* نافذة لوحة تحكم المدير (للمستخدمين) */
         .admin-panel-modal {
             display: none;
             position: fixed;
@@ -712,6 +712,100 @@
         
         .admin-panel-close:hover {
             background: #e4e6eb;
+        }
+        
+        /* نافذة إدارة العقارات المعلقة (للمسؤول) */
+        .pending-properties-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1001;
+            justify-content: center;
+            align-items: center;
+            animation: modalFadeIn 0.3s ease-out;
+            backdrop-filter: blur(5px);
+        }
+        
+        .pending-properties-content {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 1000px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            position: relative;
+        }
+        
+        .pending-properties-content h3 {
+            color: #1877f2;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .pending-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .pending-table th,
+        .pending-table td {
+            border: 1px solid #dddfe2;
+            padding: 10px;
+            text-align: center;
+            vertical-align: middle;
+        }
+        
+        .pending-table th {
+            background: #f0f2f5;
+            font-weight: 600;
+        }
+        
+        .pending-table td img {
+            max-width: 100px;
+            max-height: 60px;
+            border-radius: 5px;
+        }
+        
+        .pending-table .action-btn {
+            padding: 5px 10px;
+            margin: 2px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        .approve-btn {
+            background: #00a400;
+            color: white;
+        }
+        
+        .reject-btn {
+            background: #e74c3c;
+            color: white;
+        }
+        
+        .view-btn {
+            background: #1877f2;
+            color: white;
+        }
+        
+        .pending-close {
+            background: #f0f2f5;
+            color: #65676b;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            display: block;
+            margin: 20px auto 0;
         }
         
         /* نافذة إضافة عقار - معدلة لعدة صور */
@@ -1587,9 +1681,12 @@
         
         <button class="option-btn" id="mapToggleBtn"><i class="fas fa-satellite"></i> الأقمار</button>
         
-        <!-- هذه الأزرار تظهر للجميع الآن (تم إزالة admin-only) -->
+        <!-- هذه الأزرار تظهر للجميع الآن -->
         <button class="option-btn" id="addPropertyBtn"><i class="fas fa-plus-circle"></i> إضافة عقار</button>
         <button class="option-btn" id="locateBtn"><i class="fas fa-map-marker-alt"></i> تحديد موقع</button>
+        
+        <!-- زر إدارة العقارات المعلقة (للمسؤول فقط) -->
+        <button class="option-btn admin-only" id="managePendingBtn"><i class="fas fa-clock"></i> عقارات معلقة</button>
     </div>
     
     <!-- الخريطة -->
@@ -1597,8 +1694,6 @@
     
     <div class="aaa">
         للتواصل عبر الأرقام التالية: <a href="https://wa.me/+963949340870" target="_blank">00963949340870</a> | © 2023
-    
-    
     </div>
     
     <!-- الشريط السفلي -->
@@ -1610,7 +1705,7 @@
         
         <a href="#" class="nav-item" id="contactUsBtn"><div class="nav-icon"><i class="fas fa-headset"></i></div><div class="nav-text"> إضافة عقار</div></a>
         
-        <!-- زر لوحة التحكم للمسؤول (يظهر فقط للمسؤول) -->
+        <!-- زر لوحة التحكم للمسؤول (لإدارة المستخدمين) -->
         <a href="#" class="nav-item admin-only" id="adminPanelBtn"><div class="nav-icon"><i class="fas fa-cogs"></i></div><div class="nav-text">لوحة التحكم</div></a>
     </nav>
     
@@ -1705,7 +1800,7 @@
         </div>
     </div>
     
-    <!-- نافذة لوحة تحكم المدير -->
+    <!-- نافذة لوحة تحكم المدير (للمستخدمين) -->
     <div class="admin-panel-modal" id="adminPanelModal">
         <div class="admin-panel-content">
             <button class="close-btn" onclick="closeAdminPanel()">×</button>
@@ -1724,6 +1819,30 @@
                 </tbody>
             </table>
             <button class="admin-panel-close" onclick="closeAdminPanel()">إغلاق</button>
+        </div>
+    </div>
+    
+    <!-- نافذة إدارة العقارات المعلقة (للمسؤول) -->
+    <div class="pending-properties-modal" id="pendingPropertiesModal">
+        <div class="pending-properties-content">
+            <button class="close-btn" onclick="closePendingModal()">×</button>
+            <h3>إدارة العقارات المعلقة</h3>
+            <table class="pending-table" id="pendingTable">
+                <thead>
+                    <tr>
+                        <th>العنوان</th>
+                        <th>السعر</th>
+                        <th>المستخدم</th>
+                        <th>رقم الهاتف</th>
+                        <th>الصور</th>
+                        <th>الإجراءات</th>
+                    </tr>
+                </thead>
+                <tbody id="pendingTableBody">
+                    <!-- يتم تعبئتها بواسطة JavaScript -->
+                </tbody>
+            </table>
+            <button class="pending-close" onclick="closePendingModal()">إغلاق</button>
         </div>
     </div>
     
@@ -1982,34 +2101,23 @@
                 const csvData = await response.text();
                 const rows = csvData.split('\n').map(row => row.split(','));
                 
-                // الخلايا المطلوبة:
-                // A1: الصف 1, العمود 0 -> التوكن
-                // B2: الصف 2, العمود 1 -> اسم المستخدم
-                // D3: الصف 3, العمود 3 -> اسم المستودع
-                // C4: الصف 4, العمود 2 -> كلمة سر الادمن
-                
-                // دالة مساعدة لاستخراج قيمة خلية مع مراعاة أن CSV قد يحتوي على فواصل ونصوص مقتبسة
                 function getCellValue(rowIndex, colIndex) {
                     if (rowIndex >= rows.length) return '';
                     const row = rows[rowIndex];
                     if (colIndex >= row.length) return '';
                     let cell = row[colIndex].trim();
-                    // إزالة علامات الاقتباس إذا كانت موجودة
                     if (cell.startsWith('"') && cell.endsWith('"')) {
                         cell = cell.substring(1, cell.length - 1);
                     }
                     return cell;
                 }
                 
-                // قراءة القيم (ملاحظة: الصفوف تبدأ من 0)
                 TOKEN = getCellValue(0, 0);      // A1
                 USERNAME = getCellValue(1, 1);    // B2
                 REPO_NAME = getCellValue(2, 3);   // D3
                 ADMIN_PASSWORD = getCellValue(3, 2); // C4
                 
-                // التحقق من وجود التوكن (قد يكون في أي خلية أخرى، نبحث أيضاً عن نمط التوكن)
                 if (!TOKEN) {
-                    // البحث في كل الخلايا عن نمط التوكن (كإجراء احتياطي)
                     for (let r = 0; r < rows.length; r++) {
                         for (let c = 0; c < rows[r].length; c++) {
                             const cell = rows[r][c].trim();
@@ -2044,14 +2152,14 @@
         
         // ==================== نظام المستخدمين والكوينز ====================
         
-        let users = []; // مصفوفة المستخدمين
-        let currentUser = null; // المستخدم الحالي (إذا كان مسجلاً)
+        let users = [];
+        let currentUser = null;
         
         // تحميل المستخدمين من GitHub
         async function loadUsersFromGitHub() {
             try {
                 if (!TOKEN) {
-                    await fetchSettingsFromGoogleSheets(); // محاولة جلب التوكن مجدداً
+                    await fetchSettingsFromGoogleSheets();
                 }
                 const response = await fetch(`https://api.github.com/repos/${USERNAME}/${REPO_NAME}/contents/${USERS_FILE_PATH}`, {
                     headers: { 'Authorization': `token ${TOKEN}`, 'Accept': 'application/vnd.github.v3+json' }
@@ -2150,7 +2258,7 @@
                 username: username,
                 phone: phone,
                 password: password,
-                coins: 200 // رصيد ابتدائي 200 كوينز
+                coins: 200
             };
             
             users.push(newUser);
@@ -2168,6 +2276,7 @@
             }
         }
         
+        // دالة تسجيل الدخول
         function login() {
             const username = document.getElementById('loginUsername').value.trim();
             const password = document.getElementById('loginPassword').value;
@@ -2180,6 +2289,13 @@
             const user = users.find(u => u.username === username && u.password === password);
             if (user) {
                 currentUser = user;
+                // حفظ في localStorage
+                localStorage.setItem('currentUser', JSON.stringify({
+                    id: user.id,
+                    username: user.username,
+                    phone: user.phone,
+                    coins: user.coins
+                }));
                 document.getElementById('accountText').innerHTML = `${user.username} (${user.coins} كوينز)`;
                 closeAuthModal();
                 showNotification(`مرحباً ${user.username}`, 'success');
@@ -2189,12 +2305,34 @@
             }
         }
         
+        // دالة تسجيل خروج
         function logout() {
             currentUser = null;
+            localStorage.removeItem('currentUser');
             document.getElementById('accountText').innerHTML = 'حسابي';
             closeAccountModal();
             showNotification('تم تسجيل الخروج', 'info');
             updateMapMarkers();
+        }
+        
+        // استعادة الجلسة من localStorage
+        function restoreSession() {
+            const savedUser = localStorage.getItem('currentUser');
+            if (savedUser) {
+                try {
+                    const userData = JSON.parse(savedUser);
+                    const user = users.find(u => u.id === userData.id);
+                    if (user) {
+                        currentUser = user;
+                        document.getElementById('accountText').innerHTML = `${user.username} (${user.coins} كوينز)`;
+                    } else {
+                        // المستخدم غير موجود في القائمة (ربما حذف)
+                        localStorage.removeItem('currentUser');
+                    }
+                } catch (e) {
+                    localStorage.removeItem('currentUser');
+                }
+            }
         }
         
         function showLoginError(msg) {
@@ -2245,6 +2383,9 @@
                 updateMapMarkers();
                 closeAuthModal();
                 document.getElementById('accountText').innerHTML = 'المسؤول';
+                // إلغاء أي جلسة مستخدم عادي
+                currentUser = null;
+                localStorage.removeItem('currentUser');
             } else {
                 document.getElementById('adminLoginError').textContent = 'كلمة السر غير صحيحة';
                 document.getElementById('adminLoginError').style.display = 'block';
@@ -2337,6 +2478,13 @@
             }
             try {
                 await saveUsersToGitHub(users);
+                // تحديث localStorage
+                localStorage.setItem('currentUser', JSON.stringify({
+                    id: currentUser.id,
+                    username: currentUser.username,
+                    phone: currentUser.phone,
+                    coins: currentUser.coins
+                }));
                 document.getElementById('accountUsername').textContent = currentUser.username;
                 document.getElementById('accountPhone').textContent = currentUser.phone;
                 document.getElementById('accountText').innerHTML = `${currentUser.username} (${currentUser.coins} كوينز)`;
@@ -2393,6 +2541,89 @@
             document.getElementById('adminPanelModal').style.display = 'none';
         }
         
+        // ==================== نظام الموافقة على العقارات ====================
+        
+        // فتح نافذة إدارة العقارات المعلقة
+        function openPendingModal() {
+            if (!isAdmin) return;
+            const pendingProps = properties.filter(p => p.status === 'pending');
+            const tbody = document.getElementById('pendingTableBody');
+            tbody.innerHTML = '';
+            
+            pendingProps.forEach(prop => {
+                const user = users.find(u => u.id === prop.userId);
+                const username = user ? user.username : 'غير معروف';
+                const phone = prop.phone;
+                
+                // عرض أول صورة إن وجدت
+                let imageHtml = '';
+                if (prop.images && prop.images.length > 0) {
+                    imageHtml = `<img src="${prop.images[0]}" alt="صورة" style="max-width:100px; max-height:60px;">`;
+                } else if (prop.mediaType === 'image' && prop.mediaUrl) {
+                    imageHtml = `<img src="${prop.mediaUrl}" alt="صورة" style="max-width:100px; max-height:60px;">`;
+                } else {
+                    imageHtml = 'لا توجد';
+                }
+                
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${prop.title}</td>
+                    <td>${prop.price}$</td>
+                    <td>${username}</td>
+                    <td>${phone}</td>
+                    <td>${imageHtml}</td>
+                    <td>
+                        <button class="action-btn approve-btn" onclick="approveProperty(${prop.id})">موافقة</button>
+                        <button class="action-btn reject-btn" onclick="rejectProperty(${prop.id})">حذف</button>
+                        <button class="action-btn view-btn" onclick="showPropertyDetails(${prop.id})">عرض</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+            
+            document.getElementById('pendingPropertiesModal').style.display = 'flex';
+        }
+        
+        function closePendingModal() {
+            document.getElementById('pendingPropertiesModal').style.display = 'none';
+        }
+        
+        // الموافقة على عقار
+        async function approveProperty(propertyId) {
+            const property = properties.find(p => p.id === propertyId);
+            if (!property) return;
+            property.status = 'approved';
+            try {
+                await saveToGitHub(properties);
+                showNotification('تمت الموافقة على العقار', 'success');
+                updateMapMarkers();
+                openPendingModal(); // إعادة تحميل الجدول
+            } catch (error) {
+                showNotification('فشل في حفظ التغييرات', 'error');
+            }
+        }
+        
+        // رفض (حذف) عقار
+        async function rejectProperty(propertyId) {
+            const property = properties.find(p => p.id === propertyId);
+            if (!property) return;
+            if (confirm(`هل أنت متأكد من حذف العقار "${property.title}"؟`)) {
+                const index = properties.findIndex(p => p.id === propertyId);
+                if (index !== -1) {
+                    properties.splice(index, 1);
+                    try {
+                        await saveToGitHub(properties);
+                        showNotification('تم حذف العقار', 'success');
+                        updateMapMarkers();
+                        openPendingModal();
+                    } catch (error) {
+                        showNotification('فشل في الحذف', 'error');
+                    }
+                }
+            }
+        }
+        
+        // دالة خصم الكوينز عند إضافة عقار
         async function deductCoinsForProperty() {
             if (!currentUser) {
                 showNotification('يجب تسجيل الدخول أولاً', 'error');
@@ -2409,6 +2640,13 @@
             }
             try {
                 await saveUsersToGitHub(users);
+                // تحديث localStorage
+                localStorage.setItem('currentUser', JSON.stringify({
+                    id: currentUser.id,
+                    username: currentUser.username,
+                    phone: currentUser.phone,
+                    coins: currentUser.coins
+                }));
                 document.getElementById('accountText').innerHTML = `${currentUser.username} (${currentUser.coins} كوينز)`;
                 return true;
             } catch (error) {
@@ -2417,6 +2655,7 @@
             }
         }
         
+        // تعديل دالة حفظ العقار الجديد لتضع الحالة pending
         async function saveNewProperty() {
             if (!isAdmin && currentUser) {
                 const canAdd = await deductCoinsForProperty();
@@ -2447,7 +2686,8 @@
                 mediaUrl: '',
                 images: [],
                 createdDate: new Date().toISOString(),
-                userId: currentUser ? currentUser.id : (isAdmin ? null : null)
+                userId: currentUser ? currentUser.id : (isAdmin ? null : null),
+                status: 'pending' // حالة معلقة
             };
             
             if (!propertyData.title || !propertyData.price || !propertyData.category || !propertyData.floors || !propertyData.phone) {
@@ -2479,7 +2719,7 @@
                 propertyData.id = Date.now();
                 properties.unshift(propertyData);
                 await saveToGitHub(properties);
-                showNotification('تم إضافة العقار بنجاح', 'success');
+                showNotification('تم إضافة العقار بنجاح، بانتظار موافقة المسؤول', 'success');
                 updateMapMarkers();
                 closeAddPropertyModal();
                 selectedImages = [];
@@ -2491,7 +2731,7 @@
             } finally { hideLoading(); }
         }
         
-        // ==================== باقي الدوال (كما هي مع بعض التعديلات) ====================
+        // ==================== باقي الدوال (مع تعديل عرض العقارات) ====================
         
         function createPriceMarker(property) {
             let markerClass = 'for-sale';
@@ -2597,7 +2837,8 @@
                         category: p.category || null,
                         floors: p.floors || null,
                         images: p.images || null,
-                        userId: p.userId || null
+                        userId: p.userId || null,
+                        status: p.status || 'approved' // للعقارات القديمة نعتبرها approved
                     }));
                     console.log(`تم تحميل ${properties.length} عقار من GitHub`);
                 }
@@ -2711,7 +2952,8 @@
                     createdDate: new Date().toISOString(),
                     category: "شقة",
                     floors: 2,
-                    userId: null
+                    userId: null,
+                    status: 'approved'
                 },
                 {
                     id: 2,
@@ -2729,23 +2971,33 @@
                     createdDate: new Date().toISOString(),
                     category: "أرض",
                     floors: 1,
-                    userId: null
+                    userId: null,
+                    status: 'approved'
                 }
             ];
             updateMapMarkers();
         }
         
+        // تحديث العلامات على الخريطة (فقط العقارات approved)
         function updateMapMarkers(filteredProperties = properties) {
             markers.forEach(marker => map.removeLayer(marker));
             markers = [];
             
-            filteredProperties.forEach(property => {
+            // تصفية العقارات: تظهر فقط approved للمستخدمين العاديين، وللمسؤول تظهر الكل (مع إظهار pending بعلامة)
+            let visibleProperties = filteredProperties;
+            if (!isAdmin) {
+                visibleProperties = filteredProperties.filter(p => p.status === 'approved');
+            }
+            
+            visibleProperties.forEach(property => {
                 const marker = createPriceMarker(property);
                 
                 let showDelete = false;
                 if (isAdmin) {
                     showDelete = true;
-                } else if (currentUser && property.userId && property.userId === currentUser.id) {
+                } else if (currentUser && property.userId && property.userId === currentUser.id && property.status === 'approved') {
+                    // المستخدم لا يمكنه حذف العقار بعد الموافقة؟ حسب الرغبة، يمكن السماح أو المنع
+                    // هنا سنسمح للمستخدم بحذف عقاراته حتى بعد الموافقة
                     showDelete = true;
                 }
                 
@@ -2757,12 +3009,15 @@
                 const floorsHtml = property.floors ? `<div>🏢 الطوابق: ${property.floors}</div>` : '';
                 const descriptionHtml = property.description ? `<div class="popup-description">${property.description.replace(/\n/g, '<br>')}</div>` : '';
                 
+                // إشارة إذا كان العقار معلقاً (للمسؤول فقط)
+                const pendingTag = (isAdmin && property.status === 'pending') ? '<span style="color:red; font-weight:bold;">(معلق)</span>' : '';
+                
                 const popupContent = `
                     <div class="property-popup">
                         <div class="popup-header">
                             <div class="popup-avatar"><i class="fas fa-home"></i></div>
                             <div>
-                                <div class="popup-title">${property.title}</div>
+                                <div class="popup-title">${property.title} ${pendingTag}</div>
                                 <div class="popup-price">${property.price}$</div>
                             </div>
                         </div>
@@ -3178,21 +3433,18 @@
         }
         
         document.addEventListener('DOMContentLoaded', async () => {
-            // جلب الإعدادات أولاً
             const settingsLoaded = await fetchSettingsFromGoogleSheets();
             if (!settingsLoaded) {
-                // إذا فشل الجلب، نستخدم قيماً افتراضية (للاختبار)
-                USERNAME = 'jlalmo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stafa';
-                REPO_NAME = 'ldlib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-real-estate';
-                TOKEN = 'ghp_iYAbE77RTSpGLfZ1ylTNm5Tlkd7UD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o4EqZ0l';
-                ADMIN_PASSWORD = '09ghp_iYAbE77RTSpGLfZ1ylTNm5Tlk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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d7UDo4EqZ0l911';
+                USERNAME = 'jlalmostafa';
+                REPO_NAME = 'ldlib-real-estate';
+                TOKEN = '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';
+                ADMIN_PASSWORD = '09911';
                 showNotification('تم استخدام الإعدادات الافتراضية', 'info');
             }
             
-            // تحميل المستخدمين
             await loadUsersFromGitHub();
-            // تحميل العقارات
             await loadDataFromGitHub();
+            restoreSession(); // استعادة جلسة المستخدم من localStorage
             
             loadPhoneFromStorage();
             document.getElementById('propertyPhone').addEventListener('input', savePhoneToStorage);
@@ -3229,6 +3481,11 @@
             document.getElementById('adminPanelBtn').addEventListener('click', (e) => {
                 e.preventDefault();
                 openAdminPanel();
+            });
+            
+            document.getElementById('managePendingBtn').addEventListener('click', (e) => {
+                e.preventDefault();
+                openPendingModal();
             });
             
             document.getElementById('addPropertyBtn').addEventListener('click', () => {
@@ -3284,6 +3541,7 @@
                     currentPropertyId = null;
                 }
                 if (e.target.id === 'adminPanelModal') closeAdminPanel();
+                if (e.target.id === 'pendingPropertiesModal') closePendingModal();
                 if (e.target.id === 'contactModal') closeContactModal();
             });
             
@@ -3294,6 +3552,7 @@
                     closeAuthModal();
                     closeAccountModal();
                     closeAdminPanel();
+                    closePendingModal();
                     document.getElementById('confirmDeleteModal').style.display = 'none';
                     closeLightbox();
                     closeContactModal();
