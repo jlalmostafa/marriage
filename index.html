@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
     
     <style>
-        /* إعدادات عامة */
+        /* إعدادات عامة - كما هي دون تغيير */
         * {
             margin: 0;
             padding: 0;
@@ -99,17 +99,17 @@
         }
         
         /* شريط الخيارات العلوي - أفقي مع تمرير */
-           .top-options-bar {
-       background: white;
-       margin: 10px 20px;
-       border-radius: 10px;
-       padding: 15px;
-       box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-       display: flex;
-       gap: 10px;
-       flex-wrap: wrap;
-       align-items: center;
-   }
+        .top-options-bar {
+            background: white;
+            margin: 10px 20px;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
         
         .top-options-bar::-webkit-scrollbar {
             height: 5px;
@@ -175,7 +175,7 @@
         
         /* الخريطة - مكبرة أكثر */
         #map {
-            height: calc(100vh - 180px); /* زيادة الارتفاع */
+            height: calc(100vh - 180px);
             width: calc(100% - 40px);
             margin: 0 20px 20px 20px;
             border-radius: 10px;
@@ -468,8 +468,8 @@
             transform: scale(1.1);
         }
         
-        /* نافذة كلمة سر المسؤول */
-        .admin-modal {
+        /* نافذة تسجيل الدخول / التسجيل */
+        .auth-modal {
             display: none;
             position: fixed;
             top: 0;
@@ -484,60 +484,234 @@
             backdrop-filter: blur(5px);
         }
         
-        .admin-modal-content {
+        .auth-modal-content {
             background: white;
             padding: 30px;
             border-radius: 10px;
             width: 90%;
-            max-width: 400px;
+            max-width: 450px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.2);
             animation: modalSlideIn 0.4s ease-out;
+            position: relative;
         }
         
-        .admin-modal h3 {
+        .auth-tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #f0f2f5;
+        }
+        
+        .auth-tab {
+            flex: 1;
+            padding: 10px;
+            background: none;
+            border: none;
+            font-size: 16px;
+            font-weight: 600;
+            color: #65676b;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+        }
+        
+        .auth-tab.active {
+            color: #1877f2;
+            border-bottom-color: #1877f2;
+        }
+        
+        .auth-panel {
+            display: none;
+        }
+        
+        .auth-panel.active {
+            display: block;
+        }
+        
+        .auth-panel h3 {
             margin-bottom: 20px;
             color: #1877f2;
             text-align: center;
         }
         
-        .admin-modal input {
-            width: 100%;
-            padding: 10px;
+        .form-group {
             margin-bottom: 15px;
-            border: 1px solid #dddfe2;
-            border-radius: 5px;
-            font-size: 16px;
         }
         
-        .admin-modal .error {
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #1c1e21;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #dddfe2;
+            border-radius: 5px;
+            font-size: 14px;
+            outline: none;
+        }
+        
+        .form-group input:focus {
+            border-color: #1877f2;
+        }
+        
+        .error-message {
             color: #e41e3f;
             margin-bottom: 15px;
             display: none;
             text-align: center;
-        }
-        
-        .admin-modal-buttons {
-            display: flex;
-            gap: 10px;
-        }
-        
-        .admin-modal-btn {
-            flex: 1;
-            padding: 10px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
             font-size: 14px;
         }
         
-        .admin-modal-btn.submit {
+        .auth-btn {
+            width: 100%;
+            padding: 12px;
             background: #1877f2;
             color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 10px;
+            transition: background 0.3s;
         }
         
-        .admin-modal-btn.cancel {
+        .auth-btn:hover {
+            background: #166fe5;
+        }
+        
+        .admin-login-link {
+            text-align: center;
+            margin-top: 10px;
+        }
+        
+        .admin-login-link a {
+            color: #1877f2;
+            text-decoration: none;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        
+        .admin-login-link a:hover {
+            text-decoration: underline;
+        }
+        
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: rgba(0,0,0,0.1);
+            color: #65676b;
+            border: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+        
+        .close-btn:hover {
+            background: rgba(231, 76, 60, 0.9);
+            color: white;
+            transform: rotate(90deg);
+        }
+        
+        /* نافذة لوحة تحكم المدير */
+        .admin-panel-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1001;
+            justify-content: center;
+            align-items: center;
+            animation: modalFadeIn 0.3s ease-out;
+            backdrop-filter: blur(5px);
+        }
+        
+        .admin-panel-content {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            position: relative;
+        }
+        
+        .admin-panel-content h3 {
+            color: #1877f2;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .users-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        
+        .users-table th,
+        .users-table td {
+            border: 1px solid #dddfe2;
+            padding: 10px;
+            text-align: center;
+        }
+        
+        .users-table th {
+            background: #f0f2f5;
+            font-weight: 600;
+        }
+        
+        .users-table td input {
+            width: 80px;
+            padding: 5px;
+            border: 1px solid #dddfe2;
+            border-radius: 3px;
+            text-align: center;
+        }
+        
+        .add-coins-btn {
+            background: #00a400;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+        
+        .add-coins-btn:hover {
+            background: #008000;
+        }
+        
+        .admin-panel-close {
             background: #f0f2f5;
             color: #65676b;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            display: block;
+            margin: 0 auto;
+        }
+        
+        .admin-panel-close:hover {
+            background: #e4e6eb;
         }
         
         /* نافذة إضافة عقار - معدلة لعدة صور */
@@ -1252,6 +1426,93 @@
             cursor: pointer;
             font-size: 14px;
         }
+
+        /* نافذة الحساب (عرض وتعديل البيانات) */
+        .account-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1001;
+            justify-content: center;
+            align-items: center;
+            animation: modalFadeIn 0.3s ease-out;
+            backdrop-filter: blur(5px);
+        }
+        .account-modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            position: relative;
+            text-align: center;
+        }
+        .account-modal-content h3 {
+            color: #1877f2;
+            margin-bottom: 20px;
+        }
+        .account-info {
+            margin-bottom: 20px;
+            text-align: right;
+        }
+        .account-info p {
+            margin: 10px 0;
+            font-size: 16px;
+        }
+        .account-info strong {
+            color: #1877f2;
+        }
+        .account-edit-input {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0 15px;
+            border: 1px solid #dddfe2;
+            border-radius: 5px;
+            font-size: 14px;
+            display: none;
+        }
+        .account-edit-input.show {
+            display: block;
+        }
+        .account-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        .account-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .account-btn.edit {
+            background: #f0f2f5;
+            color: #65676b;
+        }
+        .account-btn.save {
+            background: #00a400;
+            color: white;
+        }
+        .account-btn.cancel {
+            background: #e74c3c;
+            color: white;
+        }
+        .account-btn.logout {
+            background: #1877f2;
+            color: white;
+        }
+        .account-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
     </style>
 </head>
 <body>
@@ -1326,8 +1587,9 @@
         
         <button class="option-btn" id="mapToggleBtn"><i class="fas fa-satellite"></i> الأقمار</button>
         
-        <button class="option-btn admin-only" id="addPropertyBtn"><i class="fas fa-plus-circle"></i> إضافة عقار</button>
-        <button class="option-btn admin-only" id="locateBtn"><i class="fas fa-map-marker-alt"></i> تحديد موقع</button>
+        <!-- هذه الأزرار تظهر للجميع الآن (تم إزالة admin-only) -->
+        <button class="option-btn" id="addPropertyBtn"><i class="fas fa-plus-circle"></i> إضافة عقار</button>
+        <button class="option-btn" id="locateBtn"><i class="fas fa-map-marker-alt"></i> تحديد موقع</button>
     </div>
     
     <!-- الخريطة -->
@@ -1344,25 +1606,124 @@
         <a href="https://syria-house.netlify.app/" class="nav-item active"><div class="nav-icon"><i class="fas fa-map-marked-alt"></i></div><div class="nav-text">الخريطة</div></a>
         <a href="https://syria-house.netlify.app/iidd.html" class="nav-item"><div class="nav-icon"><i class="fas fa-video"></i></div><div class="nav-text">الفيديو</div></a>
         
-        <a href="#" class="nav-item" id="adminAccessBtn"><div class="nav-icon"><i class="fas fa-user"></i></div><div class="nav-text">حسابي</div></a>
+        <a href="#" class="nav-item" id="accountBtn"><div class="nav-icon"><i class="fas fa-user"></i></div><div class="nav-text" id="accountText">حسابي</div></a>
         
         <a href="#" class="nav-item" id="contactUsBtn"><div class="nav-icon"><i class="fas fa-headset"></i></div><div class="nav-text"> إضافة عقار</div></a>
+        
+        <!-- زر لوحة التحكم للمسؤول (يظهر فقط للمسؤول) -->
+        <a href="#" class="nav-item admin-only" id="adminPanelBtn"><div class="nav-icon"><i class="fas fa-cogs"></i></div><div class="nav-text">لوحة التحكم</div></a>
     </nav>
     
     <!-- مؤشر التحميل -->
     <div class="loader" id="loader"><div class="spinner"></div></div>
     <div class="loading-message" id="loadingMessage"></div>
     
-    <!-- نافذة كلمة سر المسؤول -->
-    <div class="admin-modal" id="adminPasswordModal">
-        <div class="admin-modal-content">
-            <h3>دخول المسؤول</h3>
-            <input type="number" id="adminPassword" placeholder="أدخل كلمة السر" autocomplete="off">
-            <div class="error" id="passwordError">كلمة السر غير صحيحة</div>
-            <div class="admin-modal-buttons">
-                <button class="admin-modal-btn submit" id="submitPasswordBtn">دخول</button>
-                <button class="admin-modal-btn cancel" id="cancelPasswordBtn">إلغاء</button>
+    <!-- نافذة تسجيل الدخول / التسجيل -->
+    <div class="auth-modal" id="authModal">
+        <div class="auth-modal-content">
+            <button class="close-btn" onclick="closeAuthModal()">×</button>
+            <div class="auth-tabs">
+                <button class="auth-tab active" id="loginTab" onclick="switchAuthTab('login')">تسجيل دخول</button>
+                <button class="auth-tab" id="registerTab" onclick="switchAuthTab('register')">تسجيل جديد</button>
             </div>
+            
+            <!-- لوحة تسجيل الدخول -->
+            <div class="auth-panel active" id="loginPanel">
+                <h3>تسجيل الدخول</h3>
+                <div class="error-message" id="loginError"></div>
+                <div class="form-group">
+                    <label>اسم المستخدم</label>
+                    <input type="text" id="loginUsername" placeholder="أدخل اسم المستخدم">
+                </div>
+                <div class="form-group">
+                    <label>كلمة السر</label>
+                    <input type="password" id="loginPassword" placeholder="أدخل كلمة السر">
+                </div>
+                <button class="auth-btn" onclick="login()">دخول</button>
+                <div class="admin-login-link">
+                    <a onclick="showAdminLogin()">دخول المسؤول</a>
+                </div>
+            </div>
+            
+            <!-- لوحة التسجيل -->
+            <div class="auth-panel" id="registerPanel">
+                <h3>تسجيل جديد</h3>
+                <div class="error-message" id="registerError"></div>
+                <div class="form-group">
+                    <label>اسم المستخدم</label>
+                    <input type="text" id="regUsername" placeholder="اختر اسم مستخدم">
+                </div>
+                <div class="form-group">
+                    <label>رقم الهاتف</label>
+                    <input type="text" id="regPhone" placeholder="+963xxxxxxxxx" value="+963">
+                </div>
+                <div class="form-group">
+                    <label>كلمة السر</label>
+                    <input type="password" id="regPassword" placeholder="أدخل كلمة السر">
+                </div>
+                <div class="form-group">
+                    <label>تأكيد كلمة السر</label>
+                    <input type="password" id="regConfirmPassword" placeholder="أعد إدخال كلمة السر">
+                </div>
+                <button class="auth-btn" onclick="register()">تسجيل</button>
+            </div>
+            
+            <!-- لوحة دخول المسؤول (تظهر عند الضغط على الرابط) -->
+            <div class="auth-panel" id="adminLoginPanel" style="display: none;">
+                <h3>دخول المسؤول</h3>
+                <div class="error-message" id="adminLoginError"></div>
+                <div class="form-group">
+                    <label>كلمة سر المسؤول</label>
+                    <input type="password" id="adminPassword" placeholder="أدخل كلمة السر">
+                </div>
+                <button class="auth-btn" onclick="loginAsAdmin()">دخول</button>
+                <div class="admin-login-link">
+                    <a onclick="switchAuthTab('login')">العودة لتسجيل الدخول</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- نافذة الحساب (عرض وتعديل البيانات) -->
+    <div class="account-modal" id="accountModal">
+        <div class="account-modal-content">
+            <button class="close-btn" onclick="closeAccountModal()">×</button>
+            <h3>معلومات الحساب</h3>
+            <div class="account-info">
+                <p><strong>اسم المستخدم:</strong> <span id="accountUsername"></span></p>
+                <input type="text" id="editUsername" class="account-edit-input" placeholder="اسم المستخدم الجديد">
+                <p><strong>رقم الهاتف:</strong> <span id="accountPhone"></span></p>
+                <input type="text" id="editPhone" class="account-edit-input" placeholder="رقم الهاتف الجديد (+963...)">
+                <p><strong>رصيد الكوينز:</strong> <span id="accountCoins"></span></p>
+            </div>
+            <div class="account-buttons">
+                <button class="account-btn edit" id="editAccountBtn" onclick="enableEditMode()">تعديل</button>
+                <button class="account-btn save" id="saveAccountBtn" onclick="saveAccountChanges()" style="display: none;">حفظ</button>
+                <button class="account-btn cancel" id="cancelEditBtn" onclick="cancelEdit()" style="display: none;">إلغاء</button>
+                <button class="account-btn logout" id="logoutBtn" onclick="logout()">تسجيل خروج</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- نافذة لوحة تحكم المدير -->
+    <div class="admin-panel-modal" id="adminPanelModal">
+        <div class="admin-panel-content">
+            <button class="close-btn" onclick="closeAdminPanel()">×</button>
+            <h3>لوحة تحكم المدير - إدارة المستخدمين</h3>
+            <table class="users-table" id="usersTable">
+                <thead>
+                    <tr>
+                        <th>اسم المستخدم</th>
+                        <th>رقم الهاتف</th>
+                        <th>رصيد الكوينز</th>
+                        <th>إجراءات</th>
+                    </tr>
+                </thead>
+                <tbody id="usersTableBody">
+                    <!-- يتم تعبئتها بواسطة JavaScript -->
+                </tbody>
+            </table>
+            <button class="admin-panel-close" onclick="closeAdminPanel()">إغلاق</button>
         </div>
     </div>
     
@@ -1536,13 +1897,17 @@
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     
     <script>
-        // إعدادات التطبيق - GitHub
-        const USERNAME = 'jlalmostafa';
-        const REPO_NAME = 'ldlib-real-estate';
-        let TOKEN = "";
+        // ==================== إعدادات التطبيق (سيتم جلبها من Google Sheets) ====================
+        
+        // متغيرات قابلة للتغيير (سيتم تعيينها بعد الجلب)
+        let USERNAME = '';          // اسم مستخدم GitHub (يأتي من الخلية B2)
+        let REPO_NAME = '';         // اسم المستودع (يأتي من الخلية D3)
+        let TOKEN = '';             // التوكن (يأتي من الخلية A1)
+        let ADMIN_PASSWORD = '';    // كلمة سر الادمن (تأتي من الخلية C4)
+        
         const DATA_FILE_PATH = 'properties_data.json';
+        const USERS_FILE_PATH = 'users.json';
         const MEDIA_FOLDER = 'media/';
-        const ADMIN_PASSWORD = "09911";
         
         // إعدادات Google Sheets
         const GOOGLE_SHEET_ID = "16ARji9CLluF8e3m64gGOLYNB9cCoHH5ZqM8iWhk5XqU";
@@ -1580,18 +1945,18 @@
         
         // إنشاء الخريطة مع تحسين الأداء
         const map = L.map('map', {
-            fadeAnimation: false,       // تعطيل تأثيرات التلاشي لتحسين الأداء
-            zoomAnimation: false,       // تعطيل حركة التكبير
-            markerZoomAnimation: false, // تعطيل حركة العلامات
-            inertia: false,             // تعطيل القصور الذاتي
-            bounceAtZoomLimits: false   // تقليل الارتداد عند الحدود
+            fadeAnimation: false,
+            zoomAnimation: false,
+            markerZoomAnimation: false,
+            inertia: false,
+            bounceAtZoomLimits: false
         }).setView(regions.idlib, 8);
         
         // طبقات الخريطة
         const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { 
             attribution: ' للتواصل;00963949340870',
-            updateWhenIdle: true,       // تحديث عند التوقف
-            keepBuffer: 2               // تقليل التحميل
+            updateWhenIdle: true,
+            keepBuffer: 2
         });
         const esriLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { 
             attribution: 'عقارات إدلب',
@@ -1607,47 +1972,527 @@
         esriLabels.addTo(map);
         osmLayer.addTo(map);
         
-        // دالة لجلب التوكن من Google Sheets
-        async function fetchTokenFromGoogleSheets() {
+        // ==================== دالة جلب الإعدادات من Google Sheets ====================
+        
+        async function fetchSettingsFromGoogleSheets() {
             try {
-                showLoading('جاري تحميل البيانات ...');
+                showLoading('جاري تحميل الإعدادات...');
                 const response = await fetch(GOOGLE_SHEET_URL);
                 if (!response.ok) throw new Error(`خطأ: ${response.status}`);
                 const csvData = await response.text();
-                const rows = csvData.split('\n');
-                for (let row of rows) {
-                    const cells = row.split(',');
-                    for (let cell of cells) {
-                        const cleanCell = cell.trim();
-                        const githubTokenRegex = /(ghp_[a-zA-Z0-9]{36}|github_pat_[a-zA-Z0-9]{22}_[a-zA-Z0-9]{59}|gho_[a-zA-Z0-9]{36})/;
-                        const tokenMatch = cleanCell.match(githubTokenRegex);
-                        if (tokenMatch) {
-                            TOKEN = tokenMatch[0];
-                            console.log(' تم العثور عل عقار  :', TOKEN.substring(0, 10) + "...");
-                            showNotification('تم العثور على عقار  ', 'success');
-                            return true;
+                const rows = csvData.split('\n').map(row => row.split(','));
+                
+                // الخلايا المطلوبة:
+                // A1: الصف 1, العمود 0 -> التوكن
+                // B2: الصف 2, العمود 1 -> اسم المستخدم
+                // D3: الصف 3, العمود 3 -> اسم المستودع
+                // C4: الصف 4, العمود 2 -> كلمة سر الادمن
+                
+                // دالة مساعدة لاستخراج قيمة خلية مع مراعاة أن CSV قد يحتوي على فواصل ونصوص مقتبسة
+                function getCellValue(rowIndex, colIndex) {
+                    if (rowIndex >= rows.length) return '';
+                    const row = rows[rowIndex];
+                    if (colIndex >= row.length) return '';
+                    let cell = row[colIndex].trim();
+                    // إزالة علامات الاقتباس إذا كانت موجودة
+                    if (cell.startsWith('"') && cell.endsWith('"')) {
+                        cell = cell.substring(1, cell.length - 1);
+                    }
+                    return cell;
+                }
+                
+                // قراءة القيم (ملاحظة: الصفوف تبدأ من 0)
+                TOKEN = getCellValue(0, 0);      // A1
+                USERNAME = getCellValue(1, 1);    // B2
+                REPO_NAME = getCellValue(2, 3);   // D3
+                ADMIN_PASSWORD = getCellValue(3, 2); // C4
+                
+                // التحقق من وجود التوكن (قد يكون في أي خلية أخرى، نبحث أيضاً عن نمط التوكن)
+                if (!TOKEN) {
+                    // البحث في كل الخلايا عن نمط التوكن (كإجراء احتياطي)
+                    for (let r = 0; r < rows.length; r++) {
+                        for (let c = 0; c < rows[r].length; c++) {
+                            const cell = rows[r][c].trim();
+                            const githubTokenRegex = /(ghp_[a-zA-Z0-9]{36}|github_pat_[a-zA-Z0-9]{22}_[a-zA-Z0-9]{59}|gho_[a-zA-Z0-9]{36})/;
+                            const tokenMatch = cell.match(githubTokenRegex);
+                            if (tokenMatch) {
+                                TOKEN = tokenMatch[0];
+                                break;
+                            }
                         }
-                        if (cleanCell.length > 30 && !cleanCell.includes(' ') && cleanCell.includes('_')) {
-                            TOKEN = cleanCell;
-                            console.log('تم العثور على نص يشبه التوكن:', TOKEN.substring(0, 10) + "...");
-                            showNotification('تم العثور على التوكن', 'success');
-                            return true;
-                        }
+                        if (TOKEN) break;
                     }
                 }
-                console.warn("لم يتم العثور على توكن");
-                showNotification('لم يتم العثور على توكن، استخدام الافتراضي', 'info');
-                return false;
+                
+                console.log('تم جلب الإعدادات:', { USERNAME, REPO_NAME, TOKEN: TOKEN ? TOKEN.substring(0,10)+'...' : 'غير موجود', ADMIN_PASSWORD });
+                
+                if (!USERNAME || !REPO_NAME || !TOKEN || !ADMIN_PASSWORD) {
+                    showNotification('بعض الإعدادات غير موجودة في ورقة Excel، يرجى التحقق من الخلايا', 'error');
+                } else {
+                    showNotification('تم تحميل الإعدادات بنجاح', 'success');
+                }
+                
+                return true;
             } catch (error) {
-                console.error('خطأ في جلب التوكن:', error);
-                showNotification('خطأ في جلب التوكن', 'error');
+                console.error('خطأ في جلب الإعدادات:', error);
+                showNotification('خطأ في جلب الإعدادات من Google Sheets', 'error');
                 return false;
             } finally {
                 hideLoading();
             }
         }
         
-        // دالة لإنشاء علامة سعر مخصصة
+        // ==================== نظام المستخدمين والكوينز ====================
+        
+        let users = []; // مصفوفة المستخدمين
+        let currentUser = null; // المستخدم الحالي (إذا كان مسجلاً)
+        
+        // تحميل المستخدمين من GitHub
+        async function loadUsersFromGitHub() {
+            try {
+                if (!TOKEN) {
+                    await fetchSettingsFromGoogleSheets(); // محاولة جلب التوكن مجدداً
+                }
+                const response = await fetch(`https://api.github.com/repos/${USERNAME}/${REPO_NAME}/contents/${USERS_FILE_PATH}`, {
+                    headers: { 'Authorization': `token ${TOKEN}`, 'Accept': 'application/vnd.github.v3+json' }
+                });
+                if (!response.ok) {
+                    if (response.status === 404) {
+                        users = [];
+                        await saveUsersToGitHub(users);
+                    } else throw new Error(`خطأ في جلب المستخدمين: ${response.status}`);
+                } else {
+                    const data = await response.json();
+                    const base64Content = data.content;
+                    const binaryString = atob(base64Content);
+                    const bytes = new Uint8Array(binaryString.length);
+                    for (let i = 0; i < binaryString.length; i++) bytes[i] = binaryString.charCodeAt(i);
+                    const decoder = new TextDecoder('utf-8');
+                    const content = decoder.decode(bytes);
+                    users = JSON.parse(content);
+                    console.log(`تم تحميل ${users.length} مستخدم من GitHub`);
+                }
+            } catch (error) {
+                console.error('خطأ في تحميل المستخدمين:', error);
+                users = [];
+            }
+        }
+        
+        // حفظ المستخدمين إلى GitHub
+        async function saveUsersToGitHub(data) {
+            try {
+                const getResponse = await fetch(`https://api.github.com/repos/${USERNAME}/${REPO_NAME}/contents/${USERS_FILE_PATH}`, {
+                    headers: { 'Authorization': `token ${TOKEN}`, 'Accept': 'application/vnd.github.v3+json' }
+                });
+                let sha = null;
+                if (getResponse.ok) {
+                    const fileData = await getResponse.json();
+                    sha = fileData.sha;
+                }
+                const content = JSON.stringify(data, null, 2);
+                const encoder = new TextEncoder();
+                const encodedContent = encoder.encode(content);
+                let binaryString = '';
+                for (let i = 0; i < encodedContent.length; i++) binaryString += String.fromCharCode(encodedContent[i]);
+                const base64Content = btoa(binaryString);
+                const response = await fetch(`https://api.github.com/repos/${USERNAME}/${REPO_NAME}/contents/${USERS_FILE_PATH}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `token ${TOKEN}`,
+                        'Accept': 'application/vnd.github.v3+json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: 'تحديث بيانات المستخدمين',
+                        content: base64Content,
+                        sha: sha,
+                        branch: 'main'
+                    })
+                });
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    console.error('GitHub API Error (users):', errorData);
+                    throw new Error(`خطأ في حفظ المستخدمين: ${response.status}`);
+                }
+                return true;
+            } catch (error) {
+                console.error("Error saving users to GitHub:", error);
+                throw error;
+            }
+        }
+        
+        // دالة تسجيل مستخدم جديد
+        async function register() {
+            const username = document.getElementById('regUsername').value.trim();
+            const phone = document.getElementById('regPhone').value.trim();
+            const password = document.getElementById('regPassword').value;
+            const confirm = document.getElementById('regConfirmPassword').value;
+            
+            if (!username || !phone || !password || !confirm) {
+                showRegisterError('جميع الحقول مطلوبة');
+                return;
+            }
+            if (!phone.startsWith('+963')) {
+                showRegisterError('رقم الهاتف يجب أن يبدأ بـ +963');
+                return;
+            }
+            if (password !== confirm) {
+                showRegisterError('كلمة السر غير متطابقة');
+                return;
+            }
+            if (users.some(u => u.username === username)) {
+                showRegisterError('اسم المستخدم موجود مسبقاً');
+                return;
+            }
+            
+            const newUser = {
+                id: Date.now(),
+                username: username,
+                phone: phone,
+                password: password,
+                coins: 200 // رصيد ابتدائي 200 كوينز
+            };
+            
+            users.push(newUser);
+            try {
+                await saveUsersToGitHub(users);
+                showNotification('تم التسجيل بنجاح! يمكنك تسجيل الدخول الآن', 'success');
+                switchAuthTab('login');
+                document.getElementById('regUsername').value = '';
+                document.getElementById('regPhone').value = '+963';
+                document.getElementById('regPassword').value = '';
+                document.getElementById('regConfirmPassword').value = '';
+                document.getElementById('registerError').style.display = 'none';
+            } catch (error) {
+                showRegisterError('فشل في حفظ البيانات: ' + error.message);
+            }
+        }
+        
+        function login() {
+            const username = document.getElementById('loginUsername').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            
+            if (!username || !password) {
+                showLoginError('الرجاء إدخال اسم المستخدم وكلمة السر');
+                return;
+            }
+            
+            const user = users.find(u => u.username === username && u.password === password);
+            if (user) {
+                currentUser = user;
+                document.getElementById('accountText').innerHTML = `${user.username} (${user.coins} كوينز)`;
+                closeAuthModal();
+                showNotification(`مرحباً ${user.username}`, 'success');
+                updateMapMarkers();
+            } else {
+                showLoginError('اسم المستخدم أو كلمة السر غير صحيحة');
+            }
+        }
+        
+        function logout() {
+            currentUser = null;
+            document.getElementById('accountText').innerHTML = 'حسابي';
+            closeAccountModal();
+            showNotification('تم تسجيل الخروج', 'info');
+            updateMapMarkers();
+        }
+        
+        function showLoginError(msg) {
+            const errorDiv = document.getElementById('loginError');
+            errorDiv.textContent = msg;
+            errorDiv.style.display = 'block';
+        }
+        function showRegisterError(msg) {
+            const errorDiv = document.getElementById('registerError');
+            errorDiv.textContent = msg;
+            errorDiv.style.display = 'block';
+        }
+        function showAdminLoginError(msg) {
+            const errorDiv = document.getElementById('adminLoginError');
+            errorDiv.textContent = msg;
+            errorDiv.style.display = 'block';
+        }
+        
+        function switchAuthTab(tab) {
+            document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.auth-panel').forEach(p => p.classList.remove('active'));
+            document.getElementById('adminLoginPanel').style.display = 'none';
+            
+            if (tab === 'login') {
+                document.getElementById('loginTab').classList.add('active');
+                document.getElementById('loginPanel').classList.add('active');
+                document.getElementById('loginError').style.display = 'none';
+            } else if (tab === 'register') {
+                document.getElementById('registerTab').classList.add('active');
+                document.getElementById('registerPanel').classList.add('active');
+                document.getElementById('registerError').style.display = 'none';
+            }
+        }
+        
+        function showAdminLogin() {
+            document.querySelectorAll('.auth-panel').forEach(p => p.classList.remove('active'));
+            document.getElementById('adminLoginPanel').style.display = 'block';
+            document.getElementById('adminLoginError').style.display = 'none';
+            document.getElementById('adminPassword').value = '';
+        }
+        
+        function loginAsAdmin() {
+            const password = document.getElementById('adminPassword').value;
+            if (password === ADMIN_PASSWORD) {
+                isAdmin = true;
+                showNotification('تم الدخول كمسؤول بنجاح', 'success');
+                document.querySelectorAll('.admin-only').forEach(btn => btn.classList.add('visible'));
+                updateMapMarkers();
+                closeAuthModal();
+                document.getElementById('accountText').innerHTML = 'المسؤول';
+            } else {
+                document.getElementById('adminLoginError').textContent = 'كلمة السر غير صحيحة';
+                document.getElementById('adminLoginError').style.display = 'block';
+            }
+        }
+        
+        function closeAuthModal() {
+            document.getElementById('authModal').style.display = 'none';
+            document.getElementById('loginUsername').value = '';
+            document.getElementById('loginPassword').value = '';
+            document.getElementById('loginError').style.display = 'none';
+            document.getElementById('regUsername').value = '';
+            document.getElementById('regPhone').value = '+963';
+            document.getElementById('regPassword').value = '';
+            document.getElementById('regConfirmPassword').value = '';
+            document.getElementById('registerError').style.display = 'none';
+            document.getElementById('adminPassword').value = '';
+            document.getElementById('adminLoginError').style.display = 'none';
+            switchAuthTab('login');
+        }
+        
+        function openAccountModal() {
+            if (currentUser) {
+                document.getElementById('accountUsername').textContent = currentUser.username;
+                document.getElementById('accountPhone').textContent = currentUser.phone;
+                document.getElementById('accountCoins').textContent = currentUser.coins;
+                document.getElementById('editUsername').classList.remove('show');
+                document.getElementById('editPhone').classList.remove('show');
+                document.getElementById('editUsername').value = currentUser.username;
+                document.getElementById('editPhone').value = currentUser.phone;
+                document.getElementById('editAccountBtn').style.display = 'inline-block';
+                document.getElementById('saveAccountBtn').style.display = 'none';
+                document.getElementById('cancelEditBtn').style.display = 'none';
+                document.getElementById('logoutBtn').style.display = 'inline-block';
+                document.getElementById('accountModal').style.display = 'flex';
+            } else {
+                document.getElementById('authModal').style.display = 'flex';
+                switchAuthTab('login');
+            }
+        }
+        
+        function closeAccountModal() {
+            document.getElementById('accountModal').style.display = 'none';
+        }
+        
+        function enableEditMode() {
+            document.getElementById('accountUsername').style.display = 'none';
+            document.getElementById('accountPhone').style.display = 'none';
+            document.getElementById('editUsername').classList.add('show');
+            document.getElementById('editPhone').classList.add('show');
+            document.getElementById('editAccountBtn').style.display = 'none';
+            document.getElementById('saveAccountBtn').style.display = 'inline-block';
+            document.getElementById('cancelEditBtn').style.display = 'inline-block';
+        }
+        
+        function cancelEdit() {
+            document.getElementById('accountUsername').style.display = 'inline';
+            document.getElementById('accountPhone').style.display = 'inline';
+            document.getElementById('editUsername').classList.remove('show');
+            document.getElementById('editPhone').classList.remove('show');
+            document.getElementById('editAccountBtn').style.display = 'inline-block';
+            document.getElementById('saveAccountBtn').style.display = 'none';
+            document.getElementById('cancelEditBtn').style.display = 'none';
+            document.getElementById('editUsername').value = currentUser.username;
+            document.getElementById('editPhone').value = currentUser.phone;
+        }
+        
+        async function saveAccountChanges() {
+            const newUsername = document.getElementById('editUsername').value.trim();
+            const newPhone = document.getElementById('editPhone').value.trim();
+            
+            if (!newUsername || !newPhone) {
+                showNotification('الرجاء ملء جميع الحقول', 'error');
+                return;
+            }
+            if (!newPhone.startsWith('+963')) {
+                showNotification('رقم الهاتف يجب أن يبدأ بـ +963', 'error');
+                return;
+            }
+            if (newUsername !== currentUser.username && users.some(u => u.username === newUsername)) {
+                showNotification('اسم المستخدم موجود مسبقاً', 'error');
+                return;
+            }
+            
+            currentUser.username = newUsername;
+            currentUser.phone = newPhone;
+            const userIndex = users.findIndex(u => u.id === currentUser.id);
+            if (userIndex !== -1) {
+                users[userIndex] = currentUser;
+            }
+            try {
+                await saveUsersToGitHub(users);
+                document.getElementById('accountUsername').textContent = currentUser.username;
+                document.getElementById('accountPhone').textContent = currentUser.phone;
+                document.getElementById('accountText').innerHTML = `${currentUser.username} (${currentUser.coins} كوينز)`;
+                cancelEdit();
+                showNotification('تم تحديث البيانات بنجاح', 'success');
+            } catch (error) {
+                showNotification('فشل في حفظ التغييرات', 'error');
+            }
+        }
+        
+        function openAdminPanel() {
+            if (!isAdmin) {
+                showNotification('يجب تسجيل الدخول كمسؤول أولاً', 'error');
+                return;
+            }
+            const tbody = document.getElementById('usersTableBody');
+            tbody.innerHTML = '';
+            users.forEach(user => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${user.username}</td>
+                    <td>${user.phone}</td>
+                    <td>${user.coins}</td>
+                    <td>
+                        <input type="number" id="coins-${user.id}" min="1" value="10" style="width:60px;">
+                        <button class="add-coins-btn" onclick="addCoinsToUser(${user.id})">إضافة</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+            document.getElementById('adminPanelModal').style.display = 'flex';
+        }
+        
+        async function addCoinsToUser(userId) {
+            const input = document.getElementById(`coins-${userId}`);
+            const amount = parseInt(input.value);
+            if (isNaN(amount) || amount <= 0) {
+                showNotification('الرجاء إدخال كمية صحيحة', 'error');
+                return;
+            }
+            const user = users.find(u => u.id === userId);
+            if (!user) return;
+            user.coins += amount;
+            try {
+                await saveUsersToGitHub(users);
+                showNotification(`تم إضافة ${amount} كوينز للمستخدم ${user.username}`, 'success');
+                openAdminPanel();
+            } catch (error) {
+                showNotification('فشل في حفظ التغييرات', 'error');
+            }
+        }
+        
+        function closeAdminPanel() {
+            document.getElementById('adminPanelModal').style.display = 'none';
+        }
+        
+        async function deductCoinsForProperty() {
+            if (!currentUser) {
+                showNotification('يجب تسجيل الدخول أولاً', 'error');
+                return false;
+            }
+            if (currentUser.coins < 10) {
+                showNotification('لا يوجد لديك كوينز كافية. تحتاج 10 كوينز لإضافة عقار.', 'error');
+                return false;
+            }
+            currentUser.coins -= 10;
+            const userIndex = users.findIndex(u => u.id === currentUser.id);
+            if (userIndex !== -1) {
+                users[userIndex].coins = currentUser.coins;
+            }
+            try {
+                await saveUsersToGitHub(users);
+                document.getElementById('accountText').innerHTML = `${currentUser.username} (${currentUser.coins} كوينز)`;
+                return true;
+            } catch (error) {
+                showNotification('فشل في تحديث الرصيد', 'error');
+                return false;
+            }
+        }
+        
+        async function saveNewProperty() {
+            if (!isAdmin && currentUser) {
+                const canAdd = await deductCoinsForProperty();
+                if (!canAdd) return;
+            } else if (!isAdmin && !currentUser) {
+                showNotification('يجب تسجيل الدخول أولاً', 'error');
+                return;
+            }
+            
+            if (!selectedLocation) {
+                showNotification('الرجاء تحديد موقع العقار أولاً', 'error');
+                return;
+            }
+            
+            const propertyData = {
+                title: document.getElementById('propertyTitle').value,
+                price: parseInt(document.getElementById('propertyPrice').value),
+                category: document.getElementById('propertyCategory').value,
+                floors: parseInt(document.getElementById('propertyFloors').value),
+                type: document.getElementById('propertyType').value,
+                rooms: parseInt(document.getElementById('propertyRooms').value),
+                ready: document.getElementById('propertyReady').value === 'true',
+                phone: document.getElementById('propertyPhone').value,
+                region: document.getElementById('propertyRegion').value,
+                description: document.getElementById('propertyDescription').value,
+                coordinates: selectedLocation,
+                mediaType: currentMediaType,
+                mediaUrl: '',
+                images: [],
+                createdDate: new Date().toISOString(),
+                userId: currentUser ? currentUser.id : (isAdmin ? null : null)
+            };
+            
+            if (!propertyData.title || !propertyData.price || !propertyData.category || !propertyData.floors || !propertyData.phone) {
+                showNotification('الرجاء ملء جميع الحقول الإلزامية', 'error');
+                return;
+            }
+            
+            showLoading('جاري حفظ العقار...');
+            try {
+                if (selectedImages.length > 0) {
+                    for (let i = 0; i < selectedImages.length; i++) {
+                        const fileName = `image_${Date.now()}_${i}_${selectedImages[i].name}`;
+                        const url = await uploadFileToGitHub(selectedImages[i], fileName);
+                        propertyData.images.push(url);
+                    }
+                    propertyData.mediaUrl = propertyData.images[0];
+                    propertyData.mediaType = 'image';
+                } else {
+                    if (currentMediaType === 'youtube') {
+                        propertyData.mediaUrl = document.getElementById('propertyVideo').value.trim();
+                        propertyData.mediaType = 'youtube';
+                    } else if (currentMediaType === 'video' && uploadedVideo) {
+                        const fileName = `video_${Date.now()}_${uploadedVideo.name}`;
+                        propertyData.mediaUrl = await uploadFileToGitHub(uploadedVideo, fileName);
+                        propertyData.mediaType = 'video';
+                    }
+                }
+                
+                propertyData.id = Date.now();
+                properties.unshift(propertyData);
+                await saveToGitHub(properties);
+                showNotification('تم إضافة العقار بنجاح', 'success');
+                updateMapMarkers();
+                closeAddPropertyModal();
+                selectedImages = [];
+                uploadedVideo = null;
+                selectedLocation = null;
+            } catch (error) {
+                console.error('خطأ في حفظ العقار:', error);
+                showNotification(`خطأ في حفظ العقار: ${error.message}`, 'error');
+            } finally { hideLoading(); }
+        }
+        
+        // ==================== باقي الدوال (كما هي مع بعض التعديلات) ====================
+        
         function createPriceMarker(property) {
             let markerClass = 'for-sale';
             if (property.type === 'للإيجار (فوق 100$)') {
@@ -1667,7 +2512,6 @@
             return L.marker(property.coordinates, { icon: customIcon });
         }
         
-        // دالة لإنشاء علامة تحديد الموقع
         function createLocationMarker(coordinates) {
             const markerHtml = `<i class="fas fa-map-pin"></i>`;
             const customIcon = L.divIcon({
@@ -1679,7 +2523,6 @@
             return L.marker(coordinates, { icon: customIcon });
         }
         
-        // دالة لاستخراج ID الفيديو من رابط يوتيوب
         function extractYouTubeVideoId(url) {
             if (!url) return null;
             const patterns = [
@@ -1694,7 +2537,6 @@
             return null;
         }
         
-        // دالة لإنشاء رسالة واتساب
         function createWhatsAppMessage(property) {
             const regionNames = {
                 idlib: 'إدلب',
@@ -1730,14 +2572,9 @@
             return encodeURIComponent(message);
         }
         
-        // تحميل البيانات من GitHub
         async function loadDataFromGitHub() {
             showLoading('جاري تحميل البيانات...');
             try {
-                if (!TOKEN) {
-                    const tokenFound = await fetchTokenFromGoogleSheets();
-                    if (!tokenFound) TOKEN = "hp_iYAbE77RTSpGLfZ1ylTNm5Tlkd7UDo4EqZ0l";
-                }
                 const response = await fetch(`https://api.github.com/repos/${USERNAME}/${REPO_NAME}/contents/${DATA_FILE_PATH}`, {
                     headers: { 'Authorization': `token ${TOKEN}`, 'Accept': 'application/vnd.github.v3+json' }
                 });
@@ -1759,7 +2596,8 @@
                         ...p,
                         category: p.category || null,
                         floors: p.floors || null,
-                        images: p.images || null
+                        images: p.images || null,
+                        userId: p.userId || null
                     }));
                     console.log(`تم تحميل ${properties.length} عقار من GitHub`);
                 }
@@ -1773,7 +2611,6 @@
             }
         }
         
-        // حفظ البيانات إلى GitHub
         async function saveToGitHub(data) {
             try {
                 const getResponse = await fetch(`https://api.github.com/repos/${USERNAME}/${REPO_NAME}/contents/${DATA_FILE_PATH}`, {
@@ -1816,7 +2653,6 @@
             }
         }
         
-        // رفع ملف إلى GitHub
         async function uploadFileToGitHub(file, fileName) {
             try {
                 const reader = new FileReader();
@@ -1857,7 +2693,6 @@
             }
         }
         
-        // تحميل بيانات تجريبية
         function loadSampleData() {
             properties = [
                 {
@@ -1875,7 +2710,8 @@
                     mediaType: "",
                     createdDate: new Date().toISOString(),
                     category: "شقة",
-                    floors: 2
+                    floors: 2,
+                    userId: null
                 },
                 {
                     id: 2,
@@ -1892,23 +2728,28 @@
                     mediaType: "",
                     createdDate: new Date().toISOString(),
                     category: "أرض",
-                    floors: 1
+                    floors: 1,
+                    userId: null
                 }
             ];
             updateMapMarkers();
         }
         
-        // تحديث العلامات على الخريطة
         function updateMapMarkers(filteredProperties = properties) {
-            // إزالة العلامات القديمة
             markers.forEach(marker => map.removeLayer(marker));
             markers = [];
             
-            // إضافة العلامات الجديدة
             filteredProperties.forEach(property => {
                 const marker = createPriceMarker(property);
                 
-                const deleteButtonHtml = isAdmin ? 
+                let showDelete = false;
+                if (isAdmin) {
+                    showDelete = true;
+                } else if (currentUser && property.userId && property.userId === currentUser.id) {
+                    showDelete = true;
+                }
+                
+                const deleteButtonHtml = showDelete ? 
                     `<button class="popup-btn delete" onclick="deletePropertyPrompt(${property.id})"><i class="fas fa-trash"></i> حذف</button>` : '';
                 
                 const categoryIcon = property.category === 'شقة' ? '🏢' : (property.category === 'أرض' ? '🌳' : '🏪');
@@ -1946,7 +2787,6 @@
             });
         }
         
-        // فلترة العقارات (تم تحديث قسم السعر)
         function filterProperties() {
             let filtered = [...properties];
             
@@ -2006,7 +2846,6 @@
             updateMapMarkers(filtered);
         }
         
-        // عرض تفاصيل العقار
         function showPropertyDetails(propertyId) {
             currentPropertyId = propertyId;
             const property = properties.find(p => p.id === propertyId);
@@ -2094,14 +2933,20 @@
                 </div>
             `;
             
+            let showDelete = false;
+            if (isAdmin) {
+                showDelete = true;
+            } else if (currentUser && property.userId && property.userId === currentUser.id) {
+                showDelete = true;
+            }
+            
             let actionButtons = `<button class="action-btn whatsapp" onclick="sharePropertyWhatsApp(${propertyId})"><i class="fab fa-whatsapp"></i> تواصل عبر واتساب</button>`;
-            if (isAdmin) actionButtons += `<button class="action-btn delete" onclick="deletePropertyPrompt(${propertyId})"><i class="fas fa-trash"></i> حذف العقار</button>`;
+            if (showDelete) actionButtons += `<button class="action-btn delete" onclick="deletePropertyPrompt(${propertyId})"><i class="fas fa-trash"></i> حذف العقار</button>`;
             actionButtons += `<button class="action-btn close" onclick="closePropertyDetails()"><i class="fas fa-times"></i> إغلاق</button>`;
             document.getElementById('propertyDetailsActions').innerHTML = actionButtons;
             document.getElementById('propertyDetailsModal').style.display = 'flex';
         }
         
-        // دوال عرض الصور المكبرة
         function openLightbox(images, index) {
             lightboxImages = images;
             currentLightboxIndex = index;
@@ -2159,7 +3004,10 @@
         }
         
         function activateLocationMode() {
-            if (!isAdmin) { showNotification('يجب تسجيل الدخول كمسؤول أولاً', 'error'); return; }
+            if (!currentUser && !isAdmin) { 
+                showNotification('يجب تسجيل الدخول أولاً', 'error'); 
+                return; 
+            }
             isLocationMode = true; selectedLocation = null;
             if (locationMarker) { map.removeLayer(locationMarker); locationMarker = null; }
             showNotification('الرجاء النقر على الخريطة لتحديد موقع العقار الجديد', 'info');
@@ -2179,7 +3027,6 @@
             map.on('click', mapClickHandler);
         }
         
-        // دوال معاينة الصور
         function previewMultipleImages(input) {
             if (input.files) {
                 const newFiles = Array.from(input.files);
@@ -2220,70 +3067,6 @@
             });
         }
         
-        // دالة حفظ العقار الجديد
-        async function saveNewProperty() {
-            if (!isAdmin) { showNotification('يجب تسجيل الدخول كمسؤول أولاً', 'error'); return; }
-            if (!selectedLocation) { showNotification('الرجاء تحديد موقع العقار أولاً', 'error'); return; }
-            
-            const propertyData = {
-                title: document.getElementById('propertyTitle').value,
-                price: parseInt(document.getElementById('propertyPrice').value),
-                category: document.getElementById('propertyCategory').value,
-                floors: parseInt(document.getElementById('propertyFloors').value),
-                type: document.getElementById('propertyType').value,
-                rooms: parseInt(document.getElementById('propertyRooms').value),
-                ready: document.getElementById('propertyReady').value === 'true',
-                phone: document.getElementById('propertyPhone').value,
-                region: document.getElementById('propertyRegion').value,
-                description: document.getElementById('propertyDescription').value,
-                coordinates: selectedLocation,
-                mediaType: currentMediaType,
-                mediaUrl: '',
-                images: [],
-                createdDate: new Date().toISOString()
-            };
-            
-            if (!propertyData.title || !propertyData.price || !propertyData.category || !propertyData.floors || !propertyData.phone) {
-                showNotification('الرجاء ملء جميع الحقول الإلزامية', 'error');
-                return;
-            }
-            
-            showLoading('جاري حفظ العقار...');
-            try {
-                if (selectedImages.length > 0) {
-                    for (let i = 0; i < selectedImages.length; i++) {
-                        const fileName = `image_${Date.now()}_${i}_${selectedImages[i].name}`;
-                        const url = await uploadFileToGitHub(selectedImages[i], fileName);
-                        propertyData.images.push(url);
-                    }
-                    propertyData.mediaUrl = propertyData.images[0];
-                    propertyData.mediaType = 'image';
-                } else {
-                    if (currentMediaType === 'youtube') {
-                        propertyData.mediaUrl = document.getElementById('propertyVideo').value.trim();
-                        propertyData.mediaType = 'youtube';
-                    } else if (currentMediaType === 'video' && uploadedVideo) {
-                        const fileName = `video_${Date.now()}_${uploadedVideo.name}`;
-                        propertyData.mediaUrl = await uploadFileToGitHub(uploadedVideo, fileName);
-                        propertyData.mediaType = 'video';
-                    }
-                }
-                
-                propertyData.id = Date.now();
-                properties.unshift(propertyData);
-                await saveToGitHub(properties);
-                showNotification('تم إضافة العقار بنجاح', 'success');
-                updateMapMarkers();
-                closeAddPropertyModal();
-                selectedImages = [];
-                uploadedVideo = null;
-                selectedLocation = null;
-            } catch (error) {
-                console.error('خطأ في حفظ العقار:', error);
-                showNotification(`خطأ في حفظ العقار: ${error.message}`, 'error');
-            } finally { hideLoading(); }
-        }
-        
         function closeAddPropertyModal() {
             const videoPreview = document.getElementById('videoPreview');
             if (videoPreview) {
@@ -2292,7 +3075,6 @@
             }
             document.getElementById('addPropertyModal').style.display = 'none';
             document.getElementById('propertyForm').reset();
-            // تحميل الرقم المحفوظ عند الإغلاق
             loadPhoneFromStorage();
             currentMediaType = 'youtube';
             selectedImages = [];
@@ -2312,13 +3094,30 @@
         function deletePropertyPrompt(propertyId) {
             const property = properties.find(p => p.id === propertyId);
             if (!property) return;
+            
+            if (!isAdmin && !(currentUser && property.userId && property.userId === currentUser.id)) {
+                showNotification('ليس لديك صلاحية لحذف هذا العقار', 'error');
+                return;
+            }
+            
             currentPropertyId = propertyId;
             document.getElementById('confirmDeleteText').textContent = `هل أنت متأكد من حذف العقار "${property.title}"؟ هذا الإجراء لا يمكن التراجع عنه.`;
             document.getElementById('confirmDeleteModal').style.display = 'flex';
         }
         
         async function deleteProperty() {
-            if (!isAdmin || !currentPropertyId) return;
+            if (!currentPropertyId) return;
+            
+            const property = properties.find(p => p.id === currentPropertyId);
+            if (!property) return;
+            
+            if (!isAdmin && !(currentUser && property.userId && property.userId === currentUser.id)) {
+                showNotification('ليس لديك صلاحية لحذف هذا العقار', 'error');
+                document.getElementById('confirmDeleteModal').style.display = 'none';
+                currentPropertyId = null;
+                return;
+            }
+            
             showLoading('جاري حذف العقار...');
             try {
                 const propertyIndex = properties.findIndex(p => p.id === currentPropertyId);
@@ -2334,22 +3133,6 @@
                 console.error('خطأ في حذف العقار:', error);
                 showNotification(`خطأ في حذف العقار: ${error.message}`, 'error');
             } finally { hideLoading(); }
-        }
-        
-        function loginAsAdmin() {
-            const password = document.getElementById('adminPassword').value;
-            if (password === ADMIN_PASSWORD) {
-                isAdmin = true;
-                showNotification('تم الدخول كمسؤول بنجاح', 'success');
-                document.querySelectorAll('.admin-only').forEach(btn => btn.classList.add('visible'));
-                updateMapMarkers();
-                document.getElementById('adminPasswordModal').style.display = 'none';
-                document.getElementById('adminPassword').value = '';
-                document.getElementById('passwordError').style.display = 'none';
-            } else {
-                document.getElementById('passwordError').style.display = 'block';
-                document.getElementById('adminPassword').value = '';
-            }
         }
         
         function showLoading(message = 'جاري التحميل...') {
@@ -2372,7 +3155,6 @@
             }, 3000);
         }
         
-        // دوال حفظ واسترجاع رقم الهاتف من localStorage
         function savePhoneToStorage() {
             const phone = document.getElementById('propertyPhone').value;
             localStorage.setItem('defaultPhone', phone);
@@ -2383,11 +3165,10 @@
             if (savedPhone) {
                 document.getElementById('propertyPhone').value = savedPhone;
             } else {
-                document.getElementById('propertyPhone').value = '+963949340870'; // القيمة الافتراضية
+                document.getElementById('propertyPhone').value = '+963949340870';
             }
         }
         
-        // دالة إظهار نافذة تواصل معنا
         function showContactModal() {
             document.getElementById('contactModal').style.display = 'flex';
         }
@@ -2396,15 +3177,24 @@
             document.getElementById('contactModal').style.display = 'none';
         }
         
-        // تهيئة الصفحة
         document.addEventListener('DOMContentLoaded', async () => {
-            await fetchTokenFromGoogleSheets();
-            loadDataFromGitHub();
+            // جلب الإعدادات أولاً
+            const settingsLoaded = await fetchSettingsFromGoogleSheets();
+            if (!settingsLoaded) {
+                // إذا فشل الجلب، نستخدم قيماً افتراضية (للاختبار)
+                USERNAME = 'jlalmo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stafa';
+                REPO_NAME = 'ldlib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-real-estate';
+                TOKEN = 'ghp_iYAbE77RTSpGLfZ1ylTNm5Tlkd7UD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o4EqZ0l';
+                ADMIN_PASSWORD = '09ghp_iYAbE77RTSpGLfZ1ylTNm5Tlk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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d7UDo4EqZ0l911';
+                showNotification('تم استخدام الإعدادات الافتراضية', 'info');
+            }
             
-            // تحميل الرقم المحفوظ عند تحميل الصفحة
+            // تحميل المستخدمين
+            await loadUsersFromGitHub();
+            // تحميل العقارات
+            await loadDataFromGitHub();
+            
             loadPhoneFromStorage();
-            
-            // حفظ الرقم عند تغييره
             document.getElementById('propertyPhone').addEventListener('input', savePhoneToStorage);
             
             document.getElementById('searchBox').addEventListener('input', searchProperties);
@@ -2431,21 +3221,17 @@
                 isSatellite = !isSatellite;
             });
             
-            document.getElementById('adminAccessBtn').addEventListener('click', () => {
-                document.getElementById('adminPasswordModal').style.display = 'flex';
-                document.getElementById('adminPassword').focus();
+            document.getElementById('accountBtn').addEventListener('click', (e) => {
+                e.preventDefault();
+                openAccountModal();
             });
             
-            document.getElementById('submitPasswordBtn').addEventListener('click', loginAsAdmin);
-            document.getElementById('cancelPasswordBtn').addEventListener('click', () => {
-                document.getElementById('adminPasswordModal').style.display = 'none';
-                document.getElementById('adminPassword').value = '';
-                document.getElementById('passwordError').style.display = 'none';
+            document.getElementById('adminPanelBtn').addEventListener('click', (e) => {
+                e.preventDefault();
+                openAdminPanel();
             });
-            document.getElementById('adminPassword').addEventListener('keypress', (e) => { if (e.key === 'Enter') loginAsAdmin(); });
             
             document.getElementById('addPropertyBtn').addEventListener('click', () => {
-                if (!isAdmin) { showNotification('يجب تسجيل الدخول كمسؤول أولاً', 'error'); return; }
                 activateLocationMode();
             });
             document.getElementById('locateBtn').addEventListener('click', activateLocationMode);
@@ -2483,24 +3269,21 @@
                 currentPropertyId = null;
             });
             
-            // إضافة مستمع لزر تواصل معنا
             document.getElementById('contactUsBtn').addEventListener('click', (e) => {
                 e.preventDefault();
                 showContactModal();
             });
             
             window.addEventListener('click', (e) => {
-                if (e.target.id === 'adminPasswordModal') {
-                    document.getElementById('adminPasswordModal').style.display = 'none';
-                    document.getElementById('adminPassword').value = '';
-                    document.getElementById('passwordError').style.display = 'none';
-                }
+                if (e.target.id === 'authModal') closeAuthModal();
+                if (e.target.id === 'accountModal') closeAccountModal();
                 if (e.target.id === 'addPropertyModal') closeAddPropertyModal();
                 if (e.target.id === 'propertyDetailsModal') closePropertyDetails();
                 if (e.target.id === 'confirmDeleteModal') {
                     document.getElementById('confirmDeleteModal').style.display = 'none';
                     currentPropertyId = null;
                 }
+                if (e.target.id === 'adminPanelModal') closeAdminPanel();
                 if (e.target.id === 'contactModal') closeContactModal();
             });
             
@@ -2508,7 +3291,9 @@
                 if (e.key === 'Escape') {
                     closePropertyDetails();
                     closeAddPropertyModal();
-                    document.getElementById('adminPasswordModal').style.display = 'none';
+                    closeAuthModal();
+                    closeAccountModal();
+                    closeAdminPanel();
                     document.getElementById('confirmDeleteModal').style.display = 'none';
                     closeLightbox();
                     closeContactModal();
@@ -2516,7 +3301,6 @@
             });
         });
         
-        // دالة تغيير نوع الوسائط
         function changeMediaType(type) {
             currentMediaType = type;
             document.querySelectorAll('.media-option').forEach(option => option.classList.remove('active'));
@@ -2528,71 +3312,27 @@
         }
     </script>
     
-    
-    
-    
-    
-    
-    
+    <!-- كود إشعار الزائر -->
     <script>
         (function() {
-            // ----- إعدادات البوت (استبدلها بقيمك الخاصة) -----
-            const BOT_TOKEN = '1234567890:ABCdefGHIJklmNOPqrstUVwxyz'; // توكن البوت
-            const CHAT_ID   = '-1001234567890'; // معرف الدردشة (رقم المجموعة/القناة أو المستخدم)
-            const MESSAGE   = '👤 مستخدم جديد دخل إلى الصفحة!';
-
-            // التحقق مما إذا كان المستخدم قد زار من قبل
+            const BOT_TOKEN = '7091861211:AAHDmjyrNn7gsU_H1g8sCOqdryetggdEb0A';
+            const CHAT_ID = '1401302091';
+            const MESSAGE = '👤 مستخدم جديد دخل إلى الصفحة!';
+            
             try {
                 if (!localStorage.getItem('visited')) {
-                    // إنشاء رابط إرسال الرسالة عبر API (باستخدام GET)
                     const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(MESSAGE)}`;
-                    
-                    // استخدام كائن Image لإرسال الطلب بدون مشاكل CORS
                     const img = new Image();
                     img.src = url;
-                    
-                    // بعد محاولة الإرسال (نجاح أو فشل) نقوم بتعيين علامة الزيارة
                     img.onload = img.onerror = function() {
                         localStorage.setItem('visited', 'true');
                     };
                 }
             } catch (e) {
-                // في حال فشل الوصول إلى localStorage (مثل الوضع الخاص) نتجاهل
                 console.warn('تعذر الوصول إلى localStorage', e);
             }
         })();
     </script>
-
-    
-      <script>
-      (function() {
-          // ----- إعدادات البوت (استبدلها بقيمك الخاصة) -----
-          const BOT_TOKEN = '7091861211:AAHDmjyrNn7gsU_H1g8sCOqdryetggdEb0A'; // توكن البوت
-          const CHAT_ID = '1401302091'; // معرف الدردشة (رقم المجموعة/القناة أو المستخدم)
-          const MESSAGE = '👤 مستخدم جديد دخل إلى الصفحة!';
-          
-          // التحقق مما إذا كان المستخدم قد زار من قبل
-          try {
-              if (!localStorage.getItem('visited')) {
-                  // إنشاء رابط إرسال الرسالة عبر API (باستخدام GET)
-                  const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(MESSAGE)}`;
-                  
-                  // استخدام كائن Image لإرسال الطلب بدون مشاكل CORS
-                  const img = new Image();
-                  img.src = url;
-                  
-                  // بعد محاولة الإرسال (نجاح أو فشل) نقوم بتعيين علامة الزيارة
-                  img.onload = img.onerror = function() {
-                      localStorage.setItem('visited', 'true');
-                  };
-              }
-          } catch (e) {
-              // في حال فشل الوصول إلى localStorage (مثل الوضع الخاص) نتجاهل
-              console.warn('تعذر الوصول إلى localStorage', e);
-          }
-      })();
-  </script>
-    
     
 </body>
 </html>
